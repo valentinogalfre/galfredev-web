@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Política de privacidad · Pulso</title>
+<meta name="description" content="Política de privacidad de Pulso (ES/EN), el tracker de suscripciones y gastos recurrentes. Sin cuentas, sin servidores propios, sin recolección de datos: todo vive en tu teléfono.">
+<meta name="color-scheme" content="dark light">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://galfredev.com/pulso/privacidad">
+<style>
+  /* ===== Pulso · paleta Volt (dark-first) ===== */
+  :root {
+    --bg:        #0B0D12;
+    --surface:   #161A24;
+    --surface2:  #1F2433;
+    --border:    #2A3044;
+    --text:      #F2F4F8;
+    --text2:     #9AA1B5;
+    --accent:    #C8F542; /* lima: títulos, links */
+    --onAccent:  #1A2206;
+    --accent2:   #A78BFA; /* lavanda: detalles secundarios */
+    --danger:    #FF7A6B; /* coral: SOLO urgencia, no usado decorativamente */
+    --ok:        #5EEAD4;
+
+    --maxw: 720px;
+    --radius-card: 16px;
+    --radius-row: 14px;
+    --radius-pill: 99px;
+    --pad: 16px;
+
+    --shadow: none;
+  }
+
+  /* ===== Tema claro "Clara" (legible, respeta el SO) ===== */
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg:       #F4F5F8;
+      --surface:  #FFFFFF;
+      --surface2: #EBEDF2;
+      --border:   #DFE2EA;
+      --text:     #15171C;
+      --text2:    #5C6478;
+      --accent:   #0E8A5F; /* verde Clara para títulos/links, contraste AA sobre claro */
+      --onAccent: #FFFFFF;
+      --accent2:  #7C5CFC;
+      --danger:   #E2483D;
+      --ok:       #0E8A5F;
+      --shadow:   0 1px 3px rgba(21, 23, 28, 0.06), 0 8px 28px rgba(21, 23, 28, 0.05);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: 0 var(--pad) calc(env(safe-area-inset-bottom, 0px) + 48px);
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; }
+
+  /* ===== Encabezado / marca ===== */
+  header.brand {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: clamp(40px, 9vw, 72px) 0 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+  }
+
+  .logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); }
+
+  .pulse-dot {
+    display: inline-flex;
+    width: 40px; height: 40px;
+    align-items: center; justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    flex: 0 0 auto;
+  }
+  .pulse-dot svg { display: block; }
+  .pulse-dot svg path { stroke: var(--onAccent); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pulse-dot { animation: beat 2.4s ease-in-out infinite; }
+    @keyframes beat {
+      0%, 88%, 100% { transform: scale(1); }
+      92%           { transform: scale(1.12); }
+      96%           { transform: scale(0.97); }
+    }
+  }
+
+  .brand-name { font-size: clamp(28px, 6vw, 38px); font-weight: 800; letter-spacing: -0.02em; margin: 0; line-height: 1.1; }
+  .brand-tag  { display: block; color: var(--text2); font-size: 15px; margin: 4px 0 0; letter-spacing: 0.01em; }
+
+  /* ===== Selector de idioma ===== */
+  .lang-switch {
+    display: inline-flex; gap: 4px; flex: 0 0 auto;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-pill); padding: 4px; margin-top: 6px;
+    box-shadow: var(--shadow);
+  }
+  .lang-switch button {
+    appearance: none; border: 0; background: transparent; color: var(--text2);
+    font: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
+    padding: 6px 12px; border-radius: var(--radius-pill); cursor: pointer;
+  }
+  .lang-switch button[aria-pressed="true"] { background: var(--accent); color: var(--onAccent); }
+  .lang-switch button:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+
+  h1 { font-size: clamp(24px, 5vw, 32px); font-weight: 800; letter-spacing: -0.02em; color: var(--accent); margin: 0 0 6px; line-height: 1.2; }
+  .updated { color: var(--text2); font-size: 14px; margin: 0 0 28px; }
+  .updated strong { color: var(--text); font-weight: 600; }
+  h2 { font-size: clamp(19px, 4vw, 22px); font-weight: 700; color: var(--accent); letter-spacing: -0.01em; margin: 40px 0 12px; line-height: 1.3; }
+  p { margin: 0 0 16px; }
+
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; word-break: break-word; }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; border-radius: 4px; }
+  strong { color: var(--text); font-weight: 700; }
+
+  ul, ol { margin: 0 0 16px; padding-left: 1.4em; }
+  li { margin: 0 0 8px; }
+  li::marker { color: var(--accent2); }
+
+  .lead-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 18px 20px; margin: 0 0 8px; box-shadow: var(--shadow); }
+  .lead-card p { margin: 0; }
+
+  footer { margin-top: 44px; padding-top: 28px; border-top: 1px solid var(--border); color: var(--text2); font-size: 14px; line-height: 1.6; }
+  footer .contact { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-row); padding: 16px 18px; margin-bottom: 18px; box-shadow: var(--shadow); }
+  footer .contact p { margin: 0; color: var(--text); }
+  footer .meta { margin: 0; }
+  footer .meta .sep { color: var(--border); padding: 0 6px; }
+
+  .tnum { font-variant-numeric: tabular-nums; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 480px) {
+    body { font-size: 16px; }
+    header.brand { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="brand">
+    <span class="logo" aria-label="Pulso">
+      <span class="pulse-dot" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 12 H6 L9 5 L13 19 L16 12 H22" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </span>
+      <span>
+        <span class="brand-name">Pulso</span>
+        <span class="brand-tag" data-lang="es">el pulso de tus gastos</span>
+        <span class="brand-tag" data-lang="en" hidden>the pulse of your spending</span>
+      </span>
+    </span>
+    <nav class="lang-switch" aria-label="Idioma / Language">
+      <button type="button" data-set="es" aria-pressed="true">ES</button>
+      <button type="button" data-set="en" aria-pressed="false">EN</button>
+    </nav>
+  </header>
+
+  <!-- ===================== ESPAÑOL ===================== -->
+  <main data-lang="es">
+    <h1>Política de privacidad de Pulso</h1>
+    <p class="updated"><strong>Última actualización: 13 de junio de 2026</strong></p>
+
+    <p>Pulso es una app para llevar el control de tus suscripciones y gastos recurrentes. Está pensada desde el principio para que tus datos sean tuyos y vivan en tu teléfono.</p>
+
+    <h2>Resumen en una línea</h2>
+    <div class="lead-card">
+      <p>Pulso <strong>no tiene cuentas, no tiene servidores propios y no recolecta ni vende tus datos</strong>. Todo lo que cargás queda guardado localmente en tu dispositivo.</p>
+    </div>
+
+    <h2>Qué datos maneja Pulso y dónde</h2>
+    <p>Toda la información que cargás —suscripciones, gastos, montos, fechas, medios de pago (solo el nombre y los últimos <span class="tnum">4</span> dígitos que vos elijas escribir), notas y preferencias— se guarda <strong>únicamente en el almacenamiento local de tu teléfono</strong> (base de datos SQLite del dispositivo).</p>
+    <ul>
+      <li>No hay registro ni inicio de sesión.</li>
+      <li>No enviamos esos datos a ningún servidor de Pulso (no existe tal servidor).</li>
+      <li>No usamos analítica, rastreadores publicitarios ni SDKs de terceros que recolecten datos.</li>
+      <li>No accedemos a tus cuentas bancarias ni pedimos credenciales financieras.</li>
+    </ul>
+
+    <h2>Medios de pago</h2>
+    <p>Pulso te permite anotar tus medios de pago solo a fines organizativos. Guardás el nombre que vos quieras (ej. "Visa Galicia") y, opcionalmente, los <strong>últimos <span class="tnum">4</span> dígitos</strong>. <strong>Nunca</strong> se piden ni se guardan el número completo de tarjeta, el código de seguridad ni datos de acceso bancario.</p>
+
+    <h2>Notificaciones</h2>
+    <p>Las notificaciones de Pulso (recordatorios de cobro, avisos de presupuesto, resumen mensual) son <strong>locales</strong>: se programan y se muestran desde tu propio teléfono. No usamos notificaciones push remotas ni servidores de envío.</p>
+
+    <h2>Fotos</h2>
+    <p>Si elegís ponerle una imagen propia a una suscripción o gasto, Pulso accede a tu galería <strong>solo en ese momento y solo para esa imagen</strong>, que se guarda localmente junto al resto de tus datos. No se sube a ningún lado.</p>
+
+    <h2>Cotizaciones de moneda</h2>
+    <p>Para convertir entre monedas, Pulso puede consultar una API pública de tipos de cambio. En esa consulta <strong>no se envía ningún dato personal tuyo</strong>: solo se piden las cotizaciones del día. Si no hay conexión, Pulso usa la última cotización guardada o muestra los totales por moneda sin convertir.</p>
+
+    <h2>Asistente con IA (opcional)</h2>
+    <p>Pulso incluye una función opcional de asistente y de "importar con IA". Es <strong>opt-in</strong> y está apagada hasta que vos la actives:</p>
+    <ol>
+      <li>Tenés que cargar tu propia clave de API de Anthropic. Esa clave se guarda <strong>cifrada en el llavero (Keychain) de tu teléfono</strong>, marcada para no migrar a otros dispositivos, y nunca se comparte con nosotros.</li>
+      <li>La primera vez que la uses, Pulso te muestra un aviso explícito y te pide consentimiento.</li>
+      <li>Si aceptás, cuando hagas una consulta Pulso envía a <strong>Anthropic (Claude)</strong> el texto que escribís y un resumen de tus datos relevantes (nombres de servicios, montos, fechas) para poder responderte. <strong>No</strong> se envían números de tarjeta ni datos de pago.</li>
+    </ol>
+    <p>El tratamiento que Anthropic hace de esos datos se rige por la política de privacidad de Anthropic: <a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">https://www.anthropic.com/legal/privacy</a></p>
+    <p>Si no usás esta función, <strong>ningún dato sale de tu teléfono</strong>. Podés desactivarla en cualquier momento quitando la clave en Ajustes.</p>
+
+    <h2>Compartir y exportar</h2>
+    <p>Cuando exportás tus datos (CSV o backup JSON) o compartís una imagen/resumen, esos archivos se generan en tu dispositivo y se entregan a la hoja de compartir del sistema operativo. Vos elegís a dónde van. Pulso no recibe copia.</p>
+
+    <h2>Borrado de datos</h2>
+    <p>Tenés control total: podés borrar todos tus datos desde <strong>Ajustes → Zona de riesgo → Borrar todos los datos</strong>. Desinstalar la app también elimina toda la información local. Como no hay servidores, no queda ninguna copia en ningún otro lado.</p>
+
+    <h2>Menores</h2>
+    <p>Pulso no está dirigida a menores de <span class="tnum">13</span> años y no recolecta a sabiendas datos de menores.</p>
+
+    <h2>Cambios en esta política</h2>
+    <p>Si en el futuro cambiamos cómo funciona la app respecto de los datos, vamos a actualizar esta política y la fecha de "última actualización".</p>
+
+    <h2>Contacto</h2>
+    <p>Por dudas sobre privacidad, escribí a: <strong><a href="mailto:galfredev@gmail.com">galfredev@gmail.com</a></strong></p>
+  </main>
+
+  <!-- ===================== ENGLISH ===================== -->
+  <main data-lang="en" hidden>
+    <h1>Pulso Privacy Policy</h1>
+    <p class="updated"><strong>Last updated: June 13, 2026</strong></p>
+
+    <p>Pulso is an app for keeping track of your subscriptions and recurring expenses. It's designed from the ground up so your data is yours and lives on your phone.</p>
+
+    <h2>In one line</h2>
+    <div class="lead-card">
+      <p>Pulso <strong>has no accounts, no servers of its own, and does not collect or sell your data</strong>. Everything you enter is stored locally on your device.</p>
+    </div>
+
+    <h2>What data Pulso handles, and where</h2>
+    <p>All the information you enter —subscriptions, expenses, amounts, dates, payment methods (only the name and the last <span class="tnum">4</span> digits you choose to type), notes and preferences— is stored <strong>only in your phone's local storage</strong> (the device's SQLite database).</p>
+    <ul>
+      <li>There is no sign-up or login.</li>
+      <li>We don't send that data to any Pulso server (no such server exists).</li>
+      <li>We don't use analytics, ad trackers, or third-party data-collecting SDKs.</li>
+      <li>We don't access your bank accounts or ask for financial credentials.</li>
+    </ul>
+
+    <h2>Payment methods</h2>
+    <p>Pulso lets you jot down your payment methods for organization only. You save whatever name you like (e.g. "Visa Galicia") and, optionally, the <strong>last <span class="tnum">4</span> digits</strong>. The full card number, security code, and banking login are <strong>never</strong> requested or stored.</p>
+
+    <h2>Notifications</h2>
+    <p>Pulso's notifications (charge reminders, budget alerts, monthly summary) are <strong>local</strong>: they're scheduled and shown from your own phone. We don't use remote push notifications or delivery servers.</p>
+
+    <h2>Photos</h2>
+    <p>If you choose to set your own image for a subscription or expense, Pulso accesses your gallery <strong>only at that moment and only for that image</strong>, which is stored locally with the rest of your data. It isn't uploaded anywhere.</p>
+
+    <h2>Currency rates</h2>
+    <p>To convert between currencies, Pulso may query a public exchange-rate API. That request sends <strong>none of your personal data</strong>: it only asks for the day's rates. With no connection, Pulso uses the last saved rate or shows totals per currency without converting.</p>
+
+    <h2>AI assistant (optional)</h2>
+    <p>Pulso includes an optional assistant and "import with AI" feature. It's <strong>opt-in</strong> and stays off until you turn it on:</p>
+    <ol>
+      <li>You must add your own Anthropic API key. That key is stored <strong>encrypted in your phone's Keychain</strong>, marked not to migrate to other devices, and is never shared with us.</li>
+      <li>The first time you use it, Pulso shows an explicit notice and asks for your consent.</li>
+      <li>If you accept, when you make a query Pulso sends <strong>Anthropic (Claude)</strong> the text you write and a summary of your relevant data (service names, amounts, dates) so it can answer you. Card numbers and payment data are <strong>not</strong> sent.</li>
+    </ol>
+    <p>How Anthropic handles that data is governed by Anthropic's privacy policy: <a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">https://www.anthropic.com/legal/privacy</a></p>
+    <p>If you don't use this feature, <strong>no data leaves your phone</strong>. You can turn it off anytime by removing the key in Settings.</p>
+
+    <h2>Sharing and exporting</h2>
+    <p>When you export your data (CSV or JSON backup) or share an image/summary, those files are generated on your device and handed to the operating system's share sheet. You choose where they go. Pulso keeps no copy.</p>
+
+    <h2>Deleting data</h2>
+    <p>You're in full control: you can delete all your data from <strong>Settings → Danger zone → Delete all data</strong>. Uninstalling the app also removes all local information. Since there are no servers, no copy remains anywhere else.</p>
+
+    <h2>Minors</h2>
+    <p>Pulso isn't directed at children under <span class="tnum">13</span> and doesn't knowingly collect data from minors.</p>
+
+    <h2>Changes to this policy</h2>
+    <p>If we change how the app handles data in the future, we'll update this policy and the "last updated" date.</p>
+
+    <h2>Contact</h2>
+    <p>For privacy questions, write to: <strong><a href="mailto:galfredev@gmail.com">galfredev@gmail.com</a></strong></p>
+  </main>
+
+  <footer>
+    <div class="contact">
+      <p data-lang="es">¿Dudas sobre tu privacidad? Escribinos a <a href="mailto:galfredev@gmail.com">galfredev@gmail.com</a>.</p>
+      <p data-lang="en" hidden>Questions about your privacy? Email us at <a href="mailto:galfredev@gmail.com">galfredev@gmail.com</a>.</p>
+    </div>
+    <p class="meta" data-lang="es">Pulso · el pulso de tus gastos<span class="sep">·</span>Última actualización: 13 de junio de 2026</p>
+    <p class="meta" data-lang="en" hidden>Pulso · the pulse of your spending<span class="sep">·</span>Last updated: June 13, 2026</p>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var KEY = 'pulso_pp_lang';
+    function pick() {
+      try { var s = localStorage.getItem(KEY); if (s === 'es' || s === 'en') return s; } catch (e) {}
+      return (navigator.language || 'es').toLowerCase().indexOf('es') === 0 ? 'es' : 'en';
+    }
+    function apply(lang) {
+      document.documentElement.lang = lang === 'en' ? 'en' : 'es-AR';
+      var els = document.querySelectorAll('[data-lang]');
+      for (var i = 0; i < els.length; i++) els[i].hidden = els[i].getAttribute('data-lang') !== lang;
+      var btns = document.querySelectorAll('.lang-switch button');
+      for (var j = 0; j < btns.length; j++) btns[j].setAttribute('aria-pressed', String(btns[j].getAttribute('data-set') === lang));
+      try { localStorage.setItem(KEY, lang); } catch (e) {}
+    }
+    var btns = document.querySelectorAll('.lang-switch button');
+    for (var k = 0; k < btns.length; k++) {
+      btns[k].addEventListener('click', function () { apply(this.getAttribute('data-set')); });
+    }
+    apply(pick());
+  })();
+</script>
+</body>
+</html>
