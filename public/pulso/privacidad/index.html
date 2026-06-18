@@ -176,7 +176,7 @@
   <!-- ===================== ESPAÑOL ===================== -->
   <main data-lang="es">
     <h1>Política de privacidad de Pulso</h1>
-    <p class="updated"><strong>Última actualización: 13 de junio de 2026</strong></p>
+    <p class="updated"><strong>Última actualización: 18 de junio de 2026</strong></p>
 
     <p>Pulso es una app para llevar el control de tus suscripciones y gastos recurrentes. Está pensada desde el principio para que tus datos sean tuyos y vivan en tu teléfono.</p>
 
@@ -201,20 +201,18 @@
     <p>Las notificaciones de Pulso (recordatorios de cobro, avisos de presupuesto, resumen mensual) son <strong>locales</strong>: se programan y se muestran desde tu propio teléfono. No usamos notificaciones push remotas ni servidores de envío.</p>
 
     <h2>Fotos</h2>
-    <p>Si elegís ponerle una imagen propia a una suscripción o gasto, Pulso accede a tu galería <strong>solo en ese momento y solo para esa imagen</strong>, que se guarda localmente junto al resto de tus datos. No se sube a ningún lado.</p>
+    <p>Si elegís ponerle una imagen propia a una suscripción o gasto, Pulso accede a tu galería <strong>solo en ese momento y solo para esa imagen</strong>, que se guarda localmente junto al resto de tus datos. No se sube a ningún lado. (Distinto es si le mandás una foto al asistente para que la lea —p. ej. un recibo—: eso usa la IA y se explica abajo.)</p>
 
     <h2>Cotizaciones de moneda</h2>
     <p>Para convertir entre monedas, Pulso puede consultar una API pública de tipos de cambio. En esa consulta <strong>no se envía ningún dato personal tuyo</strong>: solo se piden las cotizaciones del día. Si no hay conexión, Pulso usa la última cotización guardada o muestra los totales por moneda sin convertir.</p>
 
-    <h2>Asistente con IA (opcional)</h2>
-    <p>Pulso incluye una función opcional de asistente y de "importar con IA". Es <strong>opt-in</strong> y está apagada hasta que vos la actives:</p>
+    <h2>Asistente con IA y voz (opcional)</h2>
+    <p>Pulso incluye funciones opcionales de IA —el asistente, "importar con IA", leer una foto (de un mail, recibo o pantalla de precio) y dictado por voz—. Son <strong>opt-in</strong> y están apagadas hasta que vos las actives. Cada una pide consentimiento explícito la primera vez.</p>
     <ol>
-      <li>Tenés que cargar tu propia clave de API de Anthropic. Esa clave se guarda <strong>cifrada en el llavero (Keychain) de tu teléfono</strong>, marcada para no migrar a otros dispositivos, y nunca se comparte con nosotros.</li>
-      <li>La primera vez que la uses, Pulso te muestra un aviso explícito y te pide consentimiento.</li>
-      <li>Si aceptás, cuando hagas una consulta Pulso envía a <strong>Anthropic (Claude)</strong> el texto que escribís y un resumen de tus datos relevantes (nombres de servicios, montos, fechas) para poder responderte. <strong>No</strong> se envían números de tarjeta ni datos de pago.</li>
+      <li><strong>Texto e imágenes → Anthropic (Claude).</strong> Cargás tu propia clave de Anthropic, que se guarda <strong>cifrada en el llavero (Keychain) de tu teléfono</strong>, marcada para no migrar a otros dispositivos, y nunca se comparte con nosotros. Si activás esto, cuando hacés una consulta o le mandás una <strong>foto</strong> al asistente, Pulso envía a Anthropic ese texto o esa imagen más un resumen de tus datos relevantes (nombres de servicios, montos, fechas) para poder responderte. <strong>No</strong> se envían números de tarjeta ni datos de pago. Política de Anthropic: <a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">anthropic.com/legal/privacy</a>.</li>
+      <li><strong>Dictado por voz → OpenAI.</strong> El dictado por voz es una función aparte que también activás vos, con <strong>tu propia clave de OpenAI</strong> (igual: cifrada en el Keychain, no migra, nunca se comparte con nosotros). Para pasar tu voz a texto, Pulso graba el audio y lo envía a <strong>OpenAI</strong> (modelo de transcripción). El audio se usa <strong>solo</strong> para transcribir. Política de OpenAI: <a href="https://openai.com/policies/privacy-policy" rel="noopener noreferrer">openai.com/policies/privacy-policy</a>.</li>
     </ol>
-    <p>El tratamiento que Anthropic hace de esos datos se rige por la política de privacidad de Anthropic: <a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">https://www.anthropic.com/legal/privacy</a></p>
-    <p>Si no usás esta función, <strong>ningún dato sale de tu teléfono</strong>. Podés desactivarla en cualquier momento quitando la clave en Ajustes.</p>
+    <p>Si no usás estas funciones, <strong>ningún dato sale de tu teléfono</strong>. Podés desactivarlas en cualquier momento quitando las claves en Ajustes.</p>
 
     <h2>Compartir y exportar</h2>
     <p>Cuando exportás tus datos (CSV o backup JSON) o compartís una imagen/resumen, esos archivos se generan en tu dispositivo y se entregan a la hoja de compartir del sistema operativo. Vos elegís a dónde van. Pulso no recibe copia.</p>
@@ -235,7 +233,7 @@
   <!-- ===================== ENGLISH ===================== -->
   <main data-lang="en" hidden>
     <h1>Pulso Privacy Policy</h1>
-    <p class="updated"><strong>Last updated: June 13, 2026</strong></p>
+    <p class="updated"><strong>Last updated: June 18, 2026</strong></p>
 
     <p>Pulso is an app for keeping track of your subscriptions and recurring expenses. It's designed from the ground up so your data is yours and lives on your phone.</p>
 
@@ -260,20 +258,18 @@
     <p>Pulso's notifications (charge reminders, budget alerts, monthly summary) are <strong>local</strong>: they're scheduled and shown from your own phone. We don't use remote push notifications or delivery servers.</p>
 
     <h2>Photos</h2>
-    <p>If you choose to set your own image for a subscription or expense, Pulso accesses your gallery <strong>only at that moment and only for that image</strong>, which is stored locally with the rest of your data. It isn't uploaded anywhere.</p>
+    <p>If you choose to set your own image for a subscription or expense, Pulso accesses your gallery <strong>only at that moment and only for that image</strong>, which is stored locally with the rest of your data. It isn't uploaded anywhere. (It's different if you send a photo to the assistant to read —e.g. a receipt—: that uses AI and is explained below.)</p>
 
     <h2>Currency rates</h2>
     <p>To convert between currencies, Pulso may query a public exchange-rate API. That request sends <strong>none of your personal data</strong>: it only asks for the day's rates. With no connection, Pulso uses the last saved rate or shows totals per currency without converting.</p>
 
-    <h2>AI assistant (optional)</h2>
-    <p>Pulso includes an optional assistant and "import with AI" feature. It's <strong>opt-in</strong> and stays off until you turn it on:</p>
+    <h2>AI assistant & voice (optional)</h2>
+    <p>Pulso includes optional AI features —the assistant, "import with AI", reading a photo (of an email, receipt or price screen) and voice dictation—. They're <strong>opt-in</strong> and stay off until you turn them on. Each asks for explicit consent the first time.</p>
     <ol>
-      <li>You must add your own Anthropic API key. That key is stored <strong>encrypted in your phone's Keychain</strong>, marked not to migrate to other devices, and is never shared with us.</li>
-      <li>The first time you use it, Pulso shows an explicit notice and asks for your consent.</li>
-      <li>If you accept, when you make a query Pulso sends <strong>Anthropic (Claude)</strong> the text you write and a summary of your relevant data (service names, amounts, dates) so it can answer you. Card numbers and payment data are <strong>not</strong> sent.</li>
+      <li><strong>Text and images → Anthropic (Claude).</strong> You add your own Anthropic API key, stored <strong>encrypted in your phone's Keychain</strong>, marked not to migrate to other devices, and never shared with us. If you enable this, when you make a query or send the assistant a <strong>photo</strong>, Pulso sends Anthropic that text or image plus a summary of your relevant data (service names, amounts, dates) so it can answer you. Card numbers and payment data are <strong>not</strong> sent. Anthropic's policy: <a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">anthropic.com/legal/privacy</a>.</li>
+      <li><strong>Voice dictation → OpenAI.</strong> Voice dictation is a separate feature you also turn on, with <strong>your own OpenAI API key</strong> (same: encrypted in the Keychain, doesn't migrate, never shared with us). To turn your voice into text, Pulso records the audio and sends it to <strong>OpenAI</strong> (a transcription model). The audio is used <strong>only</strong> to transcribe. OpenAI's policy: <a href="https://openai.com/policies/privacy-policy" rel="noopener noreferrer">openai.com/policies/privacy-policy</a>.</li>
     </ol>
-    <p>How Anthropic handles that data is governed by Anthropic's privacy policy: <a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">https://www.anthropic.com/legal/privacy</a></p>
-    <p>If you don't use this feature, <strong>no data leaves your phone</strong>. You can turn it off anytime by removing the key in Settings.</p>
+    <p>If you don't use these features, <strong>no data leaves your phone</strong>. You can turn them off anytime by removing the keys in Settings.</p>
 
     <h2>Sharing and exporting</h2>
     <p>When you export your data (CSV or JSON backup) or share an image/summary, those files are generated on your device and handed to the operating system's share sheet. You choose where they go. Pulso keeps no copy.</p>
@@ -296,8 +292,8 @@
       <p data-lang="es">¿Dudas sobre tu privacidad? Escribinos a <a href="mailto:galfredev@gmail.com">galfredev@gmail.com</a>.</p>
       <p data-lang="en" hidden>Questions about your privacy? Email us at <a href="mailto:galfredev@gmail.com">galfredev@gmail.com</a>.</p>
     </div>
-    <p class="meta" data-lang="es">Pulso · el pulso de tus gastos<span class="sep">·</span>Última actualización: 13 de junio de 2026</p>
-    <p class="meta" data-lang="en" hidden>Pulso · the pulse of your spending<span class="sep">·</span>Last updated: June 13, 2026</p>
+    <p class="meta" data-lang="es">Pulso · el pulso de tus gastos<span class="sep">·</span>Última actualización: 18 de junio de 2026</p>
+    <p class="meta" data-lang="en" hidden>Pulso · the pulse of your spending<span class="sep">·</span>Last updated: June 18, 2026</p>
   </footer>
 
 </div>
