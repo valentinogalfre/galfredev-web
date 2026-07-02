@@ -1,25 +1,9 @@
 import { socialLinks, siteCopy } from '@/content/site-content'
 import { env } from '@/lib/env'
-import { WhatsAppFab } from '@/components/layout/whatsapp-fab'
-import { CursorSpotlight } from '@/components/motion/cursor-spotlight'
-import { Analytics } from '@vercel/analytics/next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
+import { fontVariables } from '@/lib/fonts'
+import { RootShell } from '@/components/layout/root-shell'
 import type { Metadata } from 'next'
-import { Instrument_Serif, Sora } from 'next/font/google'
-import './globals.css'
-
-const sora = Sora({
-  subsets: ['latin'],
-  variable: '--font-sora',
-  display: 'swap',
-})
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  variable: '--font-instrument-serif',
-  weight: '400',
-  display: 'swap',
-})
+import '../globals.css'
 
 const metadataBase = new URL(env.siteUrl)
 
@@ -73,19 +57,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${sora.variable} ${instrumentSerif.variable}`}>
-      <body className="antialiased">
-        <a
-          href="#contenido-principal"
-          className="sr-only fixed left-4 top-4 z-[100] rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-slate-950 focus:not-sr-only"
-        >
-          Saltar al contenido
-        </a>
-        <CursorSpotlight />
+    <html lang="es" className={fontVariables}>
+      <RootShell locale="es">
         {children}
-        <WhatsAppFab />
-        <Analytics />
-        <SpeedInsights />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -124,7 +98,7 @@ export default function RootLayout({
             }),
           }}
         />
-      </body>
+      </RootShell>
     </html>
   )
 }
