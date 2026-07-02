@@ -28,3 +28,7 @@ describe('switchLocalePath', () => {
     expect(switchLocalePath('es', '/xyz')).toBe('/en')
   })
 })
+
+it('ruta que empieza con "en" pero no es /en: no se recorta y cae al fallback home es', () => {
+  expect(switchLocalePath('en', '/energy')).toBe('/')
+})

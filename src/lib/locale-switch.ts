@@ -4,7 +4,7 @@ import type { Locale } from '@/types/content'
 /** Dada la ruta actual, devuelve la equivalente en el otro idioma (fallback: home). */
 export function switchLocalePath(current: Locale, pathname: string): string {
   const target: Locale = current === 'es' ? 'en' : 'es'
-  const clean = current === 'en' ? pathname.replace(/^\/en/, '') || '/' : pathname
+  const clean = current === 'en' ? pathname.replace(/^\/en(?=\/|$)/, '') || '/' : pathname
   const tDict = getDictionary(target)
   const svcMatch = clean.match(/^\/(servicios|services)\/([^/]+)$/)
   if (svcMatch) {
