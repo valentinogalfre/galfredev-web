@@ -27,7 +27,7 @@ export default async function LoginPage() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader locale="es" />
       <main id="contenido-principal" className="relative overflow-hidden px-4 pb-18 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_top,rgba(31,127,115,0.18),transparent_42%),radial-gradient(circle_at_78%_12%,rgba(255,180,106,0.08),transparent_22%)]" />
         <div className="relative mx-auto grid min-h-[80svh] max-w-7xl items-center gap-10 lg:grid-cols-[0.88fr_1.12fr]">
@@ -46,7 +46,7 @@ export default async function LoginPage() {
           </div>
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooter locale="es" />
     </>
   )
 }

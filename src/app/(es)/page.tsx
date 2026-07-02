@@ -28,7 +28,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader locale="es" />
       <ProfileToast initialVisible={profileStatus === 'updated'} />
       <div id="top" />
       <main id="contenido-principal" className="relative overflow-hidden">
@@ -40,7 +40,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <ProfileTeaserSection />
         <ContactSection />
       </main>
-      <SiteFooter />
+      <SiteFooter locale="es" />
     </>
   )
 }

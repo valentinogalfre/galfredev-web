@@ -38,7 +38,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader locale="es" />
       <main id="contenido-principal" className="px-4 pb-18 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="mx-auto max-w-5xl">
           {showForm ? (
@@ -57,7 +57,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
           )}
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooter locale="es" />
     </>
   )
 }

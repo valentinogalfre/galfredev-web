@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader locale="es" />
       <main id="contenido-principal" className="relative overflow-hidden px-4 pb-18 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="absolute inset-x-0 top-0 h-[440px] bg-[radial-gradient(circle_at_top,rgba(31,127,115,0.16),transparent_38%)]" />
         <article className="page-panel relative mx-auto max-w-4xl p-6 sm:p-8 lg:p-10">
@@ -56,7 +56,7 @@ export default function TermsPage() {
           </div>
         </article>
       </main>
-      <SiteFooter />
+      <SiteFooter locale="es" />
     </>
   )
 }
