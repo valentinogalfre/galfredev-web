@@ -1,6 +1,7 @@
 import type { Locale } from '@/types/content'
 import { WhatsAppFab } from '@/components/layout/whatsapp-fab'
 import { CursorSpotlight } from '@/components/motion/cursor-spotlight'
+import { LenisProvider } from '@/components/motion/lenis-provider'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
@@ -20,7 +21,7 @@ export function RootShell({
         {locale === 'es' ? 'Saltar al contenido' : 'Skip to content'}
       </a>
       <CursorSpotlight />
-      {children}
+      <LenisProvider>{children}</LenisProvider>
       <WhatsAppFab />
       <Analytics />
       <SpeedInsights />
