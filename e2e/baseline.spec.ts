@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test'
 
 test('la política de privacidad de Pulso queda intacta', async ({ page }) => {
-  // Nota: se usa la ruta con index.html porque `next dev` no resuelve el
-  // índice de directorio para archivos estáticos con URL limpia (Vercel sí
-  // lo hace en producción; verificado 200 en ambos entornos para esta ruta).
+  // GAP CONOCIDO: la URL limpia /pulso/privacidad la resuelve el CDN de Vercel
+  // (ningún server local de Next —dev ni start— sirve el index de directorio),
+  // así que acá solo se puede verificar que el archivo existe y renderiza.
+  // Una regresión de ruteo exclusiva de Vercel sobre la URL limpia NO la
+  // detecta esta suite: verificar https://galfredev.com/pulso/privacidad
+  // manualmente después de cada deploy (checklist de release).
   await page.goto('/pulso/privacidad/index.html')
   await expect(page.locator('body')).toContainText(/privacidad/i)
 })

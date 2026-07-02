@@ -123,3 +123,5 @@ Checklist manual para validar la web de GalfreDev antes de cerrar release, abrir
 - Bugs encontrados:
 - Ajustes pendientes:
 - ¿Listo para promover a dominio principal?: Sí / No
+
+- [ ] Verificar manualmente https://galfredev.com/pulso/privacidad tras cada deploy (la URL limpia la resuelve solo el CDN de Vercel; la suite e2e local no puede cubrirla — ver e2e/baseline.spec.ts).
