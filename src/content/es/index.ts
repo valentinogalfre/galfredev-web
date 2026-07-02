@@ -265,7 +265,7 @@ export const es: Dictionary = {
             'Las tareas repetitivas dejan de consumir a tu equipo y ese tiempo vuelve a lo que genera plata.',
         },
       ],
-      demoTitle: 'Vela funcionar',
+      demoTitle: 'Mirala funcionar',
       demoHint:
         'Probá la demo interactiva y mirá cómo un flujo automatizado convierte una tarea de horas en segundos.',
       relatedProjects: ['orbita', 'bot-ime'],
@@ -374,10 +374,10 @@ export const es: Dictionary = {
       seo: {
         title: 'Asistente médico por WhatsApp — caso real | GalfreDev',
         description:
-          'Caso real: bot con IA para un instituto médico de Río Tercero que responde 24/7 por 33 profesionales y deriva turnos al canal correcto.',
+          'Caso real: bot con IA para un instituto médico cordobés que responde 24/7 por 33 profesionales y deriva turnos al canal correcto.',
       },
       problem:
-        'En un instituto médico de Río Tercero, las consultas repetitivas por turnos, estudios y coseguros desbordaban al personal todos los días.',
+        'En un instituto médico cordobés, las consultas repetitivas por turnos, estudios y coseguros desbordaban al personal todos los días.',
       solution:
         'Un bot de WhatsApp con IA que responde 24/7 sobre 33 profesionales y los coseguros de cada estudio, deriva los turnos al canal correcto y se administra desde un panel de gestión propio. Deployado y atendiendo todos los días.',
       stack: ['Node.js', 'PostgreSQL', 'Redis', 'Claude', 'WhatsApp Cloud API', 'Docker'],

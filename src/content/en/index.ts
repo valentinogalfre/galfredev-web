@@ -80,7 +80,7 @@ export const en: Dictionary = {
       ],
     },
     roi: {
-      title: 'How much does it give back?',
+      title: "What's the return?",
       sub: 'Calculate the return of automating your operation.',
     },
     about: {
@@ -373,10 +373,10 @@ export const en: Dictionary = {
       seo: {
         title: 'Medical WhatsApp Assistant — Real Case | GalfreDev',
         description:
-          'Real case: AI bot for a medical institute in Río Tercero that answers 24/7 about 33 practitioners and routes appointments to the right channel.',
+          'Real case: AI bot for a medical institute in Córdoba that answers 24/7 about 33 practitioners and routes appointments to the right channel.',
       },
       problem:
-        'At a medical institute in Río Tercero, repetitive questions about appointments, tests and copays overwhelmed the staff every single day.',
+        'At a medical institute in Córdoba, repetitive questions about appointments, tests and copays overwhelmed the staff every single day.',
       solution:
         'An AI-powered WhatsApp bot that answers 24/7 about 33 practitioners and the copay coverage of each test, routes appointment requests to the right channel and is managed from its own admin panel. Deployed and answering every day.',
       stack: ['Node.js', 'PostgreSQL', 'Redis', 'Claude', 'WhatsApp Cloud API', 'Docker'],
