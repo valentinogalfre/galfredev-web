@@ -10,6 +10,7 @@ export const instrumentSerif = Instrument_Serif({
   subsets: ['latin'],
   variable: '--font-instrument-serif',
   weight: '400',
+  style: ['normal', 'italic'],
   display: 'swap',
 })
 
