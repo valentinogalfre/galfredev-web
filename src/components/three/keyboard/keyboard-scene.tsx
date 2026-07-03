@@ -4,10 +4,18 @@ import type { TypingState } from '@/components/hero/use-typing-loop'
 import { ContactShadows, Environment, Float } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
+import type { MotionValue } from 'framer-motion'
 import { Suspense, useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { AdditiveBlending, CanvasTexture, type Group } from 'three'
 import { KeyboardModel } from './keyboard-model'
 import type { GpuTier } from './quality'
+
+declare global {
+  interface Window {
+    /** Solo en development: frames pedidos por el RenderDriver (QA manual/e2e). */
+    __kbFrames?: number
+  }
+}
 
 /**
  * Halo teal difuso bajo el teclado (equivalente WebGL del deck::after del CSS):
@@ -74,6 +82,62 @@ function ReadySignal({ onReady }: { onReady?: () => void }) {
 }
 
 /**
+ * Driver del frameloop "demand": la animación de la escena corre por reloj, así
+ * que necesita un invalidate() por frame — pero SOLO mientras el hero está en
+ * viewport. Fuera de viewport el rAF se cancela y la GPU queda en cero (los
+ * frames continuos del Canvas default seguían quemando GPU con el hero lejos).
+ */
+function RenderDriver({ active }: { active: boolean }) {
+  const invalidate = useThree((s) => s.invalidate)
+  useEffect(() => {
+    if (!active) return
+    let raf = 0
+    const loop = () => {
+      invalidate()
+      if (process.env.NODE_ENV === 'development') {
+        // Contador observable para QA (e2e/manual): NO se expone en prod.
+        window.__kbFrames = (window.__kbFrames ?? 0) + 1
+      }
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [active, invalidate])
+  return null
+}
+
+/** Cámara en reposo (misma que el prop `camera` del Canvas) y a scroll pleno. */
+const CAM_REST = { y: 5.2, z: 6.5 }
+const CAM_EXIT = { y: 7.5, z: 9 }
+/** Inclinación hacia atrás del teclado a scroll pleno (~12°). */
+const EXIT_TILT = 0.21
+
+/**
+ * Salida cinematográfica por scroll: la cámara sube y se aleja mientras el
+ * grupo del teclado se inclina hacia atrás. El progreso llega como MotionValue
+ * y se lee con .get() DENTRO de useFrame — cero re-render de React por scroll.
+ * Sin progress (prefers-reduced-motion) no toca nada.
+ */
+function ScrollCinematic({
+  progress,
+  children,
+}: {
+  progress?: MotionValue<number>
+  children: ReactNode
+}) {
+  const group = useRef<Group>(null)
+  useFrame(({ camera }) => {
+    if (!progress) return
+    const p = progress.get()
+    camera.position.y = CAM_REST.y + (CAM_EXIT.y - CAM_REST.y) * p
+    camera.position.z = CAM_REST.z + (CAM_EXIT.z - CAM_REST.z) * p
+    camera.lookAt(0, -0.2, 0)
+    if (group.current) group.current.rotation.x = EXIT_TILT * p
+  })
+  return <group ref={group}>{children}</group>
+}
+
+/**
  * Parallax al mouse (solo pointer 'mouse'; en touch el gesto equivalente es el
  * tap-wave del modelo): lerp de la rotación del grupo hacia el puntero
  * normalizado, máx ~4°.
@@ -105,6 +169,10 @@ type KeyboardSceneProps = {
   typing: TypingState
   tier: GpuTier
   egg?: boolean
+  /** Hero en viewport: gatea el RenderDriver (false = cero trabajo de GPU). */
+  visible?: boolean
+  /** Progreso de salida por scroll (MotionValue; undefined con reduced-motion). */
+  scrollProgress?: MotionValue<number>
   onReady?: () => void
   /** Contexto WebGL perdido en runtime: el orquestador vuelve al teclado CSS. */
   onContextLost?: () => void
@@ -115,11 +183,20 @@ type KeyboardSceneProps = {
  * encuadre teal, pero con profundidad real, reflejos metálicos y sombra de
  * contacto. Fondo transparente: el glow/grid del hero CSS queda detrás.
  */
-export function KeyboardScene({ typing, tier, egg = false, onReady, onContextLost }: KeyboardSceneProps) {
+export function KeyboardScene({
+  typing,
+  tier,
+  egg = false,
+  visible = true,
+  scrollProgress,
+  onReady,
+  onContextLost,
+}: KeyboardSceneProps) {
   return (
     <Canvas
+      frameloop="demand"
       dpr={[1, tier === 'high' ? 2 : 1.5]}
-      camera={{ position: [0, 5.2, 6.5], fov: 38 }}
+      camera={{ position: [0, CAM_REST.y, CAM_REST.z], fov: 38 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       onCreated={({ camera, gl }) => {
         camera.lookAt(0, -0.2, 0)
@@ -133,17 +210,20 @@ export function KeyboardScene({ typing, tier, egg = false, onReady, onContextLos
       <ambientLight intensity={0.35} color="#12303a" />
       <pointLight position={[3.5, 4.5, 2.5]} intensity={44} color="#3dddc4" />
       <pointLight position={[-4.5, 1.4, 3.5]} intensity={11} color="#ffb46a" />
+      <RenderDriver active={visible} />
       <Suspense fallback={null}>
-        <MouseParallax>
-          <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.6}>
-            {/* Pose equivalente al CSS aprobado (rotateX 56° rotateZ -14°):
-                cámara elevada + yaw del grupo. */}
-            <KeyboardRig>
-              <KeyboardModel typing={typing} tier={tier} egg={egg} />
-              <UnderGlow />
-            </KeyboardRig>
-          </Float>
-        </MouseParallax>
+        <ScrollCinematic progress={scrollProgress}>
+          <MouseParallax>
+            <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.6}>
+              {/* Pose equivalente al CSS aprobado (rotateX 56° rotateZ -14°):
+                  cámara elevada + yaw del grupo. */}
+              <KeyboardRig>
+                <KeyboardModel typing={typing} tier={tier} egg={egg} />
+                <UnderGlow />
+              </KeyboardRig>
+            </Float>
+          </MouseParallax>
+        </ScrollCinematic>
         <ContactShadows
           position={[0, -1.05, 0]}
           opacity={0.62}

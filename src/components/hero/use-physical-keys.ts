@@ -111,11 +111,19 @@ export function usePhysicalKeys(enabled: boolean): PhysicalKeysState {
       setState((s) => (s.liveKey === id ? { ...s, liveKey: null } : s))
     }
 
+    // Alt-tab/cmd-tab con una tecla sostenida: el keyup nunca llega y la tecla
+    // quedaba hundida hasta el unpause (~4s). Al perder foco se suelta ya mismo.
+    const onBlur = () => {
+      setState((s) => (s.liveKey !== null ? { ...s, liveKey: null } : s))
+    }
+
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('blur', onBlur)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
+      window.removeEventListener('blur', onBlur)
       if (pauseTimer.current !== null) window.clearTimeout(pauseTimer.current)
       if (eggTimer.current !== null) window.clearTimeout(eggTimer.current)
       pauseTimer.current = null

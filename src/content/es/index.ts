@@ -36,7 +36,10 @@ export const es: Dictionary = {
     hero: {
       eyebrow: 'CÓRDOBA, ARGENTINA — DISPONIBLE PARA PROYECTOS',
       titlePrefix: 'Software que',
-      rotatingWords: ['no duerme.', 'vende por vos.', 'atiende 24/7.'],
+      // La más ancha PRIMERO: la palabra rotativa re-emite candidatos LCP cuando
+      // crece el área pintada del h1 — liderando con la más larga, las siguientes
+      // rotaciones nunca vuelven a mover el LCP (gate Lighthouse del hero).
+      rotatingWords: ['vende por vos.', 'no duerme.', 'atiende 24/7.'],
       sub: 'Bots de WhatsApp, webs, apps e IA aplicada. Construido a medida, trabajando todo el día para tu negocio.',
       ctaPrimary: { label: 'Empezar un proyecto', href: '#contacto' },
       ctaSecondary: { label: 'Ver proyectos', href: '/proyectos' },

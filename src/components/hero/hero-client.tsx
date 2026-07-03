@@ -1,12 +1,18 @@
 'use client'
 
 import { Marquee } from '@/components/motion/marquee'
-import { AnimatePresence, motion } from 'framer-motion'
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from 'framer-motion'
 import { Volume2, VolumeX } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ensureAudioContext, isSoundEnabled, playClick, setSoundEnabled } from './key-sound'
 import { KeyboardHero } from './keyboard-hero'
+import { useHeroSound } from './use-hero-sound'
 import { usePhysicalKeys } from './use-physical-keys'
 import { useTypingLoop, type TypingState } from './use-typing-loop'
 
@@ -65,6 +71,19 @@ export function HeroClient({
   const typing = useTypingLoop(typedWords, { paused: typingPaused })
   const rotatingWord = rotatingWords[typing.wordIndex % rotatingWords.length]
 
+  // Salida cinematográfica por scroll: 0 con el hero clavado arriba → 1 cuando
+  // salió entero del viewport. Todo vive en MotionValues (cero re-render por
+  // scroll): el copy se desvanece hacia arriba en el primer ~60% del recorrido
+  // y el teclado recibe el progress crudo (la cámara/tilt se leen con .get()
+  // dentro de useFrame; el fallback CSS lo transforma vía motion.div).
+  const reducedMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  })
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
+  const copyY = useTransform(scrollYProgress, [0, 0.6], [0, -56])
+
   // Merge loop↔físico: mientras el usuario tipea, el teclado refleja SU tecla
   // (held: queda hundida hasta el keyup) y la typed-line muestra su buffer.
   const userLine = buffer.slice(-USER_LINE_MAX)
@@ -80,46 +99,7 @@ export function HeroClient({
   )
 
   // Sonido opcional (persistido en localStorage, apagado por defecto).
-  const [soundOn, setSoundOn] = useState(false)
-  useEffect(() => {
-    // Rehidrata la preferencia post-mount (SSR no conoce localStorage) y, si el
-    // sonido quedó activo de una visita previa, arma el AudioContext en el
-    // primer gesto (los browsers lo bloquean sin interacción del usuario).
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (isSoundEnabled()) setSoundOn(true)
-    const arm = () => {
-      if (isSoundEnabled()) ensureAudioContext()
-    }
-    window.addEventListener('pointerdown', arm, { once: true })
-    return () => window.removeEventListener('pointerdown', arm)
-  }, [])
-
-  // Click por cada press del loop automático… (los refs evitan replays cuando
-  // cambia soundOn/typingPaused sin que haya un press nuevo).
-  const lastTick = useRef<TypingState | null>(null)
-  useEffect(() => {
-    if (lastTick.current === typing) return
-    lastTick.current = typing
-    if (soundOn && !typingPaused && typing.pressedKey) playClick()
-  }, [typing, typingPaused, soundOn])
-  // …y por cada pulsación física aceptada.
-  const lastSeq = useRef(0)
-  useEffect(() => {
-    if (pressSeq === lastSeq.current) return
-    lastSeq.current = pressSeq
-    if (soundOn) playClick()
-  }, [pressSeq, soundOn])
-
-  const toggleSound = () => {
-    const next = !soundOn
-    setSoundOn(next)
-    setSoundEnabled(next)
-    if (next) {
-      // Gesto real del usuario: momento seguro para crear/resumir el contexto.
-      ensureAudioContext()
-      playClick()
-    }
-  }
+  const { soundOn, toggleSound } = useHeroSound(typing, typingPaused, pressSeq)
 
   const typedLine = egg ? eggMessage : typingPaused ? userLine : typing.typed
 
@@ -136,78 +116,80 @@ export function HeroClient({
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col items-center px-4 pb-4 pt-24 text-center sm:px-6 sm:pt-32">
-        <motion.span
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.1)] px-4 py-1.5 font-mono text-[9px] tracking-[0.12em] text-[#8ceada] sm:text-[11px] sm:tracking-[0.16em]"
-        >
-          <span className="relative inline-flex size-1.5 shrink-0">
-            <span className="absolute inline-flex size-full rounded-full bg-[#3dddc4] opacity-60 motion-safe:animate-ping" />
-            <span className="relative inline-flex size-1.5 rounded-full bg-[#3dddc4] shadow-[0_0_10px_#3dddc4]" />
-          </span>
-          {eyebrow}
-        </motion.span>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.85, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-5 text-balance text-[2.35rem] font-bold leading-[1.04] tracking-[-0.04em] text-white sm:mt-6 sm:text-6xl lg:text-7xl"
-        >
-          <span>{titlePrefix}</span>{' '}
-          <span className="inline-block whitespace-nowrap">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={rotatingWord}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                className="inline-block bg-[linear-gradient(95deg,#a5f0e0_5%,#3dddc4_45%,#2a9184_95%)] bg-clip-text pr-2 font-normal italic text-transparent [font-family:var(--font-instrument-serif),Georgia,serif]"
-              >
-                {rotatingWord}
-              </motion.span>
-            </AnimatePresence>
-          </span>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.85, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-4 max-w-xl text-pretty text-[0.95rem] leading-[1.65] text-[var(--text-soft)] sm:mt-5 sm:text-[1.08rem] sm:leading-8"
-        >
-          {sub}
-        </motion.p>
-
+        {/* Copy del hero: al scrollear se desvanece y sube (completa ~60% del
+            recorrido). Con reduced-motion el style no se aplica: queda estático. */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-7 flex w-full flex-col items-center justify-center gap-3 sm:mt-8 sm:w-auto sm:flex-row"
+          style={reducedMotion ? undefined : { opacity: copyOpacity, y: copyY }}
+          className="flex w-full flex-col items-center"
         >
-          <Link
-            href={ctaPrimary.href}
-            className="inline-flex min-h-12 w-full max-w-xs items-center justify-center rounded-full border border-[rgba(61,221,196,0.22)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-7 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_44px_rgba(31,127,115,0.34)] transition duration-300 hover:-translate-y-px hover:shadow-[0_18px_52px_rgba(31,127,115,0.44)] active:scale-[0.985] sm:w-auto"
+          <span className="hero-enter inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.1)] px-4 py-1.5 font-mono text-[9px] tracking-[0.12em] text-[#8ceada] sm:text-[11px] sm:tracking-[0.16em]">
+            <span className="relative inline-flex size-1.5 shrink-0">
+              <span className="absolute inline-flex size-full rounded-full bg-[#3dddc4] opacity-60 motion-safe:animate-ping" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-[#3dddc4] shadow-[0_0_10px_#3dddc4]" />
+            </span>
+            {eyebrow}
+          </span>
+
+          <h1
+            style={{ animationDelay: '0.08s' }}
+            className="hero-enter-h1 mt-5 text-balance text-[2.35rem] font-bold leading-[1.04] tracking-[-0.04em] text-white sm:mt-6 sm:text-6xl lg:text-7xl"
           >
-            {ctaPrimary.label}
-          </Link>
-          <Link
-            href={ctaSecondary.href}
-            className="inline-flex min-h-12 w-full max-w-xs items-center justify-center rounded-full border border-white/12 bg-white/[0.035] px-7 py-3 text-sm text-white/84 transition duration-300 hover:border-white/24 hover:bg-white/[0.055] hover:text-white active:scale-[0.985] sm:w-auto"
+            <span>{titlePrefix}</span>{' '}
+            <span className="inline-block whitespace-nowrap">
+              {/* Crossfade puro, SIN desplazamiento en y: la palabra desplazada
+                  agranda el bounding box de texto del h1 y Chrome re-emite un
+                  candidato LCP más grande en cada rotación (LCP tardío). */}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={rotatingWord}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                  className="inline-block bg-[linear-gradient(95deg,#a5f0e0_5%,#3dddc4_45%,#2a9184_95%)] bg-clip-text pr-2 font-normal italic text-transparent [font-family:var(--font-instrument-serif),Georgia,serif]"
+                >
+                  {rotatingWord}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+          </h1>
+
+          <p
+            style={{ animationDelay: '0.16s' }}
+            className="hero-enter mt-4 max-w-xl text-pretty text-[0.95rem] leading-[1.65] text-[var(--text-soft)] sm:mt-5 sm:text-[1.08rem] sm:leading-8"
           >
-            {ctaSecondary.label}
-          </Link>
+            {sub}
+          </p>
+
+          <div
+            style={{ animationDelay: '0.24s' }}
+            className="hero-enter mt-7 flex w-full flex-col items-center justify-center gap-3 sm:mt-8 sm:w-auto sm:flex-row"
+          >
+            <Link
+              href={ctaPrimary.href}
+              className="inline-flex min-h-12 w-full max-w-xs items-center justify-center rounded-full border border-[rgba(61,221,196,0.22)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-7 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_44px_rgba(31,127,115,0.34)] transition duration-300 hover:-translate-y-px hover:shadow-[0_18px_52px_rgba(31,127,115,0.44)] active:scale-[0.985] sm:w-auto"
+            >
+              {ctaPrimary.label}
+            </Link>
+            <Link
+              href={ctaSecondary.href}
+              className="inline-flex min-h-12 w-full max-w-xs items-center justify-center rounded-full border border-white/12 bg-white/[0.035] px-7 py-3 text-sm text-white/84 transition duration-300 hover:border-white/24 hover:bg-white/[0.055] hover:text-white active:scale-[0.985] sm:w-auto"
+            >
+              {ctaSecondary.label}
+            </Link>
+          </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="-mx-10 mt-0 self-stretch sm:mx-0 sm:mt-2"
+        <div
+          style={{ animationDelay: '0.3s' }}
+          className="hero-enter-fade -mx-10 mt-0 self-stretch sm:mx-0 sm:mt-2"
         >
-          <KeyboardHero typing={effective} egg={egg} />
+          <KeyboardHero
+            typing={effective}
+            egg={egg}
+            visible={inView}
+            scrollProgress={reducedMotion ? undefined : scrollYProgress}
+          />
           {/* El cursor ▌ vive en ::after para que el textContent sea solo lo
               tipeado. Fuera del teclado: existe igual en modo CSS y WebGL. */}
           <div
@@ -232,7 +214,7 @@ export function HeroClient({
           >
             {soundOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
           </button>
-        </motion.div>
+        </div>
       </div>
 
       <div className="relative z-10 border-t border-[rgba(61,221,196,0.14)] py-3">
