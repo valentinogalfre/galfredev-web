@@ -1,4 +1,5 @@
 import type { Locale } from '@/types/content'
+import { CommandPaletteProvider } from '@/components/command/command-palette-provider'
 import { WhatsAppFab } from '@/components/layout/whatsapp-fab'
 import { CursorSpotlight } from '@/components/motion/cursor-spotlight'
 import { LenisProvider } from '@/components/motion/lenis-provider'
@@ -22,6 +23,7 @@ export function RootShell({
       </a>
       <CursorSpotlight />
       <LenisProvider>{children}</LenisProvider>
+      <CommandPaletteProvider locale={locale} />
       <WhatsAppFab />
       <Analytics />
       <SpeedInsights />

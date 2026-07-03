@@ -1,7 +1,7 @@
 'use client'
 
 import { StaggerItem, StaggerReveal } from '@/components/motion/stagger-reveal'
-import { switchLocalePath } from '@/lib/locale-switch'
+import { switchByMap, type SwitchMap } from '@/lib/route-pairs'
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/types/content'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -23,6 +23,9 @@ type SiteHeaderClientProps = {
     closeMenu: string
     openPalette: string
   }
+  /** Pares de rutas es↔en computados server-side (los diccionarios no viajan al cliente). */
+  switchMap: SwitchMap
+  targetHome: string
 }
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
@@ -53,6 +56,8 @@ export function SiteHeaderClient({
   ctaLabel,
   ctaHref,
   labels,
+  switchMap,
+  targetHome,
 }: SiteHeaderClientProps) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
@@ -65,7 +70,7 @@ export function SiteHeaderClient({
     setOpen(false)
   }
 
-  const switchHref = switchLocalePath(locale, pathname)
+  const switchHref = switchByMap(switchMap, pathname, targetHome)
   const switchAria = locale === 'es' ? 'Switch to English' : 'Cambiar a español'
   const targetLang = locale === 'es' ? 'en' : 'es'
 

@@ -1,5 +1,6 @@
 import { SiteHeaderClient } from '@/components/layout/site-header-client'
 import { getDictionary, localizedPath } from '@/lib/i18n'
+import { buildLocaleSwitchMap } from '@/lib/locale-switch'
 import type { Locale } from '@/types/content'
 
 /** Hrefs del dict: '/#seccion' apunta al home del locale + hash; '/ruta' se prefija por locale. */
@@ -43,6 +44,8 @@ export function SiteHeader({ locale }: { locale: Locale }) {
       ctaLabel={dict.common.ctaTalk}
       ctaHref={resolveNavHref(locale, locale === 'es' ? '/#contacto' : '/#contact')}
       labels={labels}
+      switchMap={buildLocaleSwitchMap()}
+      targetHome={localizedPath(locale === 'es' ? 'en' : 'es', '/')}
     />
   )
 }

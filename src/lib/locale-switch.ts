@@ -1,5 +1,5 @@
 import { getDictionary, localizedPath, serviceByLocalizedSlug, projectByLocalizedSlug } from '@/lib/i18n'
-import type { Locale } from '@/types/content'
+import { LOCALES, type Locale } from '@/types/content'
 
 /** Dada la ruta actual, devuelve la equivalente en el otro idioma (fallback: home). */
 export function switchLocalePath(current: Locale, pathname: string): string {
@@ -20,4 +20,31 @@ export function switchLocalePath(current: Locale, pathname: string): string {
     ? { '/': '/', '/proyectos': '/projects', '/sobre-mi': '/about' }
     : { '/': '/', '/projects': '/proyectos', '/about': '/sobre-mi' }
   return localizedPath(target, staticMap[clean] ?? '/')
+}
+
+/**
+ * Mapa plano bidireccional ruta→ruta equivalente en el otro idioma
+ * (~24 entradas: home, estáticas y slugs de servicios/proyectos por locale).
+ * SOLO server-side: usa los diccionarios. El cliente recibe el mapa como prop
+ * y resuelve con switchByMap (lib/route-pairs.ts) sin cargar contenido.
+ */
+export function buildLocaleSwitchMap(): Record<string, string> {
+  const map: Record<string, string> = {}
+  for (const locale of LOCALES) {
+    const dict = getDictionary(locale)
+    const servicesBase = locale === 'es' ? 'servicios' : 'services'
+    const projectsBase = locale === 'es' ? 'proyectos' : 'projects'
+    const paths = [
+      '/',
+      `/${projectsBase}`,
+      locale === 'es' ? '/sobre-mi' : '/about',
+      ...Object.values(dict.services).map((service) => `/${servicesBase}/${service.slug}`),
+      ...Object.values(dict.projects).map((project) => `/${projectsBase}/${project.slug}`),
+    ]
+    for (const path of paths) {
+      const from = localizedPath(locale, path)
+      map[from] = switchLocalePath(locale, from)
+    }
+  }
+  return map
 }
