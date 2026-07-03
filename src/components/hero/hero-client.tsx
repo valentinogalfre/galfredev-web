@@ -4,7 +4,7 @@ import { Marquee } from '@/components/motion/marquee'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Volume2, VolumeX } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ensureAudioContext, isSoundEnabled, playClick, setSoundEnabled } from './key-sound'
 import { KeyboardHero } from './keyboard-hero'
 import { usePhysicalKeys } from './use-physical-keys'
@@ -68,9 +68,16 @@ export function HeroClient({
   // Merge loop↔físico: mientras el usuario tipea, el teclado refleja SU tecla
   // (held: queda hundida hasta el keyup) y la typed-line muestra su buffer.
   const userLine = buffer.slice(-USER_LINE_MAX)
-  const effective: TypingState = typingPaused
-    ? { word: '', typed: userLine, pressedKey: liveKey, wordIndex: typing.wordIndex, held: true }
-    : typing
+  // Memoizado: el modelo WebGL detecta "nueva pulsación" por identidad del
+  // objeto — un literal fresco en cada render dispararía ripples fantasma.
+  const wordIndex = typing.wordIndex
+  const effective: TypingState = useMemo(
+    () =>
+      typingPaused
+        ? { word: '', typed: userLine, pressedKey: liveKey, wordIndex, held: true }
+        : typing,
+    [typingPaused, userLine, liveKey, wordIndex, typing],
+  )
 
   // Sonido opcional (persistido en localStorage, apagado por defecto).
   const [soundOn, setSoundOn] = useState(false)
