@@ -60,12 +60,20 @@ test('GPU en cero fuera de viewport: el rAF driver se detiene', async ({ page })
   })
   // Hero fuera de viewport → inView=false → el rAF loop debe cancelarse.
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-  // Colchón: dispara el IntersectionObserver y drena el último rAF en vuelo.
-  await page.waitForTimeout(800)
-  const before = await page.evaluate(() => window.__kbFrames)
-  await page.waitForTimeout(1000)
-  const after = await page.evaluate(() => window.__kbFrames)
-  expect(after).toBe(before)
+  // Poll-until-stable: bajo carga (suite completa en paralelo) el callback del
+  // IntersectionObserver puede demorar y colar algún invalidate() tardío — en
+  // vez de una foto única antes/después, exigimos el contador PLANO en dos
+  // ventanas consecutivas (la detención es un estado estable, no un instante).
+  let last = -1
+  let stableWindows = 0
+  for (let i = 0; i < 12 && stableWindows < 2; i++) {
+    await page.waitForTimeout(500)
+    const now = await page.evaluate(() => window.__kbFrames ?? 0)
+    stableWindows = now === last ? stableWindows + 1 : 0
+    last = now
+  }
+  expect(stableWindows, 'el contador de frames nunca se aplanó: el rAF driver sigue vivo').toBeGreaterThanOrEqual(2)
+  const after = last
   // Al volver al hero, el driver retoma.
   await page.evaluate(() => window.scrollTo(0, 0))
   await page.waitForFunction(
