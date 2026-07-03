@@ -41,6 +41,9 @@ export const en: Dictionary = {
       ctaPrimary: { label: 'Start a project', href: '#contact' },
       ctaSecondary: { label: 'See projects', href: '/projects' },
       typedWords: ['WHATSAPP', 'APPS', 'WEBSITES', 'AI', 'AUTOMATE'],
+      soundOn: 'Enable keyboard sound',
+      soundOff: 'Mute keyboard',
+      eggMessage: "> access granted. you're one of us.",
     },
     services: {
       title: 'What I build',

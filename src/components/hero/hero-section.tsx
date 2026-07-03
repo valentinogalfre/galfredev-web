@@ -21,6 +21,9 @@ export function HeroSection({ locale }: { locale: Locale }) {
       ctaPrimary={{ label: hero.ctaPrimary.label, href: resolveHref(locale, hero.ctaPrimary.href) }}
       ctaSecondary={{ label: hero.ctaSecondary.label, href: resolveHref(locale, hero.ctaSecondary.href) }}
       typedWords={hero.typedWords}
+      soundOnLabel={hero.soundOn}
+      soundOffLabel={hero.soundOff}
+      eggMessage={hero.eggMessage}
       marqueeItems={Object.values(dict.projects).map((project) => ({
         name: project.name,
         tagline: project.tagline,

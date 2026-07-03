@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import type { CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type TouchEvent } from 'react'
 import type { TypingState } from './use-typing-loop'
 
 type KeyDef = {
@@ -31,8 +31,12 @@ function resolvePressedId(pressedKey: string | null): string | null {
 
 type KeyboardCssProps = {
   typing: TypingState
+  egg?: boolean
   className?: string
 }
+
+/** ms que dura hundida la ola de teclas disparada por un tap. */
+const TAP_WAVE_MS = 160
 
 /**
  * Teclado 3D construido 100% con CSS (perspective + rotateX/rotateZ + translateZ).
@@ -41,24 +45,64 @@ type KeyboardCssProps = {
  * (nada de springs por tecla: son ~60 nodos). La línea tipeada vive en
  * hero-client: existe igual en modo CSS y en modo WebGL.
  */
-export function KeyboardCss({ typing, className }: KeyboardCssProps) {
+export function KeyboardCss({ typing, egg = false, className }: KeyboardCssProps) {
   const pressedId = resolvePressedId(typing.pressedKey)
 
+  // Tap en mobile: ola de presses pseudo-aleatoria cerca del x relativo del
+  // touch. Sin preventDefault: el scroll sigue funcionando normal.
+  const deckRef = useRef<HTMLDivElement>(null)
+  const tapTimer = useRef<number | null>(null)
+  const [tapKeys, setTapKeys] = useState<readonly string[]>([])
+  useEffect(
+    () => () => {
+      if (tapTimer.current !== null) window.clearTimeout(tapTimer.current)
+    },
+    [],
+  )
+  const onTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    const deck = deckRef.current
+    const touch = e.touches[0]
+    if (!deck || !touch) return
+    const rect = deck.getBoundingClientRect()
+    if (rect.width === 0) return
+    const xRel = Math.min(1, Math.max(0, (touch.clientX - rect.left) / rect.width))
+    const rowIndex = 1 + Math.floor(Math.random() * 3) // filas QWERTY/ASDF/ZXCV
+    const row = ROWS[rowIndex]
+    const center = Math.round(xRel * (row.length - 1))
+    const neighbor = ROWS[rowIndex + 1] ?? ROWS[rowIndex - 1]
+    const ids = [
+      ...[-1, 0, 1].map((d) => row[center + d]?.id),
+      ...[0, 1].map((d) => neighbor[Math.min(neighbor.length - 1, Math.max(0, center + d))]?.id),
+    ].filter((id): id is string => Boolean(id))
+    setTapKeys(ids)
+    if (tapTimer.current !== null) window.clearTimeout(tapTimer.current)
+    tapTimer.current = window.setTimeout(() => setTapKeys([]), TAP_WAVE_MS)
+  }
+
   return (
-    <div className={cn('flex flex-col items-center', className)} aria-hidden="true">
-      <div className="kb-stage">
+    <div
+      className={cn('flex flex-col items-center', egg && 'kb-egg', className)}
+      aria-hidden="true"
+    >
+      <div className="kb-stage" onTouchStart={onTouchStart}>
         <div className="kb-float">
           <div className="kb">
-            <div className="kb-deck">
+            <div ref={deckRef} className="kb-deck">
               {ROWS.map((row, rowIndex) => (
                 <div key={rowIndex} className="kb-row">
-                  {row.map((key) => (
+                  {row.map((key, colIndex) => (
                     <span
                       key={key.id}
                       className="kb-key"
-                      style={key.w ? ({ '--kw': key.w } as CSSProperties) : undefined}
+                      style={
+                        {
+                          ...(key.w ? { '--kw': key.w } : null),
+                          // Desfasa el ciclo de hue del egg por tecla (barrido).
+                          '--ki': rowIndex * 2 + colIndex,
+                        } as CSSProperties
+                      }
                       data-lit={key.lit || undefined}
-                      data-pressed={pressedId === key.id || undefined}
+                      data-pressed={pressedId === key.id || tapKeys.includes(key.id) || undefined}
                     />
                   ))}
                 </div>

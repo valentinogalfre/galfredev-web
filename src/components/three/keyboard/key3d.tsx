@@ -1,6 +1,7 @@
 'use client'
 
 import { RoundedBox, Text } from '@react-three/drei'
+import { memo } from 'react'
 import type { Group, MeshStandardMaterial } from 'three'
 import { KEY_UNIT, type KeyDef } from './layout'
 import type { GpuTier } from './quality'
@@ -33,9 +34,11 @@ const FONT_URL = '/fonts/sora-600.ttf'
  * Keycap paramétrica: RoundedBox biselada + legenda troika (solo tiers con
  * presupuesto). El material arranca apagado; toda la vida lumínica (respiración,
  * ripple, barrido, press) la maneja el padre en un único useFrame mutando los
- * nodos registrados — nada de React state por frame.
+ * nodos registrados — nada de React state por frame. memo: sus props son
+ * estables (placement memoizado, callbacks useCallback), así los re-renders del
+ * modelo por cada tick de tipeo no reconcilian ~60 subárboles de tecla.
  */
-export function Key3D({ placement, tier, onGroup, onMaterial }: Key3DProps) {
+export const Key3D = memo(function Key3D({ placement, tier, onGroup, onMaterial }: Key3DProps) {
   const { def } = placement
   return (
     <group position={[placement.x, 0, placement.z]} ref={(node) => onGroup(def.id, node)}>
@@ -69,4 +72,4 @@ export function Key3D({ placement, tier, onGroup, onMaterial }: Key3DProps) {
       )}
     </group>
   )
-}
+})

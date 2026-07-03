@@ -52,6 +52,9 @@ export type HomeContent = {
     ctaPrimary: Cta
     ctaSecondary: Cta
     typedWords: string[]
+    soundOn: string
+    soundOff: string
+    eggMessage: string
   }
   services: { title: string; sub: string }
   projects: { title: string; sub: string }

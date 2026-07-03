@@ -2,9 +2,13 @@
 
 import { Marquee } from '@/components/motion/marquee'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Volume2, VolumeX } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
+import { ensureAudioContext, isSoundEnabled, playClick, setSoundEnabled } from './key-sound'
 import { KeyboardHero } from './keyboard-hero'
-import { useTypingLoop } from './use-typing-loop'
+import { usePhysicalKeys } from './use-physical-keys'
+import { useTypingLoop, type TypingState } from './use-typing-loop'
 
 type Cta = { label: string; href: string }
 
@@ -16,8 +20,14 @@ type HeroClientProps = {
   ctaPrimary: Cta
   ctaSecondary: Cta
   typedWords: string[]
+  soundOnLabel: string
+  soundOffLabel: string
+  eggMessage: string
   marqueeItems: { name: string; tagline: string }[]
 }
+
+/** Chars que entran en la typed-line cuando tipea el usuario (letter-spacing ancho). */
+const USER_LINE_MAX = 14
 
 export function HeroClient({
   eyebrow,
@@ -27,14 +37,92 @@ export function HeroClient({
   ctaPrimary,
   ctaSecondary,
   typedWords,
+  soundOnLabel,
+  soundOffLabel,
+  eggMessage,
   marqueeItems,
 }: HeroClientProps) {
+  // El teclado físico solo captura mientras el hero está en viewport.
+  const sectionRef = useRef<HTMLElement>(null)
+  const [inView, setInView] = useState(false)
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    // Semilla síncrona: el callback del IO puede demorar bajo carga (hidratación
+    // + compilación de shaders) y perderse las primeras teclas del usuario.
+    const rect = el.getBoundingClientRect()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (rect.bottom > 0 && rect.top < window.innerHeight) setInView(true)
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      threshold: 0.2,
+    })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  const { liveKey, buffer, typingPaused, pressSeq, egg } = usePhysicalKeys(inView)
   // Única fuente de verdad del hero: alimenta titular, teclado y línea tipeada.
-  const typing = useTypingLoop(typedWords)
+  const typing = useTypingLoop(typedWords, { paused: typingPaused })
   const rotatingWord = rotatingWords[typing.wordIndex % rotatingWords.length]
 
+  // Merge loop↔físico: mientras el usuario tipea, el teclado refleja SU tecla
+  // (held: queda hundida hasta el keyup) y la typed-line muestra su buffer.
+  const userLine = buffer.slice(-USER_LINE_MAX)
+  const effective: TypingState = typingPaused
+    ? { word: '', typed: userLine, pressedKey: liveKey, wordIndex: typing.wordIndex, held: true }
+    : typing
+
+  // Sonido opcional (persistido en localStorage, apagado por defecto).
+  const [soundOn, setSoundOn] = useState(false)
+  useEffect(() => {
+    // Rehidrata la preferencia post-mount (SSR no conoce localStorage) y, si el
+    // sonido quedó activo de una visita previa, arma el AudioContext en el
+    // primer gesto (los browsers lo bloquean sin interacción del usuario).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isSoundEnabled()) setSoundOn(true)
+    const arm = () => {
+      if (isSoundEnabled()) ensureAudioContext()
+    }
+    window.addEventListener('pointerdown', arm, { once: true })
+    return () => window.removeEventListener('pointerdown', arm)
+  }, [])
+
+  // Click por cada press del loop automático… (los refs evitan replays cuando
+  // cambia soundOn/typingPaused sin que haya un press nuevo).
+  const lastTick = useRef<TypingState | null>(null)
+  useEffect(() => {
+    if (lastTick.current === typing) return
+    lastTick.current = typing
+    if (soundOn && !typingPaused && typing.pressedKey) playClick()
+  }, [typing, typingPaused, soundOn])
+  // …y por cada pulsación física aceptada.
+  const lastSeq = useRef(0)
+  useEffect(() => {
+    if (pressSeq === lastSeq.current) return
+    lastSeq.current = pressSeq
+    if (soundOn) playClick()
+  }, [pressSeq, soundOn])
+
+  const toggleSound = () => {
+    const next = !soundOn
+    setSoundOn(next)
+    setSoundEnabled(next)
+    if (next) {
+      // Gesto real del usuario: momento seguro para crear/resumir el contexto.
+      ensureAudioContext()
+      playClick()
+    }
+  }
+
+  const typedLine = egg ? eggMessage : typingPaused ? userLine : typing.typed
+
   return (
-    <section className="relative flex min-h-[100svh] flex-col overflow-hidden">
+    <section
+      ref={sectionRef}
+      // Señal observable de que el teclado físico está capturando (e2e/manual QA).
+      data-keys-live={inView ? '' : undefined}
+      className="relative flex min-h-[100svh] flex-col overflow-hidden"
+    >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute inset-x-0 top-0 h-[760px] bg-[radial-gradient(ellipse_at_50%_62%,rgba(31,127,115,0.2),transparent_56%),radial-gradient(ellipse_at_12%_8%,rgba(31,127,115,0.1),transparent_44%),radial-gradient(ellipse_at_88%_6%,rgba(255,180,106,0.06),transparent_38%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(180deg,transparent,rgba(5,8,16,0.9))]" />
@@ -112,12 +200,31 @@ export function HeroClient({
           transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="-mx-10 mt-0 self-stretch sm:mx-0 sm:mt-2"
         >
-          <KeyboardHero typing={typing} />
+          <KeyboardHero typing={effective} egg={egg} />
           {/* El cursor ▌ vive en ::after para que el textContent sea solo lo
               tipeado. Fuera del teclado: existe igual en modo CSS y WebGL. */}
-          <div className="kb-typed" data-testid="typed-line" aria-hidden="true">
-            {typing.typed}
+          <div
+            className="kb-typed"
+            data-testid="typed-line"
+            aria-hidden="true"
+            // El mensaje del egg es largo: sin el tracking ancho no entra en mobile.
+            style={egg ? { letterSpacing: '0.08em' } : undefined}
+          >
+            {typedLine}
           </div>
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-pressed={soundOn}
+            aria-label={soundOn ? soundOffLabel : soundOnLabel}
+            title={soundOn ? soundOffLabel : soundOnLabel}
+            data-testid="sound-toggle"
+            // relative z-10: la typed-line tira el contenido -3rem sobre el shell
+            // del teclado; sin esto el canvas WebGL (capa absoluta) intercepta el click.
+            className="relative z-10 mt-2 inline-flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] text-white/35 transition duration-300 hover:border-[rgba(61,221,196,0.3)] hover:text-[#8ceada] active:scale-95"
+          >
+            {soundOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+          </button>
         </motion.div>
       </div>
 

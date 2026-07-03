@@ -6,6 +6,12 @@ export type TypingState = {
   typed: string
   pressedKey: string | null
   wordIndex: number
+  /**
+   * true cuando pressedKey viene de una tecla física sostenida: la tecla queda
+   * hundida hasta el keyup (el loop automático nunca lo setea — sus presses
+   * decaen solos vía PRESS_HOLD en el modelo).
+   */
+  held?: boolean
 }
 
 const TYPO_RATE = 0.06

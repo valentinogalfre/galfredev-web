@@ -311,6 +311,25 @@ textarea {
   50% { filter: brightness(1.4); }
 }
 
+/* Easter egg ('galfredev'): light show — todas las teclas toman base teal y
+   ciclan hue en loop, con delay negativo por tecla (--ki) para que se lea como
+   barrido rainbow y no como flash uniforme. Va después de [data-lit]/[data-pressed]
+   para pisarlos mientras dura. */
+.kb-egg .kb-key {
+  background: linear-gradient(180deg, #2a9184, #176b60);
+  box-shadow:
+    0 -7px 0 #0d453d,
+    0 0 24px rgba(61, 221, 196, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  animation: kb-egg-hue 0.9s linear infinite;
+  animation-delay: calc(var(--ki, 0) * -45ms);
+}
+
+@keyframes kb-egg-hue {
+  from { filter: hue-rotate(0deg) saturate(1.7) brightness(1.3); }
+  to { filter: hue-rotate(360deg) saturate(1.7) brightness(1.3); }
+}
+
 .kb-typed {
   margin-top: -3rem;
   text-align: center;
@@ -352,6 +371,7 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   .kb-float,
   .kb-key[data-lit],
+  .kb-egg .kb-key,
   .kb-typed::after {
     animation: none;
   }

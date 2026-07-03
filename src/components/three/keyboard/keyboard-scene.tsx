@@ -74,8 +74,9 @@ function ReadySignal({ onReady }: { onReady?: () => void }) {
 }
 
 /**
- * Parallax al mouse (solo pointer 'mouse'; touch queda para la Task 11):
- * lerp de la rotación del grupo hacia el puntero normalizado, máx ~4°.
+ * Parallax al mouse (solo pointer 'mouse'; en touch el gesto equivalente es el
+ * tap-wave del modelo): lerp de la rotación del grupo hacia el puntero
+ * normalizado, máx ~4°.
  */
 function MouseParallax({ children }: { children: ReactNode }) {
   const group = useRef<Group>(null)
@@ -103,7 +104,10 @@ function MouseParallax({ children }: { children: ReactNode }) {
 type KeyboardSceneProps = {
   typing: TypingState
   tier: GpuTier
+  egg?: boolean
   onReady?: () => void
+  /** Contexto WebGL perdido en runtime: el orquestador vuelve al teclado CSS. */
+  onContextLost?: () => void
 }
 
 /**
@@ -111,13 +115,20 @@ type KeyboardSceneProps = {
  * encuadre teal, pero con profundidad real, reflejos metálicos y sombra de
  * contacto. Fondo transparente: el glow/grid del hero CSS queda detrás.
  */
-export function KeyboardScene({ typing, tier, onReady }: KeyboardSceneProps) {
+export function KeyboardScene({ typing, tier, egg = false, onReady, onContextLost }: KeyboardSceneProps) {
   return (
     <Canvas
       dpr={[1, tier === 'high' ? 2 : 1.5]}
       camera={{ position: [0, 5.2, 6.5], fov: 38 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-      onCreated={({ camera }) => camera.lookAt(0, -0.2, 0)}
+      onCreated={({ camera, gl }) => {
+        camera.lookAt(0, -0.2, 0)
+        // `once`: al primer context lost el padre desmonta este Canvas entero,
+        // así que no hay listener que sacar después (muere con el elemento).
+        if (onContextLost) {
+          gl.domElement.addEventListener('webglcontextlost', () => onContextLost(), { once: true })
+        }
+      }}
     >
       <ambientLight intensity={0.35} color="#12303a" />
       <pointLight position={[3.5, 4.5, 2.5]} intensity={44} color="#3dddc4" />
@@ -128,7 +139,7 @@ export function KeyboardScene({ typing, tier, onReady }: KeyboardSceneProps) {
             {/* Pose equivalente al CSS aprobado (rotateX 56° rotateZ -14°):
                 cámara elevada + yaw del grupo. */}
             <KeyboardRig>
-              <KeyboardModel typing={typing} tier={tier} />
+              <KeyboardModel typing={typing} tier={tier} egg={egg} />
               <UnderGlow />
             </KeyboardRig>
           </Float>

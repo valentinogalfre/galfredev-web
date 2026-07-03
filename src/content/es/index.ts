@@ -41,6 +41,9 @@ export const es: Dictionary = {
       ctaPrimary: { label: 'Empezar un proyecto', href: '#contacto' },
       ctaSecondary: { label: 'Ver proyectos', href: '/proyectos' },
       typedWords: ['WHATSAPP', 'APPS', 'WEBS', 'IA', 'AUTOMATIZAR'],
+      soundOn: 'Activar sonido del teclado',
+      soundOff: 'Silenciar el teclado',
+      eggMessage: '> acceso concedido. sos de los míos.',
     },
     services: {
       title: 'Qué construyo',
