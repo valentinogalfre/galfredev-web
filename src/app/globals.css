@@ -157,6 +157,50 @@ textarea {
 
 /* ---------- Hero: teclado 3D CSS (port del mockup aprobado, paleta teal) ---------- */
 
+/* Shell del hero: fija la altura del área del teclado para que el crossfade
+   CSS→WebGL (capas absolutas) no mueva el layout. Espeja las alturas de .kb-stage. */
+.kb-shell {
+  width: 100%;
+  height: 360px;
+}
+
+/* Fade en los bordes del canvas WebGL: el halo del bloom se difumina hacia la
+   página en vez de cortarse en el rectángulo del canvas. Dos capas anidadas
+   (horizontal + vertical) = intersección sin depender de mask-composite. */
+.kb-fade-x {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 44px,
+    #000 calc(100% - 44px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 44px,
+    #000 calc(100% - 44px),
+    transparent
+  );
+}
+
+.kb-fade-y {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 36px,
+    #000 calc(100% - 20px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 36px,
+    #000 calc(100% - 20px),
+    transparent
+  );
+}
+
 .kb-stage {
   position: relative;
   display: flex;
@@ -168,6 +212,10 @@ textarea {
 }
 
 @media (min-width: 1024px) {
+  .kb-shell {
+    height: 380px;
+  }
+
   .kb-stage {
     --kb-scale: 1.08;
     height: 380px;
@@ -285,6 +333,10 @@ textarea {
 }
 
 @media (max-width: 640px) {
+  .kb-shell {
+    height: 230px;
+  }
+
   .kb-stage {
     --kb-scale: 0.68;
     height: 230px;

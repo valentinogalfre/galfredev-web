@@ -3,7 +3,7 @@
 import { Marquee } from '@/components/motion/marquee'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
-import { KeyboardCss } from './keyboard-css'
+import { KeyboardHero } from './keyboard-hero'
 import { useTypingLoop } from './use-typing-loop'
 
 type Cta = { label: string; href: string }
@@ -110,10 +110,14 @@ export function HeroClient({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          data-testid="keyboard-hero"
           className="-mx-10 mt-0 self-stretch sm:mx-0 sm:mt-2"
         >
-          <KeyboardCss typing={typing} />
+          <KeyboardHero typing={typing} />
+          {/* El cursor ▌ vive en ::after para que el textContent sea solo lo
+              tipeado. Fuera del teclado: existe igual en modo CSS y WebGL. */}
+          <div className="kb-typed" data-testid="typed-line" aria-hidden="true">
+            {typing.typed}
+          </div>
         </motion.div>
       </div>
 

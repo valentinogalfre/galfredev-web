@@ -38,7 +38,8 @@ type KeyboardCssProps = {
  * Teclado 3D construido 100% con CSS (perspective + rotateX/rotateZ + translateZ).
  * Decorativo: se oculta entero del árbol de accesibilidad. La tecla que coincide
  * con `typing.pressedKey` se hunde vía data-pressed + transición CSS corta
- * (nada de springs por tecla: son ~60 nodos).
+ * (nada de springs por tecla: son ~60 nodos). La línea tipeada vive en
+ * hero-client: existe igual en modo CSS y en modo WebGL.
  */
 export function KeyboardCss({ typing, className }: KeyboardCssProps) {
   const pressedId = resolvePressedId(typing.pressedKey)
@@ -65,10 +66,6 @@ export function KeyboardCss({ typing, className }: KeyboardCssProps) {
             </div>
           </div>
         </div>
-      </div>
-      {/* El cursor ▌ vive en ::after para que el textContent sea solo lo tipeado. */}
-      <div className="kb-typed" data-testid="typed-line">
-        {typing.typed}
       </div>
     </div>
   )
