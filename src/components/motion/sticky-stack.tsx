@@ -35,15 +35,24 @@ function StackCard({
   progress: MotionValue<number>
 }) {
   const isLast = index === total - 1
-  // Each card starts receding once it is pinned and the next card scrolls over it.
-  const start = index / total
-  const scale = useTransform(progress, [start, 1], isLast ? [1, 1] : [1, 0.92])
-  const opacity = useTransform(progress, [start, 1], isLast ? [1, 1] : [1, 0.45])
+  // La card i retrocede exactamente mientras la card i+1 le scrollea por
+  // encima: ventana [i, i+1] / (total-1). Nunca bajamos la opacity del
+  // elemento (haría traslúcida a la card que cubre y el texto de abajo
+  // se leería a través); en su lugar un velo oscuro opaco la apaga.
+  const start = total > 1 ? index / (total - 1) : 0
+  const end = total > 1 ? (index + 1) / (total - 1) : 1
+  const scale = useTransform(progress, [start, end], isLast ? [1, 1] : [1, 0.94])
+  const veil = useTransform(progress, [start, end], isLast ? [0, 0] : [0, 0.55])
 
   return (
     <div className="sticky top-[10vh] flex h-screen items-start">
-      <motion.div style={{ scale, opacity }} className="w-full origin-top">
+      <motion.div style={{ scale }} className="relative w-full origin-top">
         {children}
+        <motion.div
+          aria-hidden
+          style={{ opacity: veil }}
+          className="pointer-events-none absolute inset-0 rounded-[2rem] bg-[#050810]"
+        />
       </motion.div>
     </div>
   )

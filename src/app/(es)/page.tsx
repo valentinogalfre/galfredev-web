@@ -6,6 +6,7 @@ import { ContactSection } from '@/components/sections/contact-section'
 import { FounderSection } from '@/components/sections/founder-section'
 import { ProcessSection } from '@/components/sections/process-section'
 import { ProfileTeaserSection } from '@/components/sections/profile-teaser-section'
+import { ProjectsSection } from '@/components/sections/projects-section'
 import { RoiCalculatorSection } from '@/components/sections/roi-calculator-section'
 import { ServicesSection } from '@/components/sections/services-section'
 import type { Metadata } from 'next'
@@ -31,9 +32,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <SiteHeader locale="es" />
       <ProfileToast initialVisible={profileStatus === 'updated'} />
       <div id="top" />
-      <main id="contenido-principal" className="relative overflow-hidden">
+      {/* overflow-x-clip (no hidden): hidden crea un scroll container y rompe
+          position:sticky del sticky-stack; clip recorta sin romperlo. */}
+      <main id="contenido-principal" className="relative overflow-x-clip">
         <HeroSection locale="es" />
         <ServicesSection locale="es" />
+        <ProjectsSection locale="es" />
         <ProcessSection locale="es" />
         <RoiCalculatorSection />
         <FounderSection />
