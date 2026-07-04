@@ -4,7 +4,7 @@ import { scriptedReply } from '@/lib/demo-bot-script'
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/types/content'
 import { CheckCheck, MessageCircle, Send } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 export type ChatRole = 'user' | 'bot'
 
@@ -131,6 +131,14 @@ export function BotChat({
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [typing, setTyping] = useState<ChatRole | null>(null)
   const [input, setInput] = useState('')
+  // Señal de hidratación observable (data-ready): los e2e tipean recién cuando
+  // los handlers existen — sin esto, bajo carga el fill+Enter llega antes de
+  // hidratar y el mensaje se pierde (flake real reproducido en review).
+  const hydrated = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  )
   // Autoplay: arranca al entrar al viewport y muere para siempre con la
   // primera interacción del visitante (los mensajes ya mostrados quedan).
   const [autoplayStarted, setAutoplayStarted] = useState(false)
@@ -255,6 +263,7 @@ export function BotChat({
     <div
       ref={windowRef}
       data-testid="bot-chat"
+      data-ready={hydrated ? '' : undefined}
       className="overflow-hidden rounded-[1.75rem] border border-[var(--surface-border)] bg-[linear-gradient(180deg,#0b1422_0%,#070d17_100%)] shadow-[var(--surface-shadow-strong)]"
     >
       {/* Header estilo WhatsApp: avatar + estado en línea */}

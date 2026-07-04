@@ -5,6 +5,8 @@ import { test, expect } from '@playwright/test'
 
 test('el bot demo responde guionado', async ({ page }) => {
   await page.goto('/')
+  // Espera la hidratación (data-ready): tipear antes pierde el mensaje.
+  await expect(page.getByTestId('bot-chat')).toHaveAttribute('data-ready', '')
   const input = page.getByTestId('bot-input')
   await input.scrollIntoViewIfNeeded()
   // fill() enfoca el input → corta el autoplay aunque esté a mitad del guion.
@@ -17,6 +19,8 @@ test('el bot demo responde guionado', async ({ page }) => {
 
 test('los chips de sugerencia envían', async ({ page }) => {
   await page.goto('/')
+  // Espera la hidratación (data-ready): tipear antes pierde el mensaje.
+  await expect(page.getByTestId('bot-chat')).toHaveAttribute('data-ready', '')
   await page.getByTestId('bot-chat').scrollIntoViewIfNeeded()
   await page.getByRole('button', { name: '¿Qué hace un bot?' }).click()
   const log = page.getByTestId('bot-chat').getByRole('log')
@@ -28,6 +32,8 @@ test('los chips de sugerencia envían', async ({ page }) => {
 
 test('el bot demo existe en la home en inglés', async ({ page }) => {
   await page.goto('/en')
+  // Espera la hidratación (data-ready): tipear antes pierde el mensaje.
+  await expect(page.getByTestId('bot-chat')).toHaveAttribute('data-ready', '')
   const input = page.getByTestId('bot-input')
   await input.scrollIntoViewIfNeeded()
   await input.fill('how much is a website?')
