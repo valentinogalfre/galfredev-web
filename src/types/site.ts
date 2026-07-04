@@ -37,31 +37,6 @@ export type HeroScenario = {
   cards: HeroScenarioCard[]
 }
 
-export type ValuePillar = {
-  icon?: string
-  title: string
-  summary: string
-  points: string[]
-}
-
-export type SolutionCard = {
-  title: string
-  label?: string
-  audience: string
-  pain: string
-  outcome: string
-  bullets: string[]
-  ctaLabel: string
-  message: string
-}
-
-export type ProcessStep = {
-  step: string
-  title: string
-  description: string
-  outcome: string
-}
-
 export type Certification = {
   id: string
   title: string

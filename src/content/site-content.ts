@@ -1,11 +1,4 @@
-import type {
-  Certification,
-  NavItem,
-  ProcessStep,
-  SolutionCard,
-  SocialLink,
-  ValuePillar,
-} from '@/types/site'
+import type { Certification, NavItem, SocialLink } from '@/types/site'
 
 export const navItems: NavItem[] = [
   { label: 'Soluciones', href: '#soluciones' },
@@ -13,101 +6,6 @@ export const navItems: NavItem[] = [
   { label: 'ROI', href: '#roi' },
   { label: 'Valentino', href: '#fundador' },
   { label: 'Contacto', href: '#contacto' },
-]
-
-export const valuePillars: ValuePillar[] = [
-  {
-    icon: '01',
-    title: 'Responder rápido',
-    summary:
-      'WhatsApp, respuestas automáticas y recordatorios para que una consulta no se enfríe por demora.',
-    points: ['Respuesta automática por WhatsApp', 'Seguimiento sin olvidos'],
-  },
-  {
-    icon: '02',
-    title: 'Ordenar procesos',
-    summary:
-      'Conecto herramientas, formularios y sistemas para que la operación deje de depender de parches.',
-    points: ['Menos doble carga', 'Menos errores operativos'],
-  },
-  {
-    icon: '03',
-    title: 'Escalar con criterio',
-    summary:
-      'Cuando lo estándar no alcanza, diseñamos la pieza justa para crecer con una base más sólida.',
-    points: ['Integración con tu caso real', 'Base mantenible y lista para crecer'],
-  },
-]
-
-export const solutions: SolutionCard[] = [
-  {
-    label: 'WhatsApp',
-    title: 'WhatsApp que capta y responde sin fricción',
-    audience: 'Consultas diarias',
-    pain: 'Hoy se enfrían oportunidades por demora o desorden.',
-    outcome: 'Más velocidad de respuesta y mejor filtro comercial.',
-    bullets: ['Respuestas con contexto', 'Filtro y derivación'],
-    ctaLabel: 'Consultar precios',
-    message:
-      'Hola, quiero consultar precios por una solución de captación y respuesta automática por WhatsApp.',
-  },
-  {
-    label: 'Ventas',
-    title: 'Seguimiento comercial para no perder clientes',
-    audience: 'Leads y cotizaciones',
-    pain: 'Los leads quedan en pausa o sin próxima acción.',
-    outcome: 'Seguimiento automático que mantiene viva la conversación.',
-    bullets: ['Estados claros', 'Alertas y recordatorios'],
-    ctaLabel: 'Pedir propuesta',
-    message:
-      'Hola, quiero pedir una propuesta para automatizar el seguimiento de potenciales clientes y ventas.',
-  },
-  {
-    label: 'Operación',
-    title: 'Turnos, recordatorios y reprogramaciones',
-    audience: 'Agendas y reservas',
-    pain: 'Las ausencias y cambios desordenan la operación.',
-    outcome: 'Menos no-shows y una agenda más predecible.',
-    bullets: ['Confirmación automática', 'Reprogramación simple'],
-    ctaLabel: 'Ver si aplica a tu negocio',
-    message:
-      'Hola, quiero ver si una automatización de turnos, recordatorios y reprogramaciones aplica a mi negocio.',
-  },
-  {
-    label: 'Sistema',
-    title: 'Software a medida para ordenar y escalar',
-    audience: 'Procesos que ya superaron planillas',
-    pain: 'Los parches ya no alcanzan y todo empieza a trabarse.',
-    outcome: 'Una base más sólida para operar, integrar y crecer.',
-    bullets: ['Backends y paneles', 'Integraciones y APIs'],
-    ctaLabel: 'Consultar solución',
-    message:
-      'Hola, quiero consultar por software a medida e integraciones para ordenar y escalar mi negocio.',
-  },
-]
-
-export const processSteps: ProcessStep[] = [
-  {
-    step: '01',
-    title: 'Diagnóstico de negocio',
-    description:
-      'Ubicamos dónde hoy se pierde tiempo, control o facturación y qué conviene atacar primero.',
-    outcome: 'Queda definido el problema real, la prioridad y el impacto que vale la pena buscar.',
-  },
-  {
-    step: '02',
-    title: 'Implementación enfocada',
-    description:
-      'Armamos la solución con el nivel justo de automatización, integración o software, sin adornos innecesarios.',
-    outcome: 'Se pone en marcha rápido y con sentido operativo, no como una capa extra de complejidad.',
-  },
-  {
-    step: '03',
-    title: 'Ajuste y mejora continua',
-    description:
-      'Medimos qué funcionó, corregimos fricción real y definimos el siguiente paso útil según uso.',
-    outcome: 'La solución se mantiene viva y acompaña el crecimiento sin quedar congelada.',
-  },
 ]
 
 export const certifications: Certification[] = [
