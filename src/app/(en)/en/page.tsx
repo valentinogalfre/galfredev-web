@@ -1,6 +1,7 @@
 import { HeroSection } from '@/components/hero/hero-section'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
+import { BotDemoSection } from '@/components/sections/bot-demo-section'
 import { ProcessSection } from '@/components/sections/process-section'
 import { ProjectsSection } from '@/components/sections/projects-section'
 import { ServicesSection } from '@/components/sections/services-section'
@@ -17,6 +18,7 @@ export default function EnglishHomePage() {
         <HeroSection locale="en" />
         <ServicesSection locale="en" />
         <ProjectsSection locale="en" />
+        <BotDemoSection locale="en" />
         <ProcessSection locale="en" />
       </main>
       <SiteFooter locale="en" />
