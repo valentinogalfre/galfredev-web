@@ -10,6 +10,8 @@ type FrameProject = Pick<ProjectContent, 'id' | 'name' | 'image'>
 type ProjectFrameProps = {
   project: FrameProject
   kind: ProjectFrameKind
+  /** Alt localizado para la captura real (el placeholder es decorativo). */
+  captureAlt: string
 }
 
 /**
@@ -190,16 +192,18 @@ function ChatMiniUi({ tint }: { tint: (typeof TINTS)[ProjectId] }) {
 /* Visual interno: captura real si existe el PNG, placeholder si no    */
 /* ------------------------------------------------------------------ */
 
-function Visual({ project, kind }: ProjectFrameProps) {
-  // Server component (Node): si el dueño dropea el PNG en
-  // public/images/projects/, aparece solo — sin tocar código.
+function Visual({ project, kind, captureAlt }: ProjectFrameProps) {
+  // Contrato: commitear el PNG a public/images/projects/ lo activa en el
+  // próximo deploy, sin tocar código. La detección corre en build/render
+  // server-side — en Vercel el filesystem es inmutable, así que rutas
+  // estáticas (p. ej. /en) lo toman al rebuildear, nunca en runtime.
   const hasImage = existsSync(join(process.cwd(), 'public', project.image))
 
   if (hasImage) {
     return (
       <Image
         src={project.image}
-        alt={`Captura de ${project.name}`}
+        alt={captureAlt}
         fill
         sizes="(min-width: 1024px) 45vw, 92vw"
         className="object-cover object-top"
@@ -264,7 +268,7 @@ function Visual({ project, kind }: ProjectFrameProps) {
  * captura de cada proyecto. Mientras no existan los PNG reales renderiza un
  * placeholder tintado por proyecto con mini-UI abstracta según el kind.
  */
-export function ProjectFrame({ project, kind }: ProjectFrameProps) {
+export function ProjectFrame({ project, kind, captureAlt }: ProjectFrameProps) {
   const tint = TINTS[project.id]
   const glowShadow = { boxShadow: `0 32px 90px -30px ${tint.shadow}` }
 
@@ -276,7 +280,7 @@ export function ProjectFrame({ project, kind }: ProjectFrameProps) {
           style={glowShadow}
         >
           <div className="relative aspect-[9/18.5] overflow-hidden rounded-[2.1rem] bg-[#060b14]">
-            <Visual project={project} kind={kind} />
+            <Visual project={project} kind={kind} captureAlt={captureAlt} />
             <div
               aria-hidden
               className="absolute left-1/2 top-1.5 z-10 h-[18px] w-[74px] -translate-x-1/2 rounded-full border border-white/[0.05] bg-black/95"
@@ -314,7 +318,7 @@ export function ProjectFrame({ project, kind }: ProjectFrameProps) {
           </div>
         </div>
         <div className="relative aspect-[16/10]">
-          <Visual project={project} kind={kind} />
+          <Visual project={project} kind={kind} captureAlt={captureAlt} />
         </div>
       </div>
     )
@@ -339,7 +343,7 @@ export function ProjectFrame({ project, kind }: ProjectFrameProps) {
         <div aria-hidden className="w-[46px] shrink-0" />
       </div>
       <div className="relative aspect-[16/10]">
-        <Visual project={project} kind={kind} />
+        <Visual project={project} kind={kind} captureAlt={captureAlt} />
       </div>
     </div>
   )

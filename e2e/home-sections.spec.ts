@@ -12,7 +12,7 @@ test('la sección proyectos apila 4 casos', async ({ page }) => {
   await page.goto('/')
   await expect(page.locator('#proyectos')).toHaveCount(1)
   await expect(page.locator('#proyectos a[href*="/proyectos/"]')).toHaveCount(4)
-  // .first(): «Pyron» también aparece en el frame placeholder (URL pill + wordmark)
+  // .first(): «Pyron» también aparece en el wordmark del placeholder del frame — .first() evita el strict mode.
   await expect(page.locator('#proyectos').getByText('Pyron').first()).toBeVisible()
 })
 

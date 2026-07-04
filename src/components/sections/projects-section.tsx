@@ -24,11 +24,13 @@ function ProjectCard({
   index,
   href,
   caseLabel,
+  captureAlt,
 }: {
   project: ProjectContent
   index: number
   href: string
   caseLabel: string
+  captureAlt: string
 }) {
   const extraChips = project.stack.length - MAX_CHIPS
 
@@ -43,6 +45,7 @@ function ProjectCard({
             <ProjectFrame
               project={{ id: project.id, name: project.name, image: project.image }}
               kind={FRAME_KINDS[project.id]}
+              captureAlt={captureAlt}
             />
           </Parallax>
         </div>
@@ -113,6 +116,8 @@ export function ProjectsSection({ locale }: { locale: Locale }) {
   const sectionId = locale === 'es' ? 'proyectos' : 'projects'
   const basePath = locale === 'es' ? '/proyectos/' : '/projects/'
   const caseLabel = locale === 'es' ? 'Ver el caso' : 'View case'
+  const captureAlt = (name: string) =>
+    locale === 'es' ? `Captura de ${name}` : `${name} screenshot`
   const kicker =
     dict.common.nav.find((item) => item.href === (locale === 'es' ? '/proyectos' : '/projects'))
       ?.label ?? dict.home.projects.title
@@ -127,6 +132,7 @@ export function ProjectsSection({ locale }: { locale: Locale }) {
         index={index}
         href={localizedPath(locale, `${basePath}${project.slug}`)}
         caseLabel={caseLabel}
+        captureAlt={captureAlt(project.name)}
       />
     )
   })
