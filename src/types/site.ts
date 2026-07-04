@@ -1,8 +1,3 @@
-export type NavItem = {
-  href: string
-  label: string
-}
-
 export type HeroMetric = {
   label: string
   value: string

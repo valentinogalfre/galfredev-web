@@ -42,6 +42,72 @@ export type ProjectContent = {
   image: string // ruta bajo /public/images/projects/
 }
 
+/** Mensajes de validación del form de leads (client + API con default es). */
+export type LeadValidationMessages = {
+  fullNameRequired: string
+  fullNameTooLong: string
+  emailRequired: string
+  emailInvalid: string
+  emailTooLong: string
+  phoneRequired: string
+  phoneInvalid: string
+  phoneReview: string
+  companyTooLong: string
+  businessTypeTooLong: string
+  primaryNeedRequired: string
+  primaryNeedInvalid: string
+  challengeRequired: string
+  challengeTooShort: string
+  challengeTooLong: string
+  consentPrivacyRequired: string
+}
+
+/** Strings de UI de la calculadora ROI (la fórmula vive en src/lib/roi.ts). */
+export type RoiCalculatorLabels = {
+  salary: { label: string; help: string }
+  hours: { label: string; help: string; unit: string; min: string; max: string }
+  costNote: { before: string; after: string }
+  chart: { title: string; sub: string; badge: string; ariaLabel: string }
+  next: { kicker: string; before: string; after: string; cta: string }
+  results: { monthly: string; hoursFree: string; annual: string }
+  whatsapp: {
+    intro: string
+    salary: string
+    hours: string
+    monthly: string
+    annual: string
+    closing: string
+  }
+}
+
+/** Strings de UI del formulario de contacto (POST a /api/lead intacto). */
+export type ContactFormContent = {
+  fields: {
+    fullName: { label: string; placeholder: string }
+    email: { label: string; placeholder: string }
+    phone: { label: string; placeholder: string; helper: string }
+    company: { label: string; placeholder: string }
+    businessType: { label: string; placeholder: string }
+    primaryNeed: {
+      label: string
+      placeholder: string
+      options: { value: string; label: string }[]
+    }
+    challenge: { label: string; placeholder: string; helper: string }
+  }
+  consent: { followUp: string; newsletter: string; privacy: string }
+  submit: { idle: string; loading: string }
+  whatsappDirect: string
+  validation: LeadValidationMessages
+  messages: {
+    validationSummary: string
+    success: string
+    successCta: string
+    connectionError: string
+    serverError: string
+  }
+}
+
 export type HomeContent = {
   seo: SeoMeta
   hero: {
@@ -60,9 +126,17 @@ export type HomeContent = {
   projects: { title: string; sub: string }
   botDemo: { title: string; sub: string; inputPlaceholder: string; limitNote: string }
   process: { title: string; steps: { title: string; description: string; outcome: string }[] }
-  roi: { title: string; sub: string }
+  roi: { title: string; sub: string; eyebrow: string; calculator: RoiCalculatorLabels }
   about: { title: string; teaser: string; cta: Cta }
-  contact: { title: string; sub: string }
+  contact: {
+    title: string
+    sub: string
+    intro: string
+    whatsappCta: string
+    whatsappMessage: string
+    formNote: string
+    form: ContactFormContent
+  }
 }
 
 export type AboutContent = {

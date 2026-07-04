@@ -1,3 +1,5 @@
+import type { LeadValidationMessages } from '@/types/content'
+
 export type LeadStatus = 'idle' | 'loading' | 'success' | 'error'
 
 export type LeadFormState = {
@@ -34,7 +36,12 @@ export type LeadValidationResult = {
   normalized: LeadFormState
 }
 
-export const leadPrimaryNeedOptions = [
+/**
+ * Valores válidos de "necesidad principal" (labels es para el mensaje interno
+ * de WhatsApp). Los options de UI viven en los diccionarios y DEBEN usar
+ * estos mismos values: la API valida contra esta lista.
+ */
+const leadPrimaryNeedOptions = [
   { value: 'whatsapp', label: 'WhatsApp y captación' },
   { value: 'seguimiento', label: 'Seguimiento comercial' },
   { value: 'turnos', label: 'Turnos y recordatorios' },
@@ -46,6 +53,30 @@ export const leadPrimaryNeedOptions = [
 const leadPrimaryNeedLabelMap = new Map<string, string>(
   leadPrimaryNeedOptions.map((option) => [option.value, option.label]),
 )
+
+/**
+ * Mensajes por defecto (es): los usa la API (/api/lead) tal cual; el form
+ * client pasa los del diccionario del locale activo.
+ */
+export const defaultLeadValidationMessages: LeadValidationMessages = {
+  fullNameRequired: 'Necesitamos tu nombre para registrar la consulta.',
+  fullNameTooLong: 'Usá un nombre un poco más corto.',
+  emailRequired: 'Necesitamos un email para responderte.',
+  emailInvalid: 'Ingresá un email válido.',
+  emailTooLong: 'El email es demasiado largo.',
+  phoneRequired: 'Necesitamos un WhatsApp para continuar el lead.',
+  phoneInvalid: 'Ingresá un número de WhatsApp válido.',
+  phoneReview: 'Revisá el número de WhatsApp antes de enviarlo.',
+  companyTooLong: 'El nombre de la empresa es demasiado largo.',
+  businessTypeTooLong: 'El rubro es demasiado largo.',
+  primaryNeedRequired: 'Elegí la necesidad principal.',
+  primaryNeedInvalid: 'Elegí una necesidad principal válida.',
+  challengeRequired: 'Contanos el contexto para preparar mejor la propuesta.',
+  challengeTooShort: 'Sumanos un poco más de contexto para entender la consulta.',
+  challengeTooLong: 'Resumí un poco el contexto para poder revisarlo mejor.',
+  consentPrivacyRequired:
+    'Necesitamos tu consentimiento de privacidad para guardar este lead.',
+}
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const phoneDigitsRegex = /\D/g
@@ -116,7 +147,10 @@ export function validateLeadPayload(payload: unknown): payload is LeadPayload {
   )
 }
 
-export function validateLeadForm(input: LeadFormState): LeadValidationResult {
+export function validateLeadForm(
+  input: LeadFormState,
+  messages: LeadValidationMessages = defaultLeadValidationMessages,
+): LeadValidationResult {
   const normalized: LeadFormState = {
     fullName: cleanSingleLine(input.fullName),
     email: cleanSingleLine(input.email).toLowerCase(),
@@ -134,53 +168,52 @@ export function validateLeadForm(input: LeadFormState): LeadValidationResult {
   const errors: LeadFieldErrors = {}
 
   if (!normalized.fullName) {
-    errors.fullName = 'Necesitamos tu nombre para registrar la consulta.'
+    errors.fullName = messages.fullNameRequired
   } else if (normalized.fullName.length > MAX_FULL_NAME_LENGTH) {
-    errors.fullName = 'Usá un nombre un poco más corto.'
+    errors.fullName = messages.fullNameTooLong
   }
 
   if (!normalized.email) {
-    errors.email = 'Necesitamos un email para responderte.'
+    errors.email = messages.emailRequired
   } else if (!emailRegex.test(normalized.email)) {
-    errors.email = 'Ingresá un email válido.'
+    errors.email = messages.emailInvalid
   } else if (normalized.email.length > MAX_EMAIL_LENGTH) {
-    errors.email = 'El email es demasiado largo.'
+    errors.email = messages.emailTooLong
   }
 
   const phoneDigits = normalized.phone.replace(phoneDigitsRegex, '')
   if (!normalized.phone) {
-    errors.phone = 'Necesitamos un WhatsApp para continuar el lead.'
+    errors.phone = messages.phoneRequired
   } else if (phoneDigits.length < 8) {
-    errors.phone = 'Ingresá un número de WhatsApp válido.'
+    errors.phone = messages.phoneInvalid
   } else if (phoneDigits.length > 15 || normalized.phone.length > MAX_PHONE_LENGTH) {
-    errors.phone = 'Revisá el número de WhatsApp antes de enviarlo.'
+    errors.phone = messages.phoneReview
   }
 
   if (normalized.companyName.length > MAX_COMPANY_LENGTH) {
-    errors.companyName = 'El nombre de la empresa es demasiado largo.'
+    errors.companyName = messages.companyTooLong
   }
 
   if (normalized.businessType.length > MAX_BUSINESS_TYPE_LENGTH) {
-    errors.businessType = 'El rubro es demasiado largo.'
+    errors.businessType = messages.businessTypeTooLong
   }
 
   if (!normalized.primaryNeed) {
-    errors.primaryNeed = 'Elegí la necesidad principal.'
+    errors.primaryNeed = messages.primaryNeedRequired
   } else if (!leadPrimaryNeedLabelMap.has(normalized.primaryNeed)) {
-    errors.primaryNeed = 'Elegí una necesidad principal válida.'
+    errors.primaryNeed = messages.primaryNeedInvalid
   }
 
   if (!normalized.challenge) {
-    errors.challenge = 'Contanos el contexto para preparar mejor la propuesta.'
+    errors.challenge = messages.challengeRequired
   } else if (normalized.challenge.length < MIN_CHALLENGE_LENGTH) {
-    errors.challenge = 'Sumanos un poco más de contexto para entender la consulta.'
+    errors.challenge = messages.challengeTooShort
   } else if (normalized.challenge.length > MAX_CHALLENGE_LENGTH) {
-    errors.challenge = 'Resumí un poco el contexto para poder revisarlo mejor.'
+    errors.challenge = messages.challengeTooLong
   }
 
   if (!normalized.consentPrivacy) {
-    errors.consentPrivacy =
-      'Necesitamos tu consentimiento de privacidad para guardar este lead.'
+    errors.consentPrivacy = messages.consentPrivacyRequired
   }
 
   return {

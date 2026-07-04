@@ -87,6 +87,49 @@ export const en: Dictionary = {
     roi: {
       title: "What's the return?",
       sub: 'Calculate the return of automating your operation.',
+      eyebrow: 'ROI calculator',
+      calculator: {
+        salary: {
+          label: 'Monthly cost of the resource',
+          help: 'Enter the monthly cost of the employee or resource doing those tasks today.',
+        },
+        hours: {
+          label: 'Weekly hours on repetitive tasks',
+          help: 'Adjust how many hours a week get eaten by tasks we could automate.',
+          unit: 'hrs',
+          min: '1 hr',
+          max: '40 hrs',
+        },
+        costNote: {
+          before: 'Right now those repetitive hours are costing you roughly',
+          after: 'per month.',
+        },
+        chart: {
+          title: '12-month savings projection',
+          sub: 'It compounds month after month based on the current estimated savings.',
+          badge: 'Visible ROI',
+          ariaLabel: '12-month cumulative savings chart',
+        },
+        next: {
+          kicker: 'Next step',
+          before: 'If you automate these tasks, you can win back',
+          after: 'a year. Shall we talk?',
+          cta: 'I want to automate',
+        },
+        results: {
+          monthly: 'Savings / month',
+          hoursFree: 'Hours freed / month',
+          annual: 'Annual savings',
+        },
+        whatsapp: {
+          intro: "Hi! I used GalfreDev's ROI calculator.",
+          salary: 'Monthly cost of the resource:',
+          hours: 'Weekly hours on repetitive tasks:',
+          monthly: 'Estimated monthly savings:',
+          annual: 'Projected annual savings:',
+          closing: 'I want to automate these tasks.',
+        },
+      },
     },
     about: {
       title: "Who's behind this",
@@ -97,6 +140,86 @@ export const en: Dictionary = {
     contact: {
       title: "Let's talk",
       sub: 'Tell me your idea or your problem. I reply the same day.',
+      intro:
+        'The site handles the first step: showing what GalfreDev does, giving you context and letting you request a diagnosis or a proposal clearly. The ideal close is a real conversation.',
+      whatsappCta: 'Chat on WhatsApp',
+      whatsappMessage:
+        "Hi! I'd like to talk on WhatsApp about automation or custom software.",
+      formNote:
+        'You can also leave your details and main need so the conversation starts with better context, priority and explicit consent.',
+      form: {
+        fields: {
+          fullName: { label: 'Full name', placeholder: 'What should I call you' },
+          email: { label: 'Email', placeholder: 'you@email.com' },
+          phone: {
+            label: 'WhatsApp',
+            placeholder: '+1 555...',
+            helper: 'We use it to follow up on your enquiry without friction.',
+          },
+          company: {
+            label: 'Business or company',
+            placeholder: 'Business or brand name',
+          },
+          businessType: {
+            label: 'Industry',
+            placeholder: 'Design, health, services, e-commerce...',
+          },
+          primaryNeed: {
+            label: 'Main need',
+            placeholder: 'Pick an option',
+            options: [
+              { value: 'whatsapp', label: 'WhatsApp & lead capture' },
+              { value: 'seguimiento', label: 'Sales follow-up' },
+              { value: 'turnos', label: 'Bookings & reminders' },
+              { value: 'cobranzas', label: 'Collections & notices' },
+              { value: 'automatizacion-interna', label: 'Internal automation' },
+              { value: 'software-a-medida', label: 'Custom software' },
+            ],
+          },
+          challenge: {
+            label: 'Tell me the context',
+            placeholder:
+              "What's happening today, what you want to sort out and the result you expect.",
+            helper:
+              'The clearer the context, the better prepared the WhatsApp message comes out.',
+          },
+        },
+        consent: {
+          followUp: 'I authorize commercial follow-up by email or WhatsApp.',
+          newsletter:
+            'I want to receive news about automation, software and applied AI.',
+          privacy:
+            'I accept the privacy policy and the processing of my data for this contact.',
+        },
+        submit: { idle: 'Request a proposal or diagnosis', loading: 'Sending...' },
+        whatsappDirect: 'Go straight to WhatsApp',
+        validation: {
+          fullNameRequired: 'We need your name to log the enquiry.',
+          fullNameTooLong: 'Use a slightly shorter name.',
+          emailRequired: 'We need an email to get back to you.',
+          emailInvalid: 'Enter a valid email.',
+          emailTooLong: 'That email is too long.',
+          phoneRequired: 'We need a WhatsApp number to follow up.',
+          phoneInvalid: 'Enter a valid WhatsApp number.',
+          phoneReview: 'Double-check the WhatsApp number before sending it.',
+          companyTooLong: 'The company name is too long.',
+          businessTypeTooLong: 'The industry is too long.',
+          primaryNeedRequired: 'Pick your main need.',
+          primaryNeedInvalid: 'Pick a valid main need.',
+          challengeRequired: 'Tell us the context so we can prepare a better proposal.',
+          challengeTooShort: 'Give us a bit more context to understand the enquiry.',
+          challengeTooLong: 'Trim the context a little so we can review it properly.',
+          consentPrivacyRequired: 'We need your privacy consent to store this lead.',
+        },
+        messages: {
+          validationSummary: 'Check the highlighted fields before sending your enquiry.',
+          success: "Your enquiry is in. We're taking you to WhatsApp to continue.",
+          successCta: 'Continue on WhatsApp now',
+          connectionError:
+            "We couldn't send your enquiry due to a connection issue. Try again or message us on WhatsApp.",
+          serverError: "We couldn't log your enquiry right now. Please try again.",
+        },
+      },
     },
   },
 

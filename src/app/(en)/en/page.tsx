@@ -1,13 +1,15 @@
 import { HeroSection } from '@/components/hero/hero-section'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
+import { AboutTeaserSection } from '@/components/sections/about-teaser-section'
 import { BotDemoSection } from '@/components/sections/bot-demo-section'
+import { ContactSection } from '@/components/sections/contact-section'
 import { ProcessSection } from '@/components/sections/process-section'
 import { ProjectsSection } from '@/components/sections/projects-section'
+import { RoiCalculatorSection } from '@/components/sections/roi-calculator-section'
 import { ServicesSection } from '@/components/sections/services-section'
 
-// Home en inglés: hero + servicios + proceso nuevos compartidos. Las secciones
-// restantes llegan con las tareas de Fase 3/4 (mismo home completo que es).
+// Home en inglés: mismas secciones que la home es, con el dict en.
 export default function EnglishHomePage() {
   return (
     <>
@@ -20,6 +22,9 @@ export default function EnglishHomePage() {
         <ProjectsSection locale="en" />
         <BotDemoSection locale="en" />
         <ProcessSection locale="en" />
+        <RoiCalculatorSection locale="en" />
+        <AboutTeaserSection locale="en" />
+        <ContactSection locale="en" />
       </main>
       <SiteFooter locale="en" />
     </>

@@ -88,6 +88,49 @@ export const es: Dictionary = {
     roi: {
       title: '¿Cuánto te devuelve?',
       sub: 'Calculá el retorno de automatizar tu operación.',
+      eyebrow: 'Calculadora ROI',
+      calculator: {
+        salary: {
+          label: 'Sueldo mensual del recurso',
+          help: 'Ingresá el costo mensual del empleado o recurso que hoy hace esas tareas.',
+        },
+        hours: {
+          label: 'Horas semanales en tareas repetitivas',
+          help: 'Ajustá cuántas horas por semana se consumen en tareas que podríamos automatizar.',
+          unit: 'hs',
+          min: '1 hs',
+          max: '40 hs',
+        },
+        costNote: {
+          before: 'Hoy esas horas repetitivas te están costando aproximadamente',
+          after: 'por mes.',
+        },
+        chart: {
+          title: 'Proyección de ahorro a 12 meses',
+          sub: 'Se acumula automáticamente mes a mes según el ahorro estimado actual.',
+          badge: 'ROI visible',
+          ariaLabel: 'Gráfico de ahorro acumulado de 12 meses',
+        },
+        next: {
+          kicker: 'Siguiente paso',
+          before: 'Si automatizás estas tareas, podés recuperar',
+          after: 'al año. ¿Hablamos?',
+          cta: 'Quiero automatizar',
+        },
+        results: {
+          monthly: 'Ahorro / mes',
+          hoursFree: 'Horas libres / mes',
+          annual: 'Ahorro anual',
+        },
+        whatsapp: {
+          intro: 'Hola, usé la calculadora ROI de GalfreDev.',
+          salary: 'Sueldo mensual del recurso:',
+          hours: 'Horas semanales en tareas repetitivas:',
+          monthly: 'Ahorro mensual estimado:',
+          annual: 'Ahorro anual proyectado:',
+          closing: 'Quiero automatizar estas tareas.',
+        },
+      },
     },
     about: {
       title: 'Quién está detrás',
@@ -98,6 +141,88 @@ export const es: Dictionary = {
     contact: {
       title: 'Hablemos',
       sub: 'Contame tu idea o tu problema. Respondo en el día.',
+      intro:
+        'La web resuelve el primer paso: mostrar qué hace GalfreDev, darte contexto y permitirte pedir un diagnóstico o una propuesta de forma clara. El cierre ideal es una conversación real.',
+      whatsappCta: 'Hablar por WhatsApp',
+      whatsappMessage:
+        'Hola, quiero hablar por WhatsApp para evaluar automatizaciones o software a medida.',
+      formNote:
+        'También podés dejar tus datos y la necesidad principal para que el contacto salga con mejor contexto, prioridad y consentimiento explícito.',
+      form: {
+        fields: {
+          fullName: { label: 'Nombre y apellido', placeholder: 'Cómo te llamás' },
+          email: { label: 'Email', placeholder: 'tu@email.com' },
+          phone: {
+            label: 'WhatsApp',
+            placeholder: '+54 9 351...',
+            helper: 'Lo usamos para continuar el lead sin fricción.',
+          },
+          company: {
+            label: 'Negocio o empresa',
+            placeholder: 'Nombre del negocio o marca',
+          },
+          businessType: {
+            label: 'Rubro',
+            placeholder: 'Diseño, salud, servicios, e-commerce...',
+          },
+          primaryNeed: {
+            label: 'Necesidad principal',
+            placeholder: 'Elegí una opción',
+            options: [
+              { value: 'whatsapp', label: 'WhatsApp y captación' },
+              { value: 'seguimiento', label: 'Seguimiento comercial' },
+              { value: 'turnos', label: 'Turnos y recordatorios' },
+              { value: 'cobranzas', label: 'Cobranzas y avisos' },
+              { value: 'automatizacion-interna', label: 'Automatización interna' },
+              { value: 'software-a-medida', label: 'Software a medida' },
+            ],
+          },
+          challenge: {
+            label: 'Contame el contexto',
+            placeholder: 'Qué pasa hoy, qué querés ordenar y qué resultado esperás.',
+            helper:
+              'Cuanto más claro sea el contexto, mejor preparado sale el mensaje para WhatsApp.',
+          },
+        },
+        consent: {
+          followUp: 'Autorizo seguimiento comercial por email o WhatsApp.',
+          newsletter:
+            'Quiero recibir novedades sobre automatización, software e IA aplicada.',
+          privacy:
+            'Acepto la política de privacidad y el tratamiento de mis datos para este contacto.',
+        },
+        submit: { idle: 'Pedir propuesta o diagnóstico', loading: 'Enviando...' },
+        whatsappDirect: 'Ir directo a WhatsApp',
+        validation: {
+          fullNameRequired: 'Necesitamos tu nombre para registrar la consulta.',
+          fullNameTooLong: 'Usá un nombre un poco más corto.',
+          emailRequired: 'Necesitamos un email para responderte.',
+          emailInvalid: 'Ingresá un email válido.',
+          emailTooLong: 'El email es demasiado largo.',
+          phoneRequired: 'Necesitamos un WhatsApp para continuar el lead.',
+          phoneInvalid: 'Ingresá un número de WhatsApp válido.',
+          phoneReview: 'Revisá el número de WhatsApp antes de enviarlo.',
+          companyTooLong: 'El nombre de la empresa es demasiado largo.',
+          businessTypeTooLong: 'El rubro es demasiado largo.',
+          primaryNeedRequired: 'Elegí la necesidad principal.',
+          primaryNeedInvalid: 'Elegí una necesidad principal válida.',
+          challengeRequired: 'Contanos el contexto para preparar mejor la propuesta.',
+          challengeTooShort:
+            'Sumanos un poco más de contexto para entender la consulta.',
+          challengeTooLong: 'Resumí un poco el contexto para poder revisarlo mejor.',
+          consentPrivacyRequired:
+            'Necesitamos tu consentimiento de privacidad para guardar este lead.',
+        },
+        messages: {
+          validationSummary: 'Revisá los campos marcados antes de enviar la consulta.',
+          success:
+            'Tu consulta quedó registrada. Te llevamos a WhatsApp para continuar.',
+          successCta: 'Continuar por WhatsApp ahora',
+          connectionError:
+            'No pudimos enviar tu consulta por un problema de conexión. Probá de nuevo o escribinos por WhatsApp.',
+          serverError: 'No pudimos registrar tu consulta en este momento.',
+        },
+      },
     },
   },
 

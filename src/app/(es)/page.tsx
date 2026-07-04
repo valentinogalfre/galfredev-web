@@ -2,11 +2,10 @@ import { HeroSection } from '@/components/hero/hero-section'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { ProfileToast } from '@/components/profile/profile-toast'
+import { AboutTeaserSection } from '@/components/sections/about-teaser-section'
 import { BotDemoSection } from '@/components/sections/bot-demo-section'
 import { ContactSection } from '@/components/sections/contact-section'
-import { FounderSection } from '@/components/sections/founder-section'
 import { ProcessSection } from '@/components/sections/process-section'
-import { ProfileTeaserSection } from '@/components/sections/profile-teaser-section'
 import { ProjectsSection } from '@/components/sections/projects-section'
 import { RoiCalculatorSection } from '@/components/sections/roi-calculator-section'
 import { ServicesSection } from '@/components/sections/services-section'
@@ -41,10 +40,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <ProjectsSection locale="es" />
         <BotDemoSection locale="es" />
         <ProcessSection locale="es" />
-        <RoiCalculatorSection />
-        <FounderSection />
-        <ProfileTeaserSection />
-        <ContactSection />
+        <RoiCalculatorSection locale="es" />
+        <AboutTeaserSection locale="es" />
+        <ContactSection locale="es" />
       </main>
       <SiteFooter locale="es" />
     </>

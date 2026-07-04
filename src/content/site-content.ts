@@ -1,13 +1,6 @@
-import type { Certification, NavItem, SocialLink } from '@/types/site'
+import type { Certification, SocialLink } from '@/types/site'
 
-export const navItems: NavItem[] = [
-  { label: 'Soluciones', href: '#soluciones' },
-  { label: 'Proceso', href: '#proceso' },
-  { label: 'ROI', href: '#roi' },
-  { label: 'Valentino', href: '#fundador' },
-  { label: 'Contacto', href: '#contacto' },
-]
-
+// certifications y stackGroups quedan para la página Sobre mí (Task 23).
 export const certifications: Certification[] = [
   {
     id: 'ai-automation',
@@ -30,13 +23,6 @@ export const certifications: Certification[] = [
     date: '13 de mayo de 2024',
     image: '/images/certificates/python.png',
   },
-]
-
-export const founderHighlights = [
-  'Estudiante de Ingeniería en Sistemas de Información en UTN FRC.',
-  'Cursos finalizados en Coderhouse: AI Automation, Inglés para desarrollo nivel advanced y Python.',
-  'Actualmente cursando la carrera completa de Backend Developer en Coderhouse.',
-  'Foco profesional en backend, automatización, integraciones, software a medida y sistemas con IA aplicados a negocios reales.',
 ]
 
 export const stackGroups = [
@@ -65,7 +51,6 @@ export const socialLinks: SocialLink[] = [
 export const siteCopy = {
   brand: 'GalfreDev',
   founderName: 'Valentino Galfré',
-  founderRole: 'Automatización, software a medida e IA aplicada para negocios reales.',
   founderImage: '/images/founder/valentino-galfre.png',
   whatsappBaseMessage: 'Hola, me gustaría consultar por los servicios de GalfreDev.',
   email: 'galfredev@gmail.com',
