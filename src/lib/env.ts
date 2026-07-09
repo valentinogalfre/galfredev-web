@@ -6,6 +6,9 @@ const supabasePublishableKey =
 export const env = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
   supabasePublishableKey,
+  /** Solo servidor. Opcionales: sin ellas el demo bot corre en modo guionado. */
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? '',
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://galfredev.com',
   whatsappUrl:
     process.env.NEXT_PUBLIC_WHATSAPP_URL ??

@@ -49,6 +49,7 @@ const UI_COPY = {
     sendLabel: 'Enviar mensaje',
     messagesLabel: 'Conversación con el bot demo',
     typingLabel: 'Escribiendo…',
+    liveBadge: 'demo en vivo',
   },
   en: {
     online: 'online',
@@ -56,6 +57,7 @@ const UI_COPY = {
     sendLabel: 'Send message',
     messagesLabel: 'Conversation with the demo bot',
     typingLabel: 'Typing…',
+    liveBadge: 'live demo',
   },
 } as const
 
@@ -131,6 +133,9 @@ export function BotChat({
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [typing, setTyping] = useState<ChatRole | null>(null)
   const [input, setInput] = useState('')
+  // Modo de la última respuesta del bot: con 'live' mostramos el badge
+  // «demo en vivo» en el header; la degradación al guion lo apaga.
+  const [lastReplyMode, setLastReplyMode] = useState<'live' | 'scripted' | null>(null)
   // Señal de hidratación observable (data-ready): los e2e tipean recién cuando
   // los handlers existen — sin esto, bajo carga el fill+Enter llega antes de
   // hidratar y el mensaje se pierde (flake real reproducido en review).
@@ -232,19 +237,21 @@ export function BotChat({
       setTyping('bot')
 
       try {
-        const { reply } = sendMessage
+        const { reply, mode } = sendMessage
           ? await sendMessage(history)
-          : await new Promise<{ reply: string; mode: 'scripted' }>((resolve) =>
+          : await new Promise<{ reply: string; mode: 'live' | 'scripted' }>((resolve) =>
               setTimeout(
                 () => resolve({ reply: scriptedReply(locale, text), mode: 'scripted' }),
                 randomReplyDelay(),
               ),
             )
         appendMessage('bot', reply)
+        setLastReplyMode(mode)
       } catch {
         // Si el transporte real falla, degradamos al guion local: la demo
         // nunca queda muda.
         appendMessage('bot', scriptedReply(locale, text))
+        setLastReplyMode('scripted')
       } finally {
         setTyping(null)
       }
@@ -282,9 +289,19 @@ export function BotChat({
             {copy.online}
           </p>
         </div>
-        <span className="ml-auto hidden font-mono text-[10px] uppercase tracking-[0.3em] text-white/30 sm:block">
-          demo
-        </span>
+        {lastReplyMode === 'live' ? (
+          <span
+            data-testid="bot-live-badge"
+            className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(61,221,196,0.08)] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#7fe8d6]"
+          >
+            <span aria-hidden className="size-1.5 rounded-full bg-[#3dddc4] motion-safe:animate-pulse" />
+            {copy.liveBadge}
+          </span>
+        ) : (
+          <span className="ml-auto hidden font-mono text-[10px] uppercase tracking-[0.3em] text-white/30 sm:block">
+            demo
+          </span>
+        )}
       </div>
 
       {/* Mensajes */}

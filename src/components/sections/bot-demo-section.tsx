@@ -1,4 +1,5 @@
-import { BotChat, type AutoplayMessage } from '@/components/demos/bot-chat'
+import type { AutoplayMessage } from '@/components/demos/bot-chat'
+import { BotChatLive } from '@/components/demos/bot-chat-live'
 import { Reveal } from '@/components/motion/reveal'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { getDictionary } from '@/lib/i18n'
@@ -41,8 +42,9 @@ const SUGGESTIONS: Record<Locale, string[]> = {
 }
 
 /**
- * Server component: demo interactiva del bot en modo guionado (Task 18 la
- * conecta a la API real). Ventana de chat centrada con autoplay + chips.
+ * Server component: demo interactiva del bot conectada a /api/demo-bot vía
+ * BotChatLive (live con Claude si hay credenciales; si no, guionado — y ante
+ * cualquier falla degrada al guion local). Chat centrado con autoplay + chips.
  */
 export function BotDemoSection({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale)
@@ -66,7 +68,7 @@ export function BotDemoSection({ locale }: { locale: Locale }) {
             aria-hidden
             className="pointer-events-none absolute -inset-x-16 -top-14 bottom-0 -z-10 bg-[radial-gradient(60%_55%_at_50%_30%,rgba(61,221,196,0.12),transparent_70%)] blur-2xl"
           />
-          <BotChat
+          <BotChatLive
             locale={locale}
             inputPlaceholder={dict.home.botDemo.inputPlaceholder}
             limitNote={dict.home.botDemo.limitNote}
