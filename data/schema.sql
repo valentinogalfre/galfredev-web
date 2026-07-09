@@ -384,6 +384,8 @@ create table if not exists public.demo_bot_usage (
 );
 alter table public.demo_bot_usage enable row level security;
 
+create index if not exists demo_bot_usage_ip_day_idx on public.demo_bot_usage (ip, day);
+
 comment on table public.demo_bot_usage is
   'Contador diario de mensajes por visitante para el rate limit del demo bot en modo live.';
 

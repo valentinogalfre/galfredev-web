@@ -17,6 +17,16 @@ const MAX_MESSAGES = 30
 const CLAUDE_HISTORY_WINDOW = 10
 /** Timeout defensivo de la llamada a Anthropic: si tarda más, degradamos al guion. */
 const ANTHROPIC_TIMEOUT_MS = 20_000
+/**
+ * Cap secundario ANTI-ROTACIÓN: el sessionId lo elige el cliente, así que el
+ * límite por visitante solo no alcanza (rotar uuids = cuota infinita). Una
+ * misma IP no puede abrir más de N sesiones live por día; pasado el cap,
+ * respondemos guionado. En Vercel el primer hop de x-forwarded-for lo setea
+ * la plataforma (no spoofeable).
+ */
+const IP_DAILY_SESSION_CAP = 10
+/** Largo máx. de una IP válida (IPv6 completa = 45 chars). */
+const MAX_IP_CHARS = 45
 
 type ChatTurn = { role: 'user' | 'assistant'; content: string }
 
@@ -97,7 +107,23 @@ export async function POST(request: Request) {
     })
 
     const day = new Date().toISOString().slice(0, 10) // hoy en UTC
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
+    const rawIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? ''
+    // Solo guardamos algo con pinta de IP (el header es texto arbitrario).
+    const ip = rawIp && rawIp.length <= MAX_IP_CHARS && /^[0-9a-fA-F:.]+$/.test(rawIp) ? rawIp : null
+
+    // Cap por IP ANTES del upsert: además de cortar la rotación de sessionIds,
+    // evita que el ataque llene la tabla de filas basura.
+    if (ip) {
+      const { count, error: capError } = await supabase
+        .from('demo_bot_usage')
+        .select('id', { count: 'exact', head: true })
+        .eq('ip', ip)
+        .eq('day', day)
+      if (capError) throw capError
+      if ((count ?? 0) >= IP_DAILY_SESSION_CAP) {
+        return scripted(0)
+      }
+    }
 
     const { data: row, error: usageError } = await supabase
       .from('demo_bot_usage')
