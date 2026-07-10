@@ -9,10 +9,17 @@ import { ProcessSection } from '@/components/sections/process-section'
 import { ProjectsSection } from '@/components/sections/projects-section'
 import { RoiCalculatorSection } from '@/components/sections/roi-calculator-section'
 import { ServicesSection } from '@/components/sections/services-section'
+import { getDictionary } from '@/lib/i18n'
 import { hreflangAlternates } from '@/lib/seo'
 import type { Metadata } from 'next'
 
+const homeSeo = getDictionary('es').home.seo
+
 export const metadata: Metadata = {
+  // El title del hero nuevo (el default del layout queda como fallback de
+  // páginas sin metadata propia: login, perfil, etc.).
+  title: { absolute: homeSeo.title },
+  description: homeSeo.description,
   alternates: {
     canonical: '/',
     ...hreflangAlternates('/', '/'),

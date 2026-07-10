@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { getDictionary } from '../src/lib/i18n'
 
 // Contrato: cada página espejada declara sus alternates es↔en (hreflang) para
 // que Google no trate /en como contenido duplicado y sirva el idioma correcto.
@@ -60,4 +61,11 @@ test('OG image de servicio responde', async ({ page, request, baseURL }) => {
   const res = await request.get(pathname + search)
   expect(res.status()).toBe(200)
   expect(res.headers()['content-type']).toContain('image')
+})
+
+test('la home usa el title del rediseño (no el default del layout)', async ({ page }) => {
+  await page.goto('/')
+  await expect(page).toHaveTitle(getDictionary('es').home.seo.title)
+  await page.goto('/en')
+  await expect(page).toHaveTitle(getDictionary('en').home.seo.title)
 })
