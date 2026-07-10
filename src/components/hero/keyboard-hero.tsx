@@ -1,6 +1,7 @@
 'use client'
 
 import { detectTier, type GpuTier } from '@/components/three/keyboard/quality'
+import { cn } from '@/lib/utils'
 import { motion, useMotionValue, useTransform, type MotionValue } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { Component, useCallback, useEffect, useState, type ReactNode } from 'react'
@@ -12,12 +13,20 @@ const KeyboardScene = dynamic(
   { ssr: false },
 )
 
-/** ms post-load+idle antes de montar la escena WebGL (deja asentar la página).
- *  Corto a propósito: cuanto antes ocurra el swap, menos chance de que el
- *  visitante ya esté mirando fijo el teclado cuando cambia. */
-const UPGRADE_SETTLE_MS = 1200
-/** Apagado del CSS antes de encender el WebGL (swap secuencial, sin overlap). */
-const CSS_OUT_MS = 180
+/** ms post-load+idle antes de montar la escena WebGL. Corto: el tier ya se
+ *  detectó al hidratar y el HDR viene calentándose en paralelo — este settle
+ *  solo evita que la eval de three (~390 KB) caiga en plena hidratación
+ *  (long tasks que hundían TBT/LCP en mobile; gate de Lighthouse ≥90). */
+const MOUNT_SETTLE_MS = 300
+/** Techo del requestIdleCallback del montaje: si el main thread no se libera
+ *  solo, se monta igual a los 800 ms (el settle corre después). */
+const MOUNT_IDLE_TIMEOUT_MS = 800
+/** Presupuesto de materialización: canvas montado sin primer frame con assets
+ *  (red muy lenta, HDR caído) → se descarta el WebGL y entra el teclado CSS.
+ *  El hero NUNCA queda sin teclado. */
+const WEBGL_READY_TIMEOUT_MS = 10_000
+/** Duración de la entrada del teclado WebGL (fade + scale + y). */
+const WEBGL_IN_MS = 550
 
 /**
  * Si el render WebGL explota (driver raro, shader que no compila), el hero no
@@ -55,9 +64,20 @@ type KeyboardHeroProps = {
 }
 
 /**
- * Orquestador del teclado del hero: arranca SIEMPRE con el teclado CSS (barato,
- * SSR-safe), detecta tier de GPU en idle y, si alcanza, monta la escena WebGL
- * con crossfade suave cuando esta ya renderizó su primer frame con assets.
+ * Orquestador del teclado del hero — UNA sola materialización, nunca dos
+ * teclados. El SSR renderiza el teclado CSS OCULTO (decorativo aria-hidden; el
+ * LCP es el h1) y el tier se detecta apenas hidrata (~1 ms):
+ *
+ * - tier low / sin WebGL / reduced-motion → el CSS hace fade-in inmediato y es
+ *   el ÚNICO teclado que se ve.
+ * - tier mid/high → el CSS no se muestra nunca: mientras el WebGL carga se ve
+ *   el aura (halo teal elíptico respirando, como si el teclado estuviera por
+ *   encenderse) y, con el primer frame con assets, el teclado WebGL hace su
+ *   única entrada. El HDR (1.5 MB) se calienta por red apenas se conoce el
+ *   tier; el MONTAJE del canvas espera a load+idle (la eval de three no debe
+ *   pisar la hidratación).
+ * - si a los 10 s de montado el canvas no llegó el primer frame → se descarta
+ *   el WebGL y entra el CSS: el hero nunca queda vacío.
  */
 export function KeyboardHero({
   typing,
@@ -66,20 +86,24 @@ export function KeyboardHero({
   scrollProgress,
 }: KeyboardHeroProps) {
   const [tier, setTier] = useState<GpuTier | null>(null)
+  const [mounted, setMounted] = useState(false)
   const [ready, setReady] = useState(false)
-  // Swap SECUENCIAL (fix del reporte «dos teclados superpuestos»): al estar
-  // listo el WebGL, primero se apaga el CSS (CSS_OUT_MS) y recién entonces se
-  // enciende el canvas con un fade corto — nunca se ven los dos a la vez.
-  const [webglIn, setWebglIn] = useState(false)
-  const [cssGone, setCssGone] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [auraGone, setAuraGone] = useState(false)
 
-  // El upgrade a WebGL (~390 KB de three/r3f + HDR de 1.5 MB) NO compite con la
-  // carga inicial: espera a window.load + idle + un colchón. Antes se disparaba
-  // en el primer requestIdleCallback y su eval caía en plena hidratación —
-  // long tasks que hundían TBT/LCP en mobile (Lighthouse 51 → esto lo saca de
-  // la ventana de métricas y, más importante, de la carga real del usuario).
+  // Tier INMEDIATO al hidratar (matchMedia + getContext de prueba, ~1 ms):
+  // define qué teclado se materializa sin esperar a load/idle — así el CSS
+  // jamás se muestra "de puente" en máquinas que van a ver el WebGL.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- detección síncrona intencional: decide el primer paint del teclado
+    setTier(detectTier())
+  }, [])
+
+  // tier mid/high: (a) calentar YA el HDR por red (solo fetch, no evalúa JS);
+  // (b) montar el canvas recién en load + idle + settle corto.
+  useEffect(() => {
+    if (tier !== 'high' && tier !== 'mid') return
+    void fetch('/hdr/city.hdr', { cache: 'force-cache' }).catch(() => {})
     let cancelled = false
     let timer: number | undefined
     let idle: number | undefined
@@ -88,13 +112,13 @@ export function KeyboardHero({
       cancelIdleCallback?: (id: number) => void
     }
     const fire = () => {
-      if (!cancelled) setTier(detectTier())
+      if (!cancelled) setMounted(true)
     }
     const afterLoad = () => {
       const settle = () => {
-        timer = window.setTimeout(fire, UPGRADE_SETTLE_MS)
+        timer = window.setTimeout(fire, MOUNT_SETTLE_MS)
       }
-      if (w.requestIdleCallback) idle = w.requestIdleCallback(settle, { timeout: 2000 })
+      if (w.requestIdleCallback) idle = w.requestIdleCallback(settle, { timeout: MOUNT_IDLE_TIMEOUT_MS })
       else settle()
     }
     if (document.readyState === 'complete') afterLoad()
@@ -105,26 +129,34 @@ export function KeyboardHero({
       if (idle !== undefined) w.cancelIdleCallback?.(idle)
       if (timer !== undefined) window.clearTimeout(timer)
     }
-  }, [])
+  }, [tier])
 
-  // Contexto WebGL perdido en runtime: mismo destino que un crash de render —
-  // se desmonta el canvas y vuelve el teclado CSS (webgl=false lo re-renderiza
-  // con opacidad 1 aunque cssGone haya llegado a true).
-  const onContextLost = useCallback(() => setFailed(true), [])
+  // Presupuesto de materialización: canvas montado y sin primer frame a los
+  // 10 s → mismo destino que un crash (failed desmonta el canvas y entra el
+  // CSS). Determinista: un ReadySignal tardío ya no encuentra canvas.
+  useEffect(() => {
+    if (!mounted || ready || failed) return
+    const t = window.setTimeout(() => setFailed(true), WEBGL_READY_TIMEOUT_MS)
+    return () => window.clearTimeout(t)
+  }, [mounted, ready, failed])
 
-  // Secuencia del swap: ready → (CSS se apaga) → webglIn → (canvas fade in) →
-  // cssGone (el CSS apagado se desmonta; ya no aporta nada debajo).
+  // El aura ya cumplió: tras el fade-out (corre en paralelo a la entrada del
+  // WebGL) se desmonta para no dejar animaciones vivas invisibles.
   useEffect(() => {
     if (!ready) return
-    const tIn = window.setTimeout(() => setWebglIn(true), CSS_OUT_MS)
-    const tGone = window.setTimeout(() => setCssGone(true), CSS_OUT_MS + 500)
-    return () => {
-      window.clearTimeout(tIn)
-      window.clearTimeout(tGone)
-    }
+    const t = window.setTimeout(() => setAuraGone(true), WEBGL_IN_MS)
+    return () => window.clearTimeout(t)
   }, [ready])
 
+  // Contexto WebGL perdido en runtime: mismo destino que un crash de render —
+  // se desmonta el canvas y entra el teclado CSS.
+  const onContextLost = useCallback(() => setFailed(true), [])
+
   const webgl = !failed && (tier === 'high' || tier === 'mid')
+  // El CSS se ve SOLO cuando es el teclado definitivo: tier bajo o WebGL caído.
+  const showCss = failed || tier === 'low'
+  // Montado también pre-tier (SSR y primer paint: oculto, opacity 0).
+  const cssMounted = tier === null || showCss
 
   // Salida cinematográfica del fallback CSS: mismo gesto que la cámara WebGL
   // (el teclado se inclina hacia atrás, baja y se achica siguiendo el scroll).
@@ -138,33 +170,41 @@ export function KeyboardHero({
 
   return (
     <div data-testid="keyboard-hero" className="kb-shell relative" aria-hidden="true">
-      {!(webgl && cssGone) && (
-        <div
-          className="absolute inset-0 transition-opacity duration-[180ms] ease-in"
-          style={{ opacity: webgl && ready ? 0 : 1 }}
-        >
-          <motion.div
-            className="h-full w-full"
-            style={{
-              rotateX: cssRotateX,
-              scale: cssScale,
-              y: cssY,
-              transformPerspective: 1200,
-            }}
-          >
-            <KeyboardCss typing={typing} egg={egg} />
-          </motion.div>
+      {cssMounted && (
+        <div className={cn('kb-mask absolute inset-0', showCss ? 'kb-css-in' : 'opacity-0')}>
+          <div className="kb-mask-y h-full w-full">
+            <motion.div
+              className="h-full w-full"
+              style={{
+                rotateX: cssRotateX,
+                scale: cssScale,
+                y: cssY,
+                transformPerspective: 1200,
+              }}
+            >
+              <KeyboardCss typing={typing} egg={egg} />
+            </motion.div>
+          </div>
         </div>
       )}
-      {webgl && (
+      {webgl && !auraGone && (
         <div
-          className="kb-fade-x absolute inset-0 transition-[opacity,transform] duration-[420ms] ease-out"
+          data-testid="keyboard-aura"
+          className="absolute inset-0 transition-opacity duration-[550ms] ease-out"
+          style={{ opacity: ready ? 0 : 1 }}
+        >
+          <div className="kb-aura h-full w-full" />
+        </div>
+      )}
+      {webgl && mounted && (
+        <div
+          className="kb-mask absolute inset-0 transition-[opacity,transform] duration-[550ms] ease-out"
           style={{
-            opacity: webglIn ? 1 : 0,
-            transform: webglIn ? 'scale(1)' : 'scale(0.985)',
+            opacity: ready ? 1 : 0,
+            transform: ready ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.97)',
           }}
         >
-          <div className="kb-fade-y h-full w-full">
+          <div className="kb-mask-y h-full w-full">
             <WebglBoundary onError={() => setFailed(true)}>
               <KeyboardScene
                 typing={typing}

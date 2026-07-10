@@ -122,9 +122,29 @@ body::before {
   animation-delay: 0.3s;
 }
 
+/* Variante viewport-triggered (SectionHeading): la línea queda en scaleX(0)
+   —animación pausada en fill backwards— hasta que la sección entra al
+   viewport (data-kicker-reveal='in', una vez). Los usos directos de
+   .section-kicker sin el atributo conservan la animación on-load. */
+.section-kicker[data-kicker-reveal]::after {
+  animation-duration: 0.6s;
+  animation-delay: 0.12s;
+  animation-play-state: paused;
+}
+
+.section-kicker[data-kicker-reveal="in"]::after {
+  animation-play-state: running;
+}
+
 @keyframes kicker-line-in {
   from { transform: scaleX(0); transform-origin: left; }
   to   { transform: scaleX(1); transform-origin: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-kicker::after {
+    animation: none;
+  }
 }
 
 @keyframes marquee {
@@ -209,41 +229,92 @@ body::before {
   height: 360px;
 }
 
-/* Fade en los bordes del canvas WebGL: el halo del bloom se difumina hacia la
-   página en vez de cortarse en el rectángulo del canvas. Dos capas anidadas
-   (horizontal + vertical) = intersección sin depender de mask-composite. */
-.kb-fade-x {
+/* Máscara elíptica sobre las capas del teclado (canvas WebGL y CSS): la luz
+   del bloom/glow muere en un fade circular difuminado — nunca se lee el
+   rectángulo del canvas al iluminarse una tecla. El teclado llena el alto del
+   canvas, así que una elipse pura no puede morir dentro de los 4 bordes sin
+   comerse las teclas: la elipse (cola larga, forma redonda, mata laterales y
+   esquinas) se INTERSECTA con un fade lineal vertical (.kb-mask-y, capa
+   anidada) que apaga el residuo en los bordes superior/inferior. */
+.kb-mask {
+  -webkit-mask-image: radial-gradient(
+    ellipse 62% 88% at 50% 54%,
+    #000 52%,
+    transparent 79%
+  );
+  mask-image: radial-gradient(
+    ellipse 62% 88% at 50% 54%,
+    #000 52%,
+    transparent 79%
+  );
+}
+
+.kb-mask-y {
   -webkit-mask-image: linear-gradient(
-    to right,
+    to bottom,
     transparent,
-    #000 44px,
-    #000 calc(100% - 44px),
+    #000 14%,
+    #000 87%,
     transparent
   );
   mask-image: linear-gradient(
-    to right,
+    to bottom,
     transparent,
-    #000 44px,
-    #000 calc(100% - 44px),
+    #000 14%,
+    #000 87%,
     transparent
   );
 }
 
-.kb-fade-y {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 36px,
-    #000 calc(100% - 20px),
-    transparent
+/* Mobile: el teclado casi llena el ancho del shell (que además sobresale del
+   viewport por el -mx-10 del wrapper: los bordes laterales quedan offscreen).
+   Núcleo opaco más ancho para no comerse las teclas de los extremos. */
+@media (max-width: 640px) {
+  .kb-mask {
+    -webkit-mask-image: radial-gradient(
+      ellipse 75% 92% at 50% 54%,
+      #000 62%,
+      transparent 96%
+    );
+    mask-image: radial-gradient(
+      ellipse 75% 92% at 50% 54%,
+      #000 62%,
+      transparent 96%
+    );
+  }
+}
+
+/* Fade-in del teclado CSS cuando ES el teclado definitivo (tier low o WebGL
+   caído). Animation —no transition— para cubrir también el remonte tras un
+   context lost tardío. */
+.kb-css-in {
+  animation: kb-css-in 300ms ease-out both;
+}
+
+@keyframes kb-css-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Aura placeholder (tier mid/high, WebGL cargando): halo teal elíptico —misma
+   forma que .kb-mask— respirando lento, como si el teclado estuviera por
+   encenderse. Se funde cuando el WebGL materializa. */
+.kb-aura {
+  background: radial-gradient(
+    ellipse 44% 34% at 50% 54%,
+    rgba(61, 221, 196, 0.17),
+    rgba(42, 145, 132, 0.11) 42%,
+    rgba(31, 127, 115, 0.045) 68%,
+    transparent 88%
   );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 36px,
-    #000 calc(100% - 20px),
-    transparent
-  );
+  filter: blur(18px);
+  animation: kb-aura-breathe 2.8s ease-in-out infinite;
+}
+
+@keyframes kb-aura-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.72; }
+  50% { transform: scale(1.07); opacity: 1; }
 }
 
 .kb-stage {
@@ -432,12 +503,51 @@ body::before {
   .kb-float,
   .kb-key[data-lit],
   .kb-egg .kb-key,
-  .kb-typed::after {
+  .kb-typed::after,
+  .kb-aura,
+  .kb-css-in {
     animation: none;
   }
 
   .kb-key {
     transition: none;
+  }
+}
+
+/* ---------- Hero: scroll-hint (mouse pill) ---------- */
+
+/* Indicador de scroll bajo el teclado: pill de mouse con un punto teal que cae
+   en loop. Decorativo (aria-hidden); se desvanece con el primer scroll. */
+.scroll-hint-pill {
+  display: flex;
+  justify-content: center;
+  width: 21px;
+  height: 34px;
+  padding-top: 7px;
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+}
+
+.scroll-hint-dot {
+  width: 3px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(61, 221, 196, 0.9);
+  box-shadow: 0 0 8px rgba(61, 221, 196, 0.55);
+  animation: scroll-hint-drop 2.2s ease-in-out infinite;
+}
+
+@keyframes scroll-hint-drop {
+  0% { transform: translateY(0); opacity: 0; }
+  22% { opacity: 1; }
+  62% { transform: translateY(11px); opacity: 0; }
+  100% { transform: translateY(11px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint-dot {
+    animation: none;
+    opacity: 0.7;
   }
 }
 

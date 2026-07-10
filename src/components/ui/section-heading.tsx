@@ -1,4 +1,8 @@
+'use client'
+
 import { cn } from '@/lib/utils'
+import { useInView } from 'framer-motion'
+import { useRef } from 'react'
 
 type SectionHeadingProps = {
   eyebrow: string
@@ -13,6 +17,12 @@ export function SectionHeading({
   description,
   align = 'left',
 }: SectionHeadingProps) {
+  // La línea del kicker crece (scaleX 0→1) recién cuando la sección entra al
+  // viewport, una sola vez. El atributo gatea la animación CSS pausada de
+  // .section-kicker[data-kicker-reveal] (reduced-motion la anula: línea fija).
+  const kickerRef = useRef<HTMLParagraphElement>(null)
+  const inView = useInView(kickerRef, { once: true, margin: '0px 0px -10% 0px' })
+
   return (
     <div
       className={cn(
@@ -21,6 +31,8 @@ export function SectionHeading({
       )}
     >
       <p
+        ref={kickerRef}
+        data-kicker-reveal={inView ? 'in' : ''}
         className={cn(
           'section-kicker',
           align === 'center' && 'justify-center',

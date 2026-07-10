@@ -89,7 +89,9 @@ export function SiteFooter({ locale }: { locale: Locale }) {
                 href={item.href}
                 target={item.href.startsWith('mailto:') ? undefined : '_blank'}
                 rel={item.href.startsWith('mailto:') ? undefined : 'noreferrer'}
-                className="w-fit rounded-sm transition hover:text-white"
+                // Hover lift + glow teal sutil, CSS puro (motion-safe respeta
+                // reduced-motion: el lift se anula, el color/glow quedan).
+                className="w-fit rounded-sm transition-[color,transform,text-shadow] duration-300 hover:text-[#9beedd] hover:[text-shadow:0_0_14px_rgba(61,221,196,0.45)] motion-safe:hover:-translate-y-0.5"
               >
                 {item.label}
               </a>
