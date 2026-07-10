@@ -1,6 +1,7 @@
 'use client'
 
 import { Marquee } from '@/components/motion/marquee'
+import { cn } from '@/lib/utils'
 import {
   AnimatePresence,
   motion,
@@ -62,6 +63,18 @@ export function HeroClient({
     })
     io.observe(el)
     return () => io.disconnect()
+  }, [])
+
+  // Scroll-hint: visible hasta el primer scroll real (>60px); no vuelve.
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > 60) setScrolled(true)
+    }
+    // Semilla: si la página ya carga scrolleada (bfcache/anchor) no se muestra.
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   const { liveKey, buffer, typingPaused, pressSeq, egg } = usePhysicalKeys(inView)
@@ -204,6 +217,21 @@ export function HeroClient({
           >
             {soundOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
           </button>
+        </div>
+
+        {/* Scroll-hint: mouse-pill decorativa que invita a bajar; se desvanece
+            con el primer scroll (>60px) y no vuelve. Icónica, sin copy. */}
+        <div
+          aria-hidden="true"
+          style={{ animationDelay: '0.55s' }}
+          className={cn(
+            'hero-enter-fade mt-auto flex justify-center pt-6 transition-opacity duration-500',
+            scrolled && 'pointer-events-none opacity-0',
+          )}
+        >
+          <div className="scroll-hint-pill">
+            <span className="scroll-hint-dot" />
+          </div>
         </div>
       </div>
 

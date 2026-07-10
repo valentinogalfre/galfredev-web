@@ -18,7 +18,8 @@ Checklist manual para validar la web de GalfreDev antes de cerrar release, abrir
 
 ## 2. Hero y teclado 3D
 
-- [ ] El teclado CSS aparece de inmediato; el 3D hace crossfade suave cuando carga (sin flash ni salto).
+- [ ] Una sola materialización del teclado: en tier mid/high se ve el aura teal respirando y el 3D entra directo (el teclado CSS NUNCA aparece de puente); en tier low el CSS hace fade-in inmediato.
+- [ ] Al presionar una tecla (física o click) la luz del glow/bloom muere en fade elíptico — no se lee ningún borde recto del canvas.
 - [ ] El loop de tipeo escribe palabras en el teclado y en la línea tipeada.
 - [ ] **Device real iOS (Safari):** el teclado 3D carga, no recalienta, y el scroll de salida es fluido.
 - [ ] **Device real Android (Chrome):** ídem — en gama baja debe quedar el teclado CSS (tier `low`), no un canvas trabado.

@@ -1,23 +1,34 @@
 import { test, expect } from '@playwright/test'
 
-test('el hero es visible sin esperar al bundle 3D', async ({ page }) => {
+test('el hero es visible sin esperar al bundle 3D (.hdr abortado → CSS opaco)', async ({
+  page,
+}) => {
+  // Presupuesto propio: el fallback puede llegar por el presupuesto de
+  // materialización de 10 s (mount diferido a load+idle + 10 s + fade), y en
+  // dev el bundle de three compila lento la primera vez.
+  test.setTimeout(90_000)
   // El .hdr es el asset crítico dentro del Suspense de la escena WebGL:
-  // abortarlo simula "el 3D nunca llega" → el crossfade no ocurre nunca y el
-  // hero debe quedar completo y usable sobre el teclado CSS.
+  // abortarlo simula "el 3D nunca llega" → o el loader revienta (boundary) o
+  // vence el presupuesto de materialización — en ambos casos el hero debe
+  // quedar completo y usable sobre el teclado CSS. NUNCA vacío.
   await page.route('**/*.hdr', (route) => route.abort())
   await page.goto('/')
   await expect(page.getByText('Software que')).toBeVisible()
   await expect(page.getByTestId('keyboard-hero')).toBeVisible()
-  // El teclado visible es el CSS (el deck existe y no fue desmontado)…
-  await expect(page.locator('.kb-deck')).toBeVisible()
-  // …y su capa sigue opaca: sin primer frame WebGL no hay crossfade que la apague.
-  const cssLayerOpacity = await page
-    .locator('[data-testid="keyboard-hero"] > div')
-    .first()
-    .evaluate((el) => getComputedStyle(el).opacity)
-  expect(Number(cssLayerOpacity)).toBe(1)
-  // El loop de tipeo corre igual sin 3D.
+  // El loop de tipeo corre desde el arranque, con o sin 3D.
   await expect(page.getByTestId('typed-line')).not.toHaveText('', { timeout: 15_000 })
+  // El teclado CSS entra como definitivo (clase kb-css-in) y queda OPACO.
+  await page.waitForFunction(
+    () => {
+      const layer = document.querySelector('[data-testid="keyboard-hero"] .kb-css-in')
+      return layer !== null && getComputedStyle(layer).opacity === '1'
+    },
+    undefined,
+    { timeout: 60_000 },
+  )
+  await expect(page.locator('.kb-deck')).toBeVisible()
+  // El canvas fallido se desmonta: un solo teclado en pantalla.
+  await expect(page.locator('[data-testid="keyboard-hero"] canvas')).toHaveCount(0)
 })
 
 test('con WebGL roto, el hero muestra el fallback CSS', async ({ page }) => {
@@ -36,14 +47,56 @@ test('con WebGL roto, el hero muestra el fallback CSS', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByTestId('keyboard-hero')).toBeVisible()
   await expect(page.locator('.kb-deck')).toBeVisible()
-  // Margen holgado: el upgrade WebGL es diferido (load + idle + 2.5 s) — si
+  // tier low se resuelve al hidratar → el CSS hace su fade-in inmediato (300ms)
+  // y queda opaco: es el único teclado que ve este usuario.
+  await page.waitForFunction(
+    () => {
+      const layer = document.querySelector('[data-testid="keyboard-hero"] .kb-css-in')
+      return layer !== null && getComputedStyle(layer).opacity === '1'
+    },
+    undefined,
+    { timeout: 15_000 },
+  )
+  // Margen holgado: el montaje WebGL es diferido (load + idle + settle) — si
   // fuese a montar el canvas, para este punto ya estaría montado.
   await page.waitForTimeout(7000)
   await expect(page.locator('canvas')).toHaveCount(0)
 })
 
+test('tier WebGL: una sola materialización — el teclado CSS nunca se monta', async ({
+  page,
+}) => {
+  // En dev el bundle de three compila lento: presupuesto propio.
+  test.setTimeout(60_000)
+  await page.goto('/')
+  const canvas = page.locator('[data-testid="keyboard-hero"] canvas')
+  try {
+    await canvas.waitFor({ state: 'attached', timeout: 20_000 })
+  } catch {
+    test.skip(true, 'WebGL no disponible en este entorno: no hay materialización que medir')
+  }
+  // Con tier mid/high el CSS se desmonta al hidratar y NO vuelve (salvo fallo):
+  // el visitante ve aura → teclado WebGL. Jamás dos teclados.
+  await expect(page.locator('.kb-deck')).toHaveCount(0)
+  // La materialización llega: la capa del canvas termina opaca…
+  await page.waitForFunction(
+    () => {
+      const el = document
+        .querySelector('[data-testid="keyboard-hero"] canvas')
+        ?.closest('.kb-mask')
+      return !!el && getComputedStyle(el).opacity === '1'
+    },
+    undefined,
+    { timeout: 30_000 },
+  )
+  // …el aura ya cumplió y se desmontó…
+  await expect(page.getByTestId('keyboard-aura')).toHaveCount(0, { timeout: 5_000 })
+  // …y el CSS sigue sin existir: nunca hubo doble teclado.
+  await expect(page.locator('.kb-deck')).toHaveCount(0)
+})
+
 test('GPU en cero fuera de viewport: el rAF driver se detiene', async ({ page }) => {
-  // El upgrade WebGL es diferido (load + idle + settle) y en dev el bundle de
+  // El montaje WebGL es diferido (load + idle + settle) y en dev el bundle de
   // three compila lento: presupuesto propio.
   test.setTimeout(60_000)
   // Instrumentación DESDE el test (funciona contra dev Y prod, sin tocar el
