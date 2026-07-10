@@ -1,22 +1,30 @@
 import { getDictionary } from '@/lib/i18n'
 import type { Locale, ServiceId } from '@/types/content'
+import { MicroDemoLoader, type LiveDemoId } from './loader'
 
 type MicroDemoSlotProps = {
   id: ServiceId
   locale: Locale
 }
 
+/** Demos live existentes; el resto conserva el placeholder (Task 21). */
+function liveDemoId(id: ServiceId): LiveDemoId | null {
+  return id === 'bots-whatsapp' || id === 'webs' || id === 'apps' ? id : null
+}
+
 /**
- * Slot de la micro-demo por servicio. HOY es un placeholder visual (Task 20
- * lo reemplaza por el switch real de demos interactivas por ServiceId).
- * Contrato estable para ese reemplazo: props { id, locale } y
- * data-testid="micro-demo-slot" en el elemento raíz.
+ * Slot de la micro-demo por servicio: switch real de demos interactivas
+ * (bots-whatsapp / webs / apps) con lazy-load por chunk; automatizaciones-ia
+ * y software-a-medida conservan el placeholder hasta Task 21.
+ * Contrato estable: props { id, locale }, data-testid="micro-demo-slot" en el
+ * elemento raíz y data-testid="micro-demo" en la raíz de cada demo live.
  *
  * El heading (demoTitle + demoHint) vive en ServicePage, justo arriba del
- * slot — acá solo se reserva el espacio con estética de la marca.
+ * slot — acá el shell solo repite el nombre en la barra tipo ventana.
  */
 export function MicroDemoSlot({ id, locale }: MicroDemoSlotProps) {
   const service = getDictionary(locale).services[id]
+  const demoId = liveDemoId(id)
   const note = locale === 'es' ? 'Demo interactiva' : 'Interactive demo'
   const soon =
     locale === 'es'
@@ -59,12 +67,18 @@ export function MicroDemoSlot({ id, locale }: MicroDemoSlotProps) {
         </span>
       </div>
 
-      <div className="relative flex min-h-[230px] flex-col items-center justify-center gap-4 px-6 py-14 text-center sm:min-h-[280px]">
-        <span className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.12)] px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#8ceada] sm:text-[11px]">
-          {note}
-        </span>
-        <p className="max-w-sm text-sm leading-7 text-white/55">{soon}</p>
-      </div>
+      {demoId ? (
+        <div className="relative">
+          <MicroDemoLoader id={demoId} locale={locale} />
+        </div>
+      ) : (
+        <div className="relative flex min-h-[230px] flex-col items-center justify-center gap-4 px-6 py-14 text-center sm:min-h-[280px]">
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.12)] px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#8ceada] sm:text-[11px]">
+            {note}
+          </span>
+          <p className="max-w-sm text-sm leading-7 text-white/55">{soon}</p>
+        </div>
+      )}
     </div>
   )
 }
