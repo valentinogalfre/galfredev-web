@@ -11,8 +11,10 @@ import {
   useState,
 } from 'react'
 
+// text-base (16px): por debajo de 16px iOS Safari hace auto-zoom al enfocar
+// el campo — en el form de conversión principal eso es un salto de layout.
 const fieldClassName =
-  'w-full rounded-[22px] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-white outline-none transition placeholder:text-white/24 focus:border-[var(--color-accent)] focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-70'
+  'w-full rounded-[22px] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-base text-white outline-none transition placeholder:text-white/24 focus:border-[var(--color-accent)] focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-70'
 
 type FieldShellProps = {
   label: string

@@ -85,17 +85,11 @@ body::before {
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 92%);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
+/* Resets de <a> y form controls: los cubre el preflight de Tailwind v4
+   (color/text-decoration/font inherit en @layer base). Duplicarlos acá SIN
+   @layer los ponía por encima de TODAS las utilities en la cascada y mataba
+   silenciosamente cualquier utility de color o tipografía aplicada a anchors
+   y controles de formulario. */
 
 :focus-visible {
   outline: 2px solid rgba(61, 221, 196, 0.92);

@@ -49,11 +49,15 @@ test('sitemap bilingüe completo', async ({ request }) => {
 // Contrato: cada servicio/proyecto tiene su placa OG propia generada por slug.
 // Next 16 sirve la ruta file-convention con sufijo hasheado (opengraph-image-xxxx),
 // así que seguimos la URL real que emite el meta og:image — la que fetchean los crawlers.
-test('OG image de servicio responde', async ({ page, request }) => {
+test('OG image de servicio responde', async ({ page, request, baseURL }) => {
   await page.goto('/servicios/bots-whatsapp')
   const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content')
   expect(ogImage).toContain('/servicios/bots-whatsapp/opengraph-image')
-  const res = await request.get(ogImage as string)
+  // En build de prod metadataBase apunta al dominio público (galfredev.com):
+  // lo que valida ESTE build es que la ruta emitida resuelva acá, no en el
+  // deploy viejo — fetcheamos path+query contra el server local.
+  const { pathname, search } = new URL(ogImage as string, baseURL)
+  const res = await request.get(pathname + search)
   expect(res.status()).toBe(200)
   expect(res.headers()['content-type']).toContain('image')
 })

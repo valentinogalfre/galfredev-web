@@ -184,7 +184,7 @@ export function LoginPanel() {
                 }}
                 placeholder="tu@empresa.com"
                 autoComplete="email"
-                className="w-full bg-transparent text-sm outline-none placeholder:text-white/28"
+                className="w-full bg-transparent text-base outline-none placeholder:text-white/28"
               />
             </div>
           </label>

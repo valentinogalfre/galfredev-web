@@ -12,7 +12,7 @@ import type { GpuTier } from './quality'
 
 declare global {
   interface Window {
-    /** Solo en development: frames pedidos por el RenderDriver (QA manual/e2e). */
+    /** Solo en development: frames pedidos por el RenderDriver (QA manual). */
     __kbFrames?: number
   }
 }
@@ -95,7 +95,8 @@ function RenderDriver({ active }: { active: boolean }) {
     const loop = () => {
       invalidate()
       if (process.env.NODE_ENV === 'development') {
-        // Contador observable para QA (e2e/manual): NO se expone en prod.
+        // Contador observable para QA manual: NO se expone en prod (el e2e
+        // cuenta draw calls WebGL desde el test, sin depender de esto).
         window.__kbFrames = (window.__kbFrames ?? 0) + 1
       }
       raf = requestAnimationFrame(loop)

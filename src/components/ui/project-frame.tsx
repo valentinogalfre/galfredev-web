@@ -344,7 +344,7 @@ export function ProjectFrame({ project, kind, captureAlt }: ProjectFrameProps) {
           <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]/80" />
         </div>
         <div className="flex min-w-0 flex-1 justify-center">
-          <span className="truncate rounded-full border border-white/[0.07] bg-white/[0.04] px-4 py-1 font-mono text-[10px] tracking-wide text-white/45">
+          <span className="truncate rounded-full border border-white/[0.07] bg-white/[0.04] px-4 py-1 font-mono text-[10px] tracking-wide text-white/55">
             {BROWSER_URLS[project.id] ?? 'galfredev.com'}
           </span>
         </div>

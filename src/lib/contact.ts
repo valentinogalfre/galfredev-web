@@ -58,7 +58,7 @@ const leadPrimaryNeedLabelMap = new Map<string, string>(
  * Mensajes por defecto (es): los usa la API (/api/lead) tal cual; el form
  * client pasa los del diccionario del locale activo.
  */
-export const defaultLeadValidationMessages: LeadValidationMessages = {
+const defaultLeadValidationMessages: LeadValidationMessages = {
   fullNameRequired: 'Necesitamos tu nombre para registrar la consulta.',
   fullNameTooLong: 'Usá un nombre un poco más corto.',
   emailRequired: 'Necesitamos un email para responderte.',
@@ -118,7 +118,7 @@ export function createInitialLeadFormState(): LeadFormState {
   }
 }
 
-export function getLeadPrimaryNeedLabel(value: string) {
+function getLeadPrimaryNeedLabel(value: string) {
   return leadPrimaryNeedLabelMap.get(value) ?? value
 }
 

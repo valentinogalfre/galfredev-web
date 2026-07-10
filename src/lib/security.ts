@@ -1,5 +1,3 @@
-import { env } from '@/lib/env'
-
 const SOURCE_PATTERN = /^[a-z0-9][a-z0-9-_]{0,63}$/i
 
 export function isSameOriginRequest(request: Request) {
@@ -51,12 +49,4 @@ export function getSafeAuthErrorMessage(context: 'otp' | 'oauth') {
 
 export function getSafeServerErrorMessage() {
   return 'Ocurrió un problema interno. Probá de nuevo en unos segundos.'
-}
-
-export function getSiteOrigin() {
-  try {
-    return new URL(env.siteUrl).origin
-  } catch {
-    return 'https://galfredev.com'
-  }
 }

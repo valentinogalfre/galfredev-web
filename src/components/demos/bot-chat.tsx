@@ -360,7 +360,7 @@ export function BotChat({
                 onFocus={stopAutoplay}
                 autoComplete="off"
                 enterKeyHint="send"
-                className="h-11 min-w-0 flex-1 rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-[rgba(61,221,196,0.45)] focus:bg-white/[0.06]"
+                className="h-11 min-w-0 flex-1 rounded-full border border-white/10 bg-white/[0.04] px-4 text-base text-white placeholder:text-white/35 outline-none transition focus:border-[rgba(61,221,196,0.45)] focus:bg-white/[0.06]"
               />
               <button
                 type="submit"

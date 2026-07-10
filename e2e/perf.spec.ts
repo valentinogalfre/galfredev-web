@@ -46,8 +46,27 @@ test('GPU en cero fuera de viewport: el rAF driver se detiene', async ({ page })
   // El upgrade WebGL es diferido (load + idle + settle) y en dev el bundle de
   // three compila lento: presupuesto propio.
   test.setTimeout(60_000)
-  // window.__kbFrames solo existe en development (el webServer de esta suite
-  // corre `next dev`): cuenta los invalidate() del RenderDriver de la escena.
+  // Instrumentación DESDE el test (funciona contra dev Y prod, sin tocar el
+  // bundle): contamos draw calls WebGL reales. Con frameloop="demand", si el
+  // RenderDriver se cancela dejan de pedirse frames → los draws se aplanan.
+  await page.addInitScript(() => {
+    const w = window as unknown as { __glDraws: number }
+    w.__glDraws = 0
+    const methods = ['drawElements', 'drawArrays', 'drawElementsInstanced', 'drawArraysInstanced']
+    for (const proto of [WebGLRenderingContext.prototype, WebGL2RenderingContext.prototype]) {
+      for (const name of methods) {
+        const target = proto as unknown as Record<string, (...a: unknown[]) => unknown>
+        const original = target[name]
+        if (typeof original !== 'function') continue
+        target[name] = function (...args: unknown[]) {
+          w.__glDraws += 1
+          return original.apply(this, args)
+        }
+      }
+    }
+  })
+  const glDraws = () =>
+    page.evaluate(() => (window as unknown as { __glDraws?: number }).__glDraws ?? 0)
   await page.goto('/')
   const canvas = page.locator('[data-testid="keyboard-hero"] canvas')
   try {
@@ -55,9 +74,11 @@ test('GPU en cero fuera de viewport: el rAF driver se detiene', async ({ page })
   } catch {
     test.skip(true, 'WebGL no disponible en este entorno: no hay driver que medir')
   }
-  await page.waitForFunction(() => (window.__kbFrames ?? 0) > 0, undefined, {
-    timeout: 10_000,
-  })
+  await page.waitForFunction(
+    () => ((window as unknown as { __glDraws?: number }).__glDraws ?? 0) > 0,
+    undefined,
+    { timeout: 10_000 },
+  )
   // Hero fuera de viewport → inView=false → el rAF loop debe cancelarse.
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
   // Poll-until-stable: bajo carga (suite completa en paralelo) el callback del
@@ -68,16 +89,16 @@ test('GPU en cero fuera de viewport: el rAF driver se detiene', async ({ page })
   let stableWindows = 0
   for (let i = 0; i < 12 && stableWindows < 2; i++) {
     await page.waitForTimeout(500)
-    const now = await page.evaluate(() => window.__kbFrames ?? 0)
+    const now = await glDraws()
     stableWindows = now === last ? stableWindows + 1 : 0
     last = now
   }
-  expect(stableWindows, 'el contador de frames nunca se aplanó: el rAF driver sigue vivo').toBeGreaterThanOrEqual(2)
+  expect(stableWindows, 'el contador de draws nunca se aplanó: el rAF driver sigue vivo').toBeGreaterThanOrEqual(2)
   const after = last
   // Al volver al hero, el driver retoma.
   await page.evaluate(() => window.scrollTo(0, 0))
   await page.waitForFunction(
-    (prev) => (window.__kbFrames ?? 0) > (prev ?? 0),
+    (prev) => ((window as unknown as { __glDraws?: number }).__glDraws ?? 0) > (prev ?? 0),
     after,
     { timeout: 10_000 },
   )

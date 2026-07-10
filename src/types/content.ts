@@ -1,6 +1,5 @@
 export type Locale = 'es' | 'en'
 export const LOCALES: Locale[] = ['es', 'en']
-export const DEFAULT_LOCALE: Locale = 'es'
 
 export type ServiceId =
   | 'bots-whatsapp'
@@ -11,9 +10,9 @@ export type ServiceId =
 
 export type ProjectId = 'pyron' | 'pulso' | 'bot-ime' | 'orbita'
 
-export type Cta = { label: string; href: string }
+type Cta = { label: string; href: string }
 
-export type SeoMeta = { title: string; description: string }
+type SeoMeta = { title: string; description: string }
 
 export type ServiceContent = {
   id: ServiceId
@@ -108,7 +107,7 @@ export type ContactFormContent = {
   }
 }
 
-export type HomeContent = {
+type HomeContent = {
   seo: SeoMeta
   hero: {
     eyebrow: string
@@ -139,7 +138,7 @@ export type HomeContent = {
   }
 }
 
-export type AboutContent = {
+type AboutContent = {
   seo: SeoMeta
   title: string
   story: string[]
@@ -147,7 +146,7 @@ export type AboutContent = {
   certifications: { id: string; title: string; issuer: string; date: string; image: string }[]
 }
 
-export type CommonContent = {
+type CommonContent = {
   brand: string
   nav: { label: string; href: string }[]
   localeSwitch: string
