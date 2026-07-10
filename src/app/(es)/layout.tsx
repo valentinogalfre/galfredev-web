@@ -38,10 +38,14 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/opengraph-image',
+        // OG estática de marca (teclado del hero renderizado): JPEG liviano
+        // (<300KB) porque WhatsApp cachea mal imágenes pesadas. Es el default
+        // global; servicios/proyectos la overridean con su opengraph-image
+        // file-convention por segmento (file-based gana sobre config).
+        url: '/og-home.jpg',
         width: 1200,
         height: 630,
-        alt: 'GalfreDev | Automatización, software a medida e IA aplicada',
+        alt: 'GalfreDev — Software que no duerme. Bots de WhatsApp, webs, apps e IA.',
       },
     ],
   },
@@ -50,7 +54,7 @@ export const metadata: Metadata = {
     title: 'GalfreDev | Automatización, software a medida e IA aplicada',
     description:
       'Automatización para negocios, bots para WhatsApp, integraciones y software a medida en Argentina.',
-    images: ['/opengraph-image'],
+    images: ['/og-home.jpg'],
   },
 }
 
@@ -68,6 +72,9 @@ export default function RootLayout({
             '@id': ORG_ID,
             name: siteCopy.brand,
             url: env.siteUrl,
+            // Google usa logo para el ícono en resultados enriquecidos.
+            logo: `${env.siteUrl}/logo-512.png`,
+            image: `${env.siteUrl}/og-home.jpg`,
             email: siteCopy.email,
             description:
               'Automatización para negocios, bots para WhatsApp, integraciones y software a medida en Argentina.',

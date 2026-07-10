@@ -9,8 +9,8 @@ function clamp(text: string, max = 150) {
 }
 
 /** Placa OG 1200×630 compartida por servicios/proyectos (es y en): misma
- *  estética que el opengraph-image global — azul noche + grilla sutil +
- *  acento cian de marca. */
+ *  estética que la OG estática de la home (public/og-home.jpg) — azul noche +
+ *  grilla sutil + acento cian de marca. */
 export function ogCard({
   title,
   subtitle,
