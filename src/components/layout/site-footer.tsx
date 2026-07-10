@@ -35,15 +35,17 @@ export function SiteFooter({ locale }: { locale: Locale }) {
 
   return (
     <footer className="relative border-t border-[var(--surface-border)] bg-black/40">
-      <div aria-hidden="true" className="border-b border-[var(--surface-border)] py-8">
-        <Marquee speed={38} className="select-none">
+      {/* Banda fina, mismo lenguaje que la marquee del hero (mono chica, sin
+          pausa al hover): la versión serif gigante se sentía enorme y tosca. */}
+      <div aria-hidden="true" className="border-b border-[var(--surface-border)] py-3.5">
+        <Marquee speed={30} pauseOnHover={false} className="select-none">
           {dict.home.hero.typedWords.map((word) => (
             <span
               key={word}
-              className="flex shrink-0 items-baseline gap-8 pr-8 font-serif-display text-5xl tracking-[-0.02em] text-white/8 sm:text-7xl"
+              className="flex shrink-0 items-center gap-6 pr-6 font-mono text-[10px] uppercase tracking-[0.22em] text-white/35 sm:text-[11px]"
             >
               {word}
-              <span className="text-3xl text-[rgba(61,221,196,0.35)] sm:text-4xl">✦</span>
+              <span className="text-[9px] text-[rgba(61,221,196,0.55)]">✦</span>
             </span>
           ))}
         </Marquee>

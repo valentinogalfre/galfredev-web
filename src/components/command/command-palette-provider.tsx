@@ -49,6 +49,12 @@ export function CommandPaletteProvider({ locale }: { locale: Locale }) {
       href: localizedPath(locale, locale === 'es' ? '/sobre-mi' : '/about'),
     },
     {
+      group: 'pages',
+      label: locale === 'es' ? 'Acceso · Mi perfil' : 'Sign in · My profile',
+      href: '/login',
+      keywords: locale === 'es' ? 'login cuenta perfil acceder' : 'login account profile access',
+    },
+    {
       group: 'actions',
       label: dict.common.ctaTalk,
       action: 'whatsapp',

@@ -161,6 +161,9 @@ body::before {
   .animate-marquee:hover {
     animation-play-state: paused;
   }
+  .animate-marquee.marquee-no-pause:hover {
+    animation-play-state: running;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -8,14 +8,25 @@ type MarqueeProps = {
   /** Seconds per full loop. */
   speed?: number
   reverse?: boolean
+  /** Pausar al hover (default). Con false, la banda nunca se detiene. */
+  pauseOnHover?: boolean
   className?: string
 }
 
-export function Marquee({ children, speed = 30, reverse = false, className }: MarqueeProps) {
+export function Marquee({
+  children,
+  speed = 30,
+  reverse = false,
+  pauseOnHover = true,
+  className,
+}: MarqueeProps) {
   return (
     <div className={cn('flex overflow-hidden', className)}>
       <div
-        className="animate-marquee flex w-max shrink-0 items-center"
+        className={cn(
+          'animate-marquee flex w-max shrink-0 items-center',
+          !pauseOnHover && 'marquee-no-pause',
+        )}
         style={
           {
             '--marquee-duration': `${speed}s`,

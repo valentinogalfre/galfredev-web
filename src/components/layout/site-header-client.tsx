@@ -267,6 +267,15 @@ export function SiteHeaderClient({
                     {cta(true)}
                     {localeSwitch(true)}
                   </div>
+                  <Link
+                    href="/login"
+                    prefetch={false}
+                    onClick={() => setOpen(false)}
+                    className="mt-5 inline-flex items-center gap-2 px-2 text-sm text-white/45 transition duration-300 hover:text-white/75"
+                  >
+                    {locale === 'es' ? 'Acceso · Mi perfil' : 'Sign in · My profile'}
+                    <span aria-hidden>→</span>
+                  </Link>
                 </StaggerItem>
               </StaggerReveal>
             </nav>
