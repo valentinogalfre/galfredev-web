@@ -18,11 +18,20 @@ const en = getDictionary('en')
 async function clickLocaleSwitch(page: Page, targetPath: string) {
   const headerSwitch = page.getByTestId('locale-switch').first()
   await expect(headerSwitch).toHaveAttribute('href', targetPath)
-  if (await headerSwitch.isVisible()) {
+  // Rama por viewport (breakpoint lg=1024 de Tailwind), no por isVisible():
+  // sondear visibilidad durante el churn de navegación da falsos positivos.
+  const isDesktop = (page.viewportSize()?.width ?? 1280) >= 1024
+  if (isDesktop) {
     await headerSwitch.click()
     return
   }
-  await page.locator('button[aria-controls="mobile-navigation"]').click()
+  // El click al hamburguesa puede caer antes de la hidratación (SSR ya pinta
+  // el botón pero sin handler): reintentamos click→sheet visible hasta que
+  // React esté vivo.
+  await expect(async () => {
+    await page.locator('button[aria-controls="mobile-navigation"]').click({ timeout: 2_000 })
+    await expect(page.locator('#mobile-navigation')).toBeVisible({ timeout: 1_500 })
+  }).toPass({ timeout: 15_000 })
   await page.locator('#mobile-navigation').getByTestId('locale-switch').click()
 }
 
@@ -34,24 +43,31 @@ test('todas las páginas en responden 200 con lang=en', async ({ page }) => {
     ...Object.values(en.projects).map((p) => `/en/projects/${p.slug}`),
   ]
   for (const p of paths) {
-    const res = await page.goto(p)
+    // En dev, un fetch RSC abortado de la página anterior puede disparar una
+    // navegación fallback que interrumpe este goto: un retry lo absorbe.
+    const res = await page.goto(p).catch(() => page.goto(p))
     expect(res?.status(), p).toBe(200)
     expect(await page.getAttribute('html', 'lang'), p).toBe('en')
   }
 })
 
+// Los links del sitio van con prefetch={false}: la URL recién se commitea
+// cuando llega el payload RSC, y en dev (compilación on-demand + suite en
+// paralelo) eso puede superar los 5s default del expect.
+const NAV_TIMEOUT = { timeout: 15_000 }
+
 test('el switcher es↔en mantiene la página equivalente', async ({ page }) => {
   await page.goto('/servicios/bots-whatsapp')
   await clickLocaleSwitch(page, '/en/services/whatsapp-bots')
-  await expect(page).toHaveURL(/\/en\/services\/whatsapp-bots$/)
+  await expect(page).toHaveURL(/\/en\/services\/whatsapp-bots$/, NAV_TIMEOUT)
   await clickLocaleSwitch(page, '/servicios/bots-whatsapp')
-  await expect(page).toHaveURL(/\/servicios\/bots-whatsapp$/)
+  await expect(page).toHaveURL(/\/servicios\/bots-whatsapp$/, NAV_TIMEOUT)
 })
 
 test('el switcher funciona desde una página de proyecto', async ({ page }) => {
   await page.goto('/en/projects/pyron')
   await clickLocaleSwitch(page, '/proyectos/pyron')
-  await expect(page).toHaveURL(/\/proyectos\/pyron$/)
+  await expect(page).toHaveURL(/\/proyectos\/pyron$/, NAV_TIMEOUT)
 })
 
 test('sin texto español filtrado en /en (muestreo)', async ({ page }) => {
