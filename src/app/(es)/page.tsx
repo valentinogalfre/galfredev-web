@@ -9,11 +9,13 @@ import { ProcessSection } from '@/components/sections/process-section'
 import { ProjectsSection } from '@/components/sections/projects-section'
 import { RoiCalculatorSection } from '@/components/sections/roi-calculator-section'
 import { ServicesSection } from '@/components/sections/services-section'
+import { hreflangAlternates } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   alternates: {
     canonical: '/',
+    ...hreflangAlternates('/', '/'),
   },
 }
 

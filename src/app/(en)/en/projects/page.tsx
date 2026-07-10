@@ -1,4 +1,7 @@
 import { ProjectsIndexPage } from '@/components/pages/projects-index-page'
+import { breadcrumbSchema, JsonLd } from '@/components/seo/json-ld'
+import { env } from '@/lib/env'
+import { hreflangAlternates } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -6,9 +9,22 @@ export const metadata: Metadata = {
   title: 'Projects',
   description:
     'Real cases in production: WhatsApp bots, apps, websites and custom software built by GalfreDev, used every single day.',
-  alternates: { canonical: '/en/projects' },
+  alternates: {
+    canonical: '/en/projects',
+    ...hreflangAlternates('/proyectos', '/projects'),
+  },
 }
 
 export default function Page() {
-  return <ProjectsIndexPage locale="en" />
+  return (
+    <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: 'Home', url: `${env.siteUrl}/en` },
+          { name: 'Projects', url: `${env.siteUrl}/en/projects` },
+        ])}
+      />
+      <ProjectsIndexPage locale="en" />
+    </>
+  )
 }

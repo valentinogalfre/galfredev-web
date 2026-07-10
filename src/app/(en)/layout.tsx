@@ -3,6 +3,7 @@ import { env } from '@/lib/env'
 import { fontVariables } from '@/lib/fonts'
 import { getDictionary } from '@/lib/i18n'
 import { RootShell } from '@/components/layout/root-shell'
+import { JsonLd, ORG_ID, PERSON_ID, personSchema } from '@/components/seo/json-ld'
 import type { Metadata } from 'next'
 import '../globals.css'
 
@@ -63,43 +64,41 @@ export default function RootLayout({
     <html lang="en" className={fontVariables}>
       <RootShell locale="en">
         {children}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'ProfessionalService',
-              name: siteCopy.brand,
-              url: env.siteUrl,
-              email: siteCopy.email,
-              description: enDescription,
-              serviceType: [
-                'Process automation',
-                'WhatsApp bots',
-                'Integrations',
-                'Custom software',
-                'Applied AI for business',
-              ],
-              areaServed: [
-                {
-                  '@type': 'Country',
-                  name: 'Argentina',
-                },
-                {
-                  '@type': 'City',
-                  name: 'Córdoba',
-                },
-              ],
-              founder: {
-                '@type': 'Person',
-                name: siteCopy.founderName,
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'ProfessionalService',
+            '@id': ORG_ID,
+            name: siteCopy.brand,
+            url: env.siteUrl,
+            email: siteCopy.email,
+            description: enDescription,
+            serviceType: [
+              'Process automation',
+              'WhatsApp bots',
+              'Integrations',
+              'Custom software',
+              'Applied AI for business',
+            ],
+            areaServed: [
+              {
+                '@type': 'Country',
+                name: 'Argentina',
               },
-              sameAs: socialLinks
-                .filter((item) => !item.href.startsWith('mailto:'))
-                .map((item) => item.href),
-            }),
+              {
+                '@type': 'City',
+                name: 'Córdoba',
+              },
+            ],
+            // Referencia por @id: la entidad Person completa se declara aparte
+            // (personSchema) — una sola entidad en el grafo, sin duplicar.
+            founder: { '@id': PERSON_ID },
+            sameAs: socialLinks
+              .filter((item) => !item.href.startsWith('mailto:'))
+              .map((item) => item.href),
           }}
         />
+        <JsonLd data={personSchema()} />
       </RootShell>
     </html>
   )

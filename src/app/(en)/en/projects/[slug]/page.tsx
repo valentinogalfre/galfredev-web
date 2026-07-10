@@ -1,5 +1,8 @@
 import { ProjectPage } from '@/components/pages/project-page'
+import { breadcrumbSchema, JsonLd, projectSchema } from '@/components/seo/json-ld'
+import { env } from '@/lib/env'
 import { getDictionary, projectByLocalizedSlug } from '@/lib/i18n'
+import { hreflangAlternates } from '@/lib/seo'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -23,7 +26,11 @@ export async function generateMetadata({
     // '%s | GalfreDev' del layout lo duplicaría.
     title: { absolute: project.seo.title },
     description: project.seo.description,
-    alternates: { canonical: `/en/projects/${slug}` },
+    alternates: {
+      canonical: `/en/projects/${slug}`,
+      // Los proyectos comparten slug en ambos idiomas.
+      ...hreflangAlternates(`/proyectos/${slug}`, `/projects/${slug}`),
+    },
   }
 }
 
@@ -36,5 +43,19 @@ export default async function Page({
   const project = projectByLocalizedSlug('en', slug)
   if (!project) notFound()
 
-  return <ProjectPage locale="en" project={project} />
+  const url = `${env.siteUrl}/en/projects/${project.slug}`
+
+  return (
+    <>
+      <JsonLd data={projectSchema(project, 'en', url)} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: 'Home', url: `${env.siteUrl}/en` },
+          { name: 'Projects', url: `${env.siteUrl}/en/projects` },
+          { name: project.name, url },
+        ])}
+      />
+      <ProjectPage locale="en" project={project} />
+    </>
+  )
 }
