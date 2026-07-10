@@ -26,7 +26,7 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        'max-w-3xl space-y-6',
+        'max-w-3xl space-y-4 sm:space-y-6',
         align === 'center' && 'mx-auto text-center',
       )}
     >
@@ -40,14 +40,14 @@ export function SectionHeading({
       >
         {eyebrow}
       </p>
-      <div className="space-y-4">
-        <h2 className="text-balance text-3xl font-semibold leading-[0.96] tracking-[-0.07em] text-white sm:text-4xl lg:text-[3.35rem]">
+      <div className="space-y-3 sm:space-y-4">
+        <h2 className="text-balance text-2xl font-semibold leading-[0.96] tracking-[-0.07em] text-white sm:text-4xl lg:text-[3.35rem]">
           {title}
         </h2>
         {description ? (
           <p
             className={cn(
-              'max-w-2xl text-pretty text-base leading-8 text-[var(--text-faint)] sm:text-lg',
+              'max-w-2xl text-pretty text-[15px] leading-7 text-[var(--text-faint)] sm:text-lg sm:leading-8',
               align === 'center' && 'mx-auto',
             )}
           >

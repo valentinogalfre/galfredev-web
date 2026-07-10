@@ -140,6 +140,8 @@ type HomeContent = {
     whatsappCta: string
     whatsappMessage: string
     formNote: string
+    /** Toggle mobile que expande el form (en lg+ el form siempre está visible). */
+    formToggle: string
     form: ContactFormContent
   }
 }

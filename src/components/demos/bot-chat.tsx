@@ -310,7 +310,7 @@ export function BotChat({
         role="log"
         aria-live="polite"
         aria-label={copy.messagesLabel}
-        className="h-[340px] space-y-3 overflow-y-auto bg-[radial-gradient(120%_90%_at_50%_0%,rgba(61,221,196,0.05),transparent_55%)] px-4 py-5 [scrollbar-width:thin] sm:h-[400px] sm:px-5"
+        className="h-[260px] space-y-3 overflow-y-auto bg-[radial-gradient(120%_90%_at_50%_0%,rgba(61,221,196,0.05),transparent_55%)] px-4 py-5 [scrollbar-width:thin] sm:h-[400px] sm:px-5"
       >
         {messages.map((message) => (
           <Bubble key={message.id} message={message} />

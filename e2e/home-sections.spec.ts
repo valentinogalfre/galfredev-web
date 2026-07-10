@@ -47,6 +47,18 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
 
   await page.goto('/#contacto')
 
+  // En mobile el form arranca colapsado detrás de «Prefiero el formulario»:
+  // expandirlo primero (reintentando el tap hasta que aria-expanded confirme
+  // hidratación, como abajo). En desktop el toggle no existe a la vista (el
+  // form está siempre visible) y este paso no aplica.
+  const formToggle = page.getByTestId('contact-form-toggle')
+  if (await formToggle.isVisible()) {
+    await expect(async () => {
+      await formToggle.click({ force: true })
+      await expect(formToggle).toHaveAttribute('aria-expanded', 'true', { timeout: 300 })
+    }).toPass()
+  }
+
   // Gate de hidratación: los inputs son controlados — un fill antes de que React
   // hidrate se borra. El checkbox solo togglea con los handlers vivos, así que
   // reintentar el click hasta que aria-checked cambie garantiza hidratación.

@@ -20,6 +20,12 @@ type ProjectFrameProps = {
   kind: ProjectFrameKind
   /** Alt localizado para la captura real (el placeholder es decorativo). */
   captureAlt: string
+  /**
+   * Cards compactas del carousel mobile de la home: el iPhone baja a un ancho
+   * contenido (~alto de los frames browser/chat) por debajo de lg. Desktop
+   * queda idéntico. Solo afecta al kind 'phone'.
+   */
+  compactOnMobile?: boolean
 }
 
 /**
@@ -276,13 +282,19 @@ function Visual({ project, kind, captureAlt }: ProjectFrameProps) {
  * captura de cada proyecto. Mientras no existan los PNG reales renderiza un
  * placeholder tintado por proyecto con mini-UI abstracta según el kind.
  */
-export function ProjectFrame({ project, kind, captureAlt }: ProjectFrameProps) {
+export function ProjectFrame({ project, kind, captureAlt, compactOnMobile }: ProjectFrameProps) {
   const tint = TINTS[project.id]
   const glowShadow = { boxShadow: `0 32px 90px -30px ${tint.shadow}` }
 
   if (kind === 'phone') {
     return (
-      <div className="mx-auto w-[156px] sm:w-[190px] lg:w-[200px]">
+      <div
+        className={
+          compactOnMobile
+            ? 'mx-auto w-[104px] lg:w-[200px]'
+            : 'mx-auto w-[156px] sm:w-[190px] lg:w-[200px]'
+        }
+      >
         <div
           className="overflow-hidden rounded-[2.6rem] border border-white/12 bg-[#0a0f1a] p-[7px]"
           style={glowShadow}

@@ -23,6 +23,9 @@ const LABELS = {
 export function WhatsAppFab({ locale }: { locale: Locale }) {
   const labels = LABELS[locale]
   const [visible, setVisible] = useState(false)
+  // Con la sección Contacto a la vista el FAB es redundante (la sección ES el
+  // CTA de WhatsApp) y en mobile pisaba el toggle del formulario — se oculta.
+  const [contactInView, setContactInView] = useState(false)
 
   useEffect(() => {
     const onScroll = () => {
@@ -35,9 +38,21 @@ export function WhatsAppFab({ locale }: { locale: Locale }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    const contact =
+      document.getElementById('contacto') ?? document.getElementById('contact')
+    if (!contact) return
+    const io = new IntersectionObserver(
+      ([entry]) => setContactInView(entry.isIntersecting),
+      { threshold: 0.15 },
+    )
+    io.observe(contact)
+    return () => io.disconnect()
+  }, [])
+
   return (
     <AnimatePresence>
-      {visible ? (
+      {visible && !contactInView ? (
         <motion.a
           initial={{ opacity: 0, y: 16, scale: 0.92 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}

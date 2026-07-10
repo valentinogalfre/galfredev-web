@@ -51,7 +51,7 @@ export function BotDemoSection({ locale }: { locale: Locale }) {
   const kicker = locale === 'es' ? 'Demo en vivo' : 'Live demo'
 
   return (
-    <section id="demo" className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8">
+    <section id="demo" className="px-4 py-14 sm:px-6 sm:py-28 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <Reveal variant="section">
           <SectionHeading
@@ -62,7 +62,7 @@ export function BotDemoSection({ locale }: { locale: Locale }) {
           />
         </Reveal>
 
-        <Reveal variant="surface" delay={0.12} className="relative mx-auto mt-12 max-w-xl sm:mt-16">
+        <Reveal variant="surface" delay={0.12} className="relative mx-auto mt-6 max-w-xl sm:mt-16">
           {/* Glow ambiental detrás de la ventana */}
           <div
             aria-hidden
