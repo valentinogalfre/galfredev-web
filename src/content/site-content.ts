@@ -1,45 +1,7 @@
-import type { Certification, SocialLink } from '@/types/site'
+import type { SocialLink } from '@/types/site'
 
-// certifications y stackGroups quedan para la página Sobre mí (Task 23).
-export const certifications: Certification[] = [
-  {
-    id: 'ai-automation',
-    title: 'AI Automation',
-    issuer: 'Coderhouse',
-    date: '23 de enero de 2026',
-    image: '/images/certificates/ai-automation.png',
-  },
-  {
-    id: 'english-advanced',
-    title: 'Inglés para desarrollo nivel advanced',
-    issuer: 'Coderhouse',
-    date: '14 de junio de 2023',
-    image: '/images/certificates/english-advanced.png',
-  },
-  {
-    id: 'python',
-    title: 'Python',
-    issuer: 'Coderhouse',
-    date: '13 de mayo de 2024',
-    image: '/images/certificates/python.png',
-  },
-]
-
-export const stackGroups = [
-  {
-    label: 'Backend y datos',
-    items: ['Node.js', 'TypeScript', 'Python', 'PostgreSQL', 'Supabase'],
-  },
-  {
-    label: 'Frontend y experiencia',
-    items: ['Next.js App Router', 'Framer Motion', 'Responsive UI', 'SEO técnico'],
-  },
-  {
-    label: 'Automatización e IA',
-    items: ['APIs', 'Bots', 'Integraciones', 'Workflows', 'IA aplicada'],
-  },
-]
-
+// La página Sobre mí (historia, stack, certificaciones) vive en dict.about
+// (src/content/{es,en}). Acá queda solo lo transversal: links y datos de marca.
 export const socialLinks: SocialLink[] = [
   { label: 'X', href: 'https://x.com/galfredev' },
   { label: 'Instagram', href: 'https://www.instagram.com/valentinogalfre/' },
