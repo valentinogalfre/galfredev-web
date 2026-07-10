@@ -22,10 +22,10 @@ export function AboutTeaserSection({ locale }: { locale: Locale }) {
     dict.common.nav.find((item) => item.href === aboutPagePath)?.label ?? about.title
 
   return (
-    <section className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+    <section className="px-4 py-14 sm:px-6 sm:py-28 lg:px-8">
+      <div className="mx-auto grid max-w-6xl items-center gap-8 sm:gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         <Reveal variant="surface" className="order-last lg:order-first">
-          <Parallax offset={26} className="mx-auto w-full max-w-[380px] lg:max-w-[420px]">
+          <Parallax offset={26} className="mx-auto w-full max-w-[260px] sm:max-w-[380px] lg:max-w-[420px]">
             {/* Glow ambiental detrás de la foto */}
             <div
               aria-hidden
@@ -64,7 +64,7 @@ export function AboutTeaserSection({ locale }: { locale: Locale }) {
 
           <Link
             href={localizedPath(locale, about.cta.href)}
-            className="group mt-8 inline-flex items-center gap-2 rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:translate-y-[-1px] hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)]"
+            className="group mt-6 inline-flex items-center gap-2 rounded-full sm:mt-8 border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:translate-y-[-1px] hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)]"
           >
             {about.cta.label}
             <ArrowRight

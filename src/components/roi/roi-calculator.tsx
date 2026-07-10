@@ -3,7 +3,7 @@
 import { BorderGlowCard } from '@/components/motion/border-glow-card'
 import { StaggerItem, StaggerReveal } from '@/components/motion/stagger-reveal'
 import { calculateRoi } from '@/lib/roi'
-import { formatCurrencyArs } from '@/lib/utils'
+import { formatCurrencyArs, formatCurrencyArsCompact } from '@/lib/utils'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import type { RoiCalculatorLabels } from '@/types/content'
 import {
@@ -248,8 +248,8 @@ function RoiLiveChart({
   const clipId = useId()
 
   return (
-    <div ref={containerRef} className="surface-panel surface-panel-soft p-4 sm:p-5">
-      <div className="mb-4 flex items-center justify-between gap-3">
+    <div ref={containerRef} className="surface-panel surface-panel-soft p-3.5 sm:p-5">
+      <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
         <div>
           <p className="text-[15px] font-semibold text-white">{labels.title}</p>
           <p className="mt-1 text-[13px] leading-5 text-white/50">{labels.sub}</p>
@@ -259,9 +259,12 @@ function RoiLiveChart({
         </div>
       </div>
 
+      {/* En mobile el viewBox (760×280) queda limitado por el ANCHO: el
+          contenido renderiza ~114px de alto y un h fijo mayor solo agrega
+          letterbox muerto — 150px deja aire justo sin espacio vacío. */}
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="h-[220px] w-full"
+        className="h-[128px] w-full sm:h-[220px]"
         role="img"
         aria-label={labels.ariaLabel}
       >
@@ -400,6 +403,8 @@ type ResultCardProps = {
   label: string
   value: number
   formatter: (value: number) => string
+  /** Formato corto para mobile (<sm): la grilla de 3 no aguanta la cifra larga. */
+  compactFormatter?: (value: number) => string
   icon: ComponentType<{ size?: number; className?: string }>
   celebrationThresholds?: readonly number[]
 }
@@ -408,6 +413,7 @@ function ResultCard({
   label,
   value,
   formatter,
+  compactFormatter,
   icon: Icon,
   celebrationThresholds,
 }: ResultCardProps) {
@@ -416,7 +422,7 @@ function ResultCard({
   const celebrate = burst > 0 && !reducedMotion
 
   return (
-    <BorderGlowCard className="relative h-full min-h-[7.5rem] p-3 sm:p-5">
+    <BorderGlowCard className="relative h-full min-h-[6.25rem] p-2.5 sm:min-h-[7.5rem] sm:p-5">
       <div className="flex h-full flex-col">
         <div className="flex items-start justify-between gap-1.5 sm:gap-2">
           <p className="text-[10px] font-semibold uppercase leading-[1.35] tracking-[0.18em] text-white/55 sm:text-[11px] sm:tracking-[0.22em]">
@@ -427,7 +433,7 @@ function ResultCard({
             <Icon size={14} className="hidden sm:block" />
           </div>
         </div>
-        <p className="relative mt-auto break-words pt-3 text-[1.15rem] font-medium leading-[1] tracking-[-0.04em] text-white sm:pt-4 sm:text-[1.6rem]">
+        <p className="relative mt-auto break-words pt-2.5 text-[1.05rem] font-medium leading-[1] tracking-[-0.04em] text-white sm:pt-4 sm:text-[1.6rem]">
           {celebrate ? <CelebrationBurst key={burst} seed={burst} /> : null}
           <motion.span
             key={celebrate ? burst : 'metric'}
@@ -448,7 +454,18 @@ function ResultCard({
             // block (no inline-block): permite el wrap del número en mobile
             className="relative block origin-left break-words"
           >
-            <AnimatedMetric value={value} formatter={formatter} />
+            {compactFormatter ? (
+              <>
+                <span className="sm:hidden">
+                  <AnimatedMetric value={value} formatter={compactFormatter} />
+                </span>
+                <span className="hidden sm:inline">
+                  <AnimatedMetric value={value} formatter={formatter} />
+                </span>
+              </>
+            ) : (
+              <AnimatedMetric value={value} formatter={formatter} />
+            )}
           </motion.span>
         </p>
       </div>
@@ -486,11 +503,11 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
   )
 
   return (
-    <div className="surface-panel mt-12 p-5 sm:p-7 lg:p-8">
-      <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
-        <div className="space-y-5">
-          <div className="surface-panel surface-panel-soft p-5 sm:p-6">
-            <div className="space-y-6">
+    <div className="surface-panel mt-6 p-3.5 sm:mt-12 sm:p-7 lg:p-8">
+      <div className="grid gap-3 sm:gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+        <div className="space-y-4 sm:space-y-5">
+          <div className="surface-panel surface-panel-soft p-4 sm:p-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label
                   htmlFor={salaryInputId}
@@ -499,10 +516,13 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                   <Wallet size={16} className="text-[var(--color-accent)]" />
                   {labels.salary.label}
                 </label>
-                <p id={`${salaryInputId}-help`} className="mt-2 text-sm leading-6 text-white/55">
+                <p
+                  id={`${salaryInputId}-help`}
+                  className="mt-1.5 text-[13px] leading-5 text-white/55 sm:mt-2 sm:text-sm sm:leading-6"
+                >
                   {labels.salary.help}
                 </p>
-                <div className="mt-4 rounded-[1.3rem] border border-white/8 bg-white/[0.02] px-4 py-3 transition duration-300 focus-within:border-[var(--color-accent)]/45 focus-within:bg-white/[0.04]">
+                <div className="mt-3 rounded-[1.3rem] border border-white/8 bg-white/[0.02] px-4 py-2.5 transition duration-300 focus-within:border-[var(--color-accent)]/45 focus-within:bg-white/[0.04] sm:mt-4 sm:py-3">
                   <input
                     id={salaryInputId}
                     type="text"
@@ -512,11 +532,11 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     onChange={(event) => {
                       setMonthlySalaryArs(parseCurrencyInput(event.target.value))
                     }}
-                    className="w-full bg-transparent text-2xl font-medium tracking-[-0.04em] text-white outline-none placeholder:text-white/24"
+                    className="w-full bg-transparent text-xl font-medium tracking-[-0.04em] text-white outline-none placeholder:text-white/24 sm:text-2xl"
                     aria-describedby={`${salaryInputId}-help`}
                   />
                 </div>
-                <div className="mt-4">
+                <div className="mt-3 sm:mt-4">
                   <input
                     type="range"
                     min={SALARY_SLIDER_MIN}
@@ -531,7 +551,9 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     className="roi-slider h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent"
                     style={{ '--roi-fill': `${salaryFillPct}%` } as CSSProperties}
                   />
-                  <div className="mt-2 flex justify-between text-xs text-white/34">
+                  {/* Rango del slider: en mobile el valor exacto ya vive en el
+                      input de arriba — la fila min/max solo suma alto. */}
+                  <div className="mt-1.5 hidden justify-between text-xs text-white/34 sm:mt-2 sm:flex">
                     <span>{formatCurrencyArs(SALARY_SLIDER_MIN)}</span>
                     <span>{formatCurrencyArs(SALARY_SLIDER_MAX)}</span>
                   </div>
@@ -551,10 +573,13 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     {formatHours(repetitiveHoursPerWeek)} {labels.hours.unit}
                   </span>
                 </div>
-                <p id={`${hoursInputId}-help`} className="mt-2 text-sm leading-6 text-white/55">
+                <p
+                  id={`${hoursInputId}-help`}
+                  className="mt-1.5 text-[13px] leading-5 text-white/55 sm:mt-2 sm:text-sm sm:leading-6"
+                >
                   {labels.hours.help}
                 </p>
-                <div className="mt-5">
+                <div className="mt-3 sm:mt-5">
                   <input
                     id={hoursInputId}
                     type="range"
@@ -569,7 +594,8 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     style={{ '--roi-fill': `${hoursFillPct}%` } as CSSProperties}
                     aria-describedby={`${hoursInputId}-help`}
                   />
-                  <div className="mt-2 flex justify-between text-xs text-white/34">
+                  {/* Ídem salario: el valor elegido ya está en la pill de horas. */}
+                  <div className="mt-1.5 hidden justify-between text-xs text-white/34 sm:mt-2 sm:flex">
                     <span>{labels.hours.min}</span>
                     <span>{labels.hours.max}</span>
                   </div>
@@ -578,9 +604,9 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
             </div>
           </div>
 
-          <div className="ambient-divider" />
+          <div className="ambient-divider hidden sm:block" />
 
-          <div className="rounded-[1.6rem] border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-4 py-4 text-sm text-white/74">
+          <div className="rounded-[1.6rem] border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-4 py-3 text-[13px] leading-5 text-white/74 sm:py-4 sm:text-sm sm:leading-6">
             {labels.costNote.before}{' '}
             <span className="font-semibold text-white">
               <AnimatedMetric
@@ -592,7 +618,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <RoiLiveChart
             monthlySavingsArs={results.monthlySavingsArs}
             monthlySalaryArs={monthlySalaryArs}
@@ -607,13 +633,13 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
             href={whatsappHref}
             target="_blank"
             rel="noreferrer"
-            className="surface-panel-interactive group relative block overflow-hidden rounded-[1.6rem] border border-[var(--color-accent)]/20 bg-[linear-gradient(180deg,rgba(31,127,115,0.13),rgba(31,127,115,0.05))] p-5 text-white backdrop-blur-sm hover:border-[var(--color-accent)]/32 hover:shadow-[0_0_48px_rgba(31,127,115,0.12)]"
+            className="surface-panel-interactive group relative block overflow-hidden rounded-[1.6rem] border border-[var(--color-accent)]/20 bg-[linear-gradient(180deg,rgba(31,127,115,0.13),rgba(31,127,115,0.05))] p-4 text-white backdrop-blur-sm hover:border-[var(--color-accent)]/32 hover:shadow-[0_0_48px_rgba(31,127,115,0.12)] sm:p-5"
           >
             <div className="pointer-events-none absolute inset-[1px] rounded-[calc(1.6rem-1px)] border border-[var(--color-accent)]/8" />
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--color-accent)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--color-accent)] sm:text-xs">
               {labels.next.kicker}
             </p>
-            <p className="mt-3 text-xl font-medium leading-tight tracking-[-0.04em]">
+            <p className="mt-2 text-lg font-medium leading-tight tracking-[-0.04em] sm:mt-3 sm:text-xl">
               {labels.next.before}{' '}
               <span className="text-[var(--color-accent)]">
                 <AnimatedMetric
@@ -623,7 +649,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
               </span>{' '}
               {labels.next.after}
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-white/84">
+            <div className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-white/84 sm:mt-4">
               {labels.next.cta}
               <ArrowRight
                 size={16}
@@ -634,12 +660,13 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
         </div>
       </div>
 
-      <StaggerReveal className="mt-6 grid grid-cols-3 gap-3 sm:gap-4" delay={0.1} stagger={0.09}>
+      <StaggerReveal className="mt-3 grid grid-cols-3 gap-2 sm:mt-6 sm:gap-4" delay={0.1} stagger={0.09}>
         <StaggerItem className="h-full">
           <ResultCard
             label={labels.results.monthly}
             value={results.monthlySavingsArs}
             formatter={formatCurrencyArs}
+            compactFormatter={formatCurrencyArsCompact}
             icon={TrendingUp}
           />
         </StaggerItem>
@@ -656,6 +683,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
             label={labels.results.annual}
             value={results.annualSavingsArs}
             formatter={formatCurrencyArs}
+            compactFormatter={formatCurrencyArsCompact}
             icon={Wallet}
             celebrationThresholds={ANNUAL_CELEBRATION_THRESHOLDS}
           />

@@ -117,7 +117,7 @@ export function ServicesSection({ locale }: { locale: Locale }) {
     dict.home.services.title
 
   return (
-    <section id={sectionId} className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8">
+    <section id={sectionId} className="px-4 py-14 sm:px-6 sm:py-28 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <Reveal variant="section">
           <SectionHeading
@@ -130,7 +130,7 @@ export function ServicesSection({ locale }: { locale: Locale }) {
         <StaggerReveal
           delay={0.1}
           stagger={0.09}
-          className="-mx-4 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-6 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
+          className="-mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:mt-12 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-6 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
         >
           {ORDER.map((id) => {
             const service = dict.services[id]

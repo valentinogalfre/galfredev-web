@@ -148,6 +148,7 @@ export const es: Dictionary = {
         'Hola, quiero hablar por WhatsApp para evaluar automatizaciones o software a medida.',
       formNote:
         'También podés dejar tus datos y la necesidad principal para que el contacto salga con mejor contexto, prioridad y consentimiento explícito.',
+      formToggle: 'Prefiero el formulario',
       form: {
         fields: {
           fullName: { label: 'Nombre y apellido', placeholder: 'Cómo te llamás' },

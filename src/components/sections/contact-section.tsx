@@ -1,5 +1,6 @@
 import { Reveal } from '@/components/motion/reveal'
 import { ContactForm } from '@/components/ui/contact-form'
+import { ContactFormDisclosure } from '@/components/ui/contact-form-disclosure'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { getDictionary } from '@/lib/i18n'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
@@ -9,6 +10,8 @@ import { ArrowRight, MessageCircle } from 'lucide-react'
 /**
  * Server component: cierre de la home. Columna izquierda con el pitch y el
  * CTA directo a WhatsApp; columna derecha con el form de leads (client).
+ * En mobile el form arranca colapsado detrás de «Prefiero el formulario»
+ * (WhatsApp es el protagonista); en lg+ siempre visible, como siempre.
  * El POST a /api/lead no cambia. id localizado: #contacto / #contact.
  */
 export function ContactSection({ locale }: { locale: Locale }) {
@@ -20,21 +23,22 @@ export function ContactSection({ locale }: { locale: Locale }) {
     contact.title
 
   return (
-    <section id={sectionId} className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-8">
+    <section id={sectionId} className="px-4 py-14 sm:px-6 sm:py-28 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-8 sm:gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-8">
         <Reveal variant="section">
           <SectionHeading eyebrow={kicker} title={contact.title} description={contact.sub} />
 
-          <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-[var(--text-soft)] sm:text-lg">
+          <p className="mt-5 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--text-soft)] sm:text-lg">
             {contact.intro}
           </p>
 
-          <div className="mt-8 space-y-4">
+          <div className="mt-6 space-y-4 sm:mt-8">
+            {/* En mobile la mayoría va directo a WhatsApp: CTA protagonista full-width */}
             <a
               href={buildWhatsAppUrl(contact.whatsappMessage)}
               target="_blank"
               rel="noreferrer"
-              className="group inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:translate-y-[-1px] hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)]"
+              className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3.5 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:translate-y-[-1px] hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)] sm:w-auto sm:justify-start sm:py-3"
             >
               {/* Pulso sutil: presencia «en línea» del canal directo */}
               <span className="relative inline-flex" aria-hidden>
@@ -55,7 +59,9 @@ export function ContactSection({ locale }: { locale: Locale }) {
         </Reveal>
 
         <Reveal delay={0.06} variant="surface">
-          <ContactForm labels={contact.form} />
+          <ContactFormDisclosure toggleLabel={contact.formToggle}>
+            <ContactForm labels={contact.form} />
+          </ContactFormDisclosure>
         </Reveal>
       </div>
     </section>

@@ -19,16 +19,16 @@ export function ProcessSection({ locale }: { locale: Locale }) {
     process.title
 
   return (
-    <section id={sectionId} className="px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+    <section id={sectionId} className="px-4 py-14 sm:px-6 sm:py-32 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <Reveal variant="section">
           <SectionHeading eyebrow={kicker} title={process.title} align="center" />
         </Reveal>
 
-        <div className="relative mt-14 sm:mt-16 lg:mt-24">
+        <div className="relative mt-8 sm:mt-16 lg:mt-24">
           <DrawLine className="left-[11px] -translate-x-1/2 lg:left-1/2" />
 
-          <ol className="space-y-16 lg:space-y-24">
+          <ol className="space-y-8 sm:space-y-16 lg:space-y-24">
             {process.steps.map((step, index) => {
               const left = index % 2 === 0
 
@@ -57,20 +57,20 @@ export function ProcessSection({ locale }: { locale: Locale }) {
                     >
                       <span
                         aria-hidden
-                        className="block select-none bg-[linear-gradient(95deg,#a5f0e0_5%,#3dddc4_45%,#2a9184_95%)] bg-clip-text text-[3.4rem] italic leading-none text-transparent [font-family:var(--font-instrument-serif),Georgia,serif] sm:text-[4.2rem]"
+                        className="block select-none bg-[linear-gradient(95deg,#a5f0e0_5%,#3dddc4_45%,#2a9184_95%)] bg-clip-text text-[2.2rem] italic leading-none text-transparent [font-family:var(--font-instrument-serif),Georgia,serif] sm:text-[4.2rem]"
                       >
                         {String(index + 1).padStart(2, '0')}
                       </span>
 
-                      <h3 className="mt-4 text-[1.55rem] font-medium leading-[1.06] tracking-[-0.05em] text-white sm:text-[1.95rem]">
+                      <h3 className="mt-2 text-[1.35rem] font-medium leading-[1.06] tracking-[-0.05em] text-white sm:mt-4 sm:text-[1.95rem]">
                         {step.title}
                       </h3>
 
-                      <p className="mt-4 max-w-lg text-sm leading-7 text-white/60 sm:text-base sm:leading-8">
+                      <p className="mt-2 max-w-lg text-sm leading-6 text-white/60 sm:mt-4 sm:text-base sm:leading-8">
                         {step.description}
                       </p>
 
-                      <p className="mt-6 flex items-start gap-3 border-l-2 border-[#3dddc4]/50 pl-4 text-sm leading-7 text-white/80 sm:text-[15px]">
+                      <p className="mt-4 flex items-start gap-3 border-l-2 border-[#3dddc4]/50 pl-4 text-sm leading-6 text-white/80 sm:mt-6 sm:text-[15px] sm:leading-7">
                         <Check
                           size={16}
                           strokeWidth={2.4}

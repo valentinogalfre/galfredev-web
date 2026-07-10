@@ -147,6 +147,7 @@ export const en: Dictionary = {
         "Hi! I'd like to talk on WhatsApp about automation or custom software.",
       formNote:
         'You can also leave your details and main need so the conversation starts with better context, priority and explicit consent.',
+      formToggle: "I'd rather use the form",
       form: {
         fields: {
           fullName: { label: 'Full name', placeholder: 'What should I call you' },

@@ -13,7 +13,7 @@ export function RoiCalculatorSection({ locale }: { locale: Locale }) {
   const { roi } = getDictionary(locale).home
 
   return (
-    <section id="roi" className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8">
+    <section id="roi" className="px-4 py-14 sm:px-6 sm:py-28 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <Reveal variant="section">
           <SectionHeading eyebrow={roi.eyebrow} title={roi.title} description={roi.sub} />
