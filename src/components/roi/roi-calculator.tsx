@@ -8,16 +8,37 @@ import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import type { RoiCalculatorLabels } from '@/types/content'
 import {
   motion,
+  useInView,
   useMotionValue,
   useMotionValueEvent,
   useReducedMotion,
   useSpring,
 } from 'framer-motion'
 import { ArrowRight, Coins, TrendingUp, Wallet } from 'lucide-react'
-import { useEffect, useId, useMemo, useState, type ComponentType } from 'react'
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ComponentType,
+  type CSSProperties,
+} from 'react'
 
 const DEFAULT_SALARY_ARS = 850000
 const DEFAULT_HOURS = 16
+
+/** Rango del slider de sueldo (el input numérico admite valores fuera). */
+const SALARY_SLIDER_MIN = 200_000
+const SALARY_SLIDER_MAX = 5_000_000
+const SALARY_SLIDER_STEP = 25_000
+
+/**
+ * Umbrales de celebración del ahorro anual: al cruzarlos hacia arriba el
+ * contador «festeja» (pop + glow + partículas). Escalera 1-2-5 por década.
+ */
+const ANNUAL_CELEBRATION_THRESHOLDS = [
+  1e6, 2e6, 5e6, 1e7, 2e7, 5e7, 1e8, 2e8, 5e8, 1e9,
+] as const
 
 function formatHours(value: number) {
   return new Intl.NumberFormat('es-AR', {
@@ -41,6 +62,34 @@ function formatCurrencyInput(value: number) {
   return formatCurrencyArs(Math.max(0, value))
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
+}
+
+/**
+ * Sigue `target` con un spring y lo expone como estado renderizable.
+ * Con reduced-motion devuelve el target directo (sin frames intermedios).
+ */
+function useSpringNumber(
+  target: number,
+  config: { stiffness: number; damping: number; mass?: number },
+  reduced: boolean,
+) {
+  const motionValue = useMotionValue(target)
+  const spring = useSpring(motionValue, config)
+  const [value, setValue] = useState(target)
+
+  useEffect(() => {
+    motionValue.set(target)
+  }, [motionValue, target])
+
+  useMotionValueEvent(spring, 'change', (latest) => {
+    setValue(latest)
+  })
+
+  return reduced ? target : value
+}
+
 function AnimatedMetric({
   value,
   formatter,
@@ -49,72 +98,157 @@ function AnimatedMetric({
   formatter: (value: number) => string
 }) {
   const reducedMotion = useReducedMotion()
-  const motionValue = useMotionValue(value)
-  const spring = useSpring(motionValue, {
-    stiffness: 110,
-    damping: 22,
-    mass: 0.8,
-  })
-  const [displayValue, setDisplayValue] = useState(value)
+  const display = useSpringNumber(
+    value,
+    { stiffness: 110, damping: 22, mass: 0.8 },
+    Boolean(reducedMotion),
+  )
 
-  useEffect(() => {
-    motionValue.set(value)
-  }, [motionValue, value])
-
-  useMotionValueEvent(spring, 'change', (latest) => {
-    setDisplayValue(latest)
-  })
-
-  if (reducedMotion) {
-    return <>{formatter(value)}</>
-  }
-
-  return <>{formatter(displayValue)}</>
+  return <>{formatter(display)}</>
 }
 
-function RoiProjectionChart({
+/**
+ * Incrementa un contador cada vez que `value` cruza hacia arriba alguno de
+ * los umbrales. Sirve para re-montar (key) la animación de celebración.
+ * Usa el patrón «adjust state during render» (sin effect).
+ */
+function useThresholdBurst(value: number, thresholds: readonly number[]) {
+  const [state, setState] = useState({ value, burst: 0 })
+
+  if (state.value !== value) {
+    const crossed =
+      value > state.value && thresholds.some((t) => state.value < t && value >= t)
+    setState({ value, burst: crossed ? state.burst + 1 : state.burst })
+  }
+
+  return state.burst
+}
+
+/**
+ * Estallido puntual: flash radial + anillo + partículas teal saliendo del
+ * número. Se re-monta con `key` en cada burst; `seed` varía los ángulos.
+ */
+function CelebrationBurst({ seed }: { seed: number }) {
+  const particles = Array.from({ length: 8 }, (_, index) => {
+    const angle = (index / 8) * Math.PI * 2 + seed * 0.9
+    const distance = 30 + ((index * 37 + seed * 13) % 24)
+
+    return {
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance,
+      delay: (index % 4) * 0.02,
+    }
+  })
+
+  return (
+    <span aria-hidden className="pointer-events-none absolute inset-0">
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0.85, 0] }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="absolute -inset-2 rounded-2xl bg-[radial-gradient(circle,rgba(61,221,196,0.28),transparent_70%)]"
+      />
+      <motion.span
+        initial={{ opacity: 0.7, scale: 0.55 }}
+        animate={{ opacity: 0, scale: 1.5 }}
+        transition={{ duration: 0.65, ease: 'easeOut' }}
+        className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(61,221,196,0.8)]"
+      />
+      {particles.map((particle, index) => (
+        <motion.span
+          key={index}
+          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+          animate={{
+            x: particle.x,
+            y: particle.y,
+            opacity: 0,
+            scale: 0.35,
+          }}
+          transition={{ duration: 0.7, ease: 'easeOut', delay: particle.delay }}
+          className="absolute left-1/2 top-1/2 size-1.5 rounded-full bg-[#3dddc4] shadow-[0_0_10px_2px_rgba(61,221,196,0.55)]"
+        />
+      ))}
+    </span>
+  )
+}
+
+/**
+ * Gráfico vivo: 12 barras de ahorro acumulado con doble spring (el valor
+ * reacciona rápido, la escala lo persigue lento) → cada movimiento del input
+ * produce una oleada orgánica. Marca el hito donde el acumulado supera un
+ * sueldo mensual completo con línea punteada + pulso teal.
+ */
+function RoiLiveChart({
   monthlySavingsArs,
+  monthlySalaryArs,
   labels,
 }: {
   monthlySavingsArs: number
+  monthlySalaryArs: number
   labels: RoiCalculatorLabels['chart']
 }) {
-  const data = useMemo(
-    () =>
-      Array.from({ length: 12 }, (_, index) => ({
-        month: index + 1,
-        value: monthlySavingsArs * (index + 1),
-      })),
-    [monthlySavingsArs],
+  const reducedMotion = Boolean(useReducedMotion())
+  const containerRef = useRef<HTMLDivElement>(null)
+  const inView = useInView(containerRef, { once: true, amount: 0.3 })
+  const grown = inView || reducedMotion
+
+  const totalArs = monthlySavingsArs * 12
+  const milestoneMonth =
+    monthlySavingsArs > 0
+      ? Math.ceil(monthlySalaryArs / monthlySavingsArs)
+      : Number.POSITIVE_INFINITY
+  const hasMilestone =
+    monthlySalaryArs > 0 && milestoneMonth >= 1 && milestoneMonth <= 12
+
+  // La escala contempla la línea del sueldo solo si el hito entra en 12 meses.
+  const targetMax =
+    Math.max(hasMilestone ? Math.max(totalArs, monthlySalaryArs) : totalArs, 1) * 1.06
+
+  // Doble spring: valor rápido / escala lenta y con leve rebote → oleada.
+  const monthlyDisplay = useSpringNumber(
+    grown ? monthlySavingsArs : 0,
+    { stiffness: 170, damping: 26 },
+    reducedMotion,
+  )
+  const maxDisplay = useSpringNumber(
+    targetMax,
+    { stiffness: 80, damping: 18 },
+    reducedMotion,
   )
 
   const width = 760
-  const height = 260
-  const paddingX = 26
-  const paddingTop = 20
-  const paddingBottom = 32
+  const height = 280
+  const paddingX = 18
+  const paddingTop = 34
+  const paddingBottom = 30
   const chartWidth = width - paddingX * 2
   const chartHeight = height - paddingTop - paddingBottom
-  const maxValue = Math.max(...data.map((point) => point.value), 1)
+  const columnWidth = chartWidth / 12
+  const barWidth = columnWidth * 0.58
+  const safeMax = Math.max(maxDisplay, 1)
 
-  const points = data.map((point, index) => {
-    const x = paddingX + (chartWidth / (data.length - 1)) * index
-    const y =
-      paddingTop + chartHeight - (point.value / maxValue) * chartHeight
+  const bars = Array.from({ length: 12 }, (_, index) => {
+    const value = monthlyDisplay * (index + 1)
+    const barHeight = clamp((value / safeMax) * chartHeight, 0, chartHeight)
 
-    return { ...point, x, y }
+    return {
+      month: index + 1,
+      x: paddingX + columnWidth * index + (columnWidth - barWidth) / 2,
+      y: paddingTop + chartHeight - barHeight,
+      height: barHeight,
+      reached: hasMilestone && index + 1 >= milestoneMonth,
+    }
   })
 
-  const linePath = points
-    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-    .join(' ')
-
-  const areaPath = `${linePath} L ${points.at(-1)?.x ?? width - paddingX} ${
-    height - paddingBottom
-  } L ${points[0]?.x ?? paddingX} ${height - paddingBottom} Z`
+  const salaryLineY =
+    paddingTop +
+    chartHeight -
+    clamp((monthlySalaryArs / safeMax) * chartHeight, 0, chartHeight)
+  const milestoneBar = hasMilestone ? bars[milestoneMonth - 1] : undefined
+  const clipId = useId()
 
   return (
-    <div className="surface-panel surface-panel-soft p-4 sm:p-5">
+    <div ref={containerRef} className="surface-panel surface-panel-soft p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
           <p className="text-[15px] font-semibold text-white">{labels.title}</p>
@@ -132,17 +266,20 @@ function RoiProjectionChart({
         aria-label={labels.ariaLabel}
       >
         <defs>
-          <linearGradient id="roi-line" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="rgba(31,127,115,0.6)" />
-            <stop offset="100%" stopColor="rgba(61,221,196,1)" />
+          <linearGradient id="roi-bar-dim" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="rgba(61,221,196,0.42)" />
+            <stop offset="100%" stopColor="rgba(31,127,115,0.08)" />
           </linearGradient>
-          <linearGradient id="roi-fill" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(31,127,115,0.28)" />
-            <stop offset="100%" stopColor="rgba(31,127,115,0)" />
+          <linearGradient id="roi-bar-hot" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="rgba(61,221,196,0.95)" />
+            <stop offset="100%" stopColor="rgba(31,127,115,0.26)" />
           </linearGradient>
+          <clipPath id={clipId}>
+            <rect x={0} y={0} width={width} height={paddingTop + chartHeight} />
+          </clipPath>
         </defs>
 
-        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+        {[0.25, 0.5, 0.75, 1].map((ratio) => {
           const y = paddingTop + chartHeight - chartHeight * ratio
 
           return (
@@ -152,49 +289,106 @@ function RoiProjectionChart({
               x2={width - paddingX}
               y1={y}
               y2={y}
-              stroke="rgba(255,255,255,0.08)"
+              stroke="rgba(255,255,255,0.07)"
               strokeDasharray="6 8"
             />
           )
         })}
-
-        <path
-          d={areaPath}
-          fill="url(#roi-fill)"
-          opacity="1"
-        />
-        <path
-          d={linePath}
-          fill="none"
-          stroke="url(#roi-line)"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity="1"
+        <line
+          x1={paddingX}
+          x2={width - paddingX}
+          y1={paddingTop + chartHeight}
+          y2={paddingTop + chartHeight}
+          stroke="rgba(255,255,255,0.12)"
         />
 
-        {points.map((point) => (
-          <g key={point.month}>
-            <circle
-              cx={point.x}
-              cy={point.y}
-              r="5"
-              fill="#0a0a0f"
-              stroke="rgba(61,221,196,0.9)"
-              strokeWidth="3"
+        {/* Barras: la altura ya viene animada por los springs de arriba. El
+            clip corta el redondeo inferior para que apoyen planas. */}
+        <g clipPath={`url(#${clipId})`}>
+          {bars.map((bar) => (
+            <rect
+              key={bar.month}
+              x={bar.x}
+              y={bar.y}
+              width={barWidth}
+              height={bar.height + 8}
+              rx={Math.min(7, barWidth / 2.4)}
+              fill={bar.reached ? 'url(#roi-bar-hot)' : 'url(#roi-bar-dim)'}
             />
-          </g>
-        ))}
+          ))}
+        </g>
 
-        {points.map((point) => (
+        {/* Línea del hito: 1 sueldo mensual completo recuperado */}
+        {hasMilestone ? (
+          <g>
+            <line
+              x1={paddingX}
+              x2={width - paddingX}
+              y1={salaryLineY}
+              y2={salaryLineY}
+              stroke="rgba(61,221,196,0.55)"
+              strokeWidth={1.5}
+              strokeDasharray="7 7"
+            />
+            {milestoneBar ? (
+              <g>
+                {!reducedMotion ? (
+                  <motion.circle
+                    key={`ping-${milestoneMonth}`}
+                    cx={milestoneBar.x + barWidth / 2}
+                    cy={milestoneBar.y}
+                    fill="none"
+                    stroke="rgba(61,221,196,0.85)"
+                    strokeWidth={2}
+                    initial={{ r: 6, opacity: 0.85 }}
+                    animate={{ r: 19, opacity: 0 }}
+                    transition={{
+                      duration: 1.5,
+                      ease: 'easeOut',
+                      repeat: Infinity,
+                      repeatDelay: 0.8,
+                    }}
+                  />
+                ) : null}
+                <circle
+                  cx={milestoneBar.x + barWidth / 2}
+                  cy={milestoneBar.y}
+                  r={6}
+                  fill="#3dddc4"
+                  stroke="rgba(10,14,20,0.9)"
+                  strokeWidth={2}
+                />
+                {/* En mobile el viewBox escala ~0.4: tamaños responsive para
+                    que el hito y los meses sigan siendo legibles. */}
+                <text
+                  x={clamp(milestoneBar.x + barWidth / 2, paddingX + 80, width - paddingX - 80)}
+                  y={Math.max(milestoneBar.y - 14, 16)}
+                  textAnchor="middle"
+                  className="fill-[#8ceada] text-[20px] font-semibold sm:text-[13px]"
+                  stroke="rgba(8,12,20,0.85)"
+                  strokeWidth={3.5}
+                  paintOrder="stroke"
+                >
+                  {labels.milestone}
+                </text>
+              </g>
+            ) : null}
+          </g>
+        ) : null}
+
+        {bars.map((bar) => (
           <text
-            key={`label-${point.month}`}
-            x={point.x}
+            key={`label-${bar.month}`}
+            x={bar.x + barWidth / 2}
             y={height - 8}
             textAnchor="middle"
-            className="fill-white/45 text-[11px]"
+            className={
+              bar.month === milestoneMonth && hasMilestone
+                ? 'fill-[#8ceada] text-[17px] font-semibold sm:text-[11px]'
+                : 'fill-white/45 text-[17px] sm:text-[11px]'
+            }
           >
-            {point.month}
+            {bar.month}
           </text>
         ))}
       </svg>
@@ -207,9 +401,20 @@ type ResultCardProps = {
   value: number
   formatter: (value: number) => string
   icon: ComponentType<{ size?: number; className?: string }>
+  celebrationThresholds?: readonly number[]
 }
 
-function ResultCard({ label, value, formatter, icon: Icon }: ResultCardProps) {
+function ResultCard({
+  label,
+  value,
+  formatter,
+  icon: Icon,
+  celebrationThresholds,
+}: ResultCardProps) {
+  const reducedMotion = useReducedMotion()
+  const burst = useThresholdBurst(value, celebrationThresholds ?? [])
+  const celebrate = burst > 0 && !reducedMotion
+
   return (
     <BorderGlowCard className="relative h-full min-h-[7.5rem] p-3 sm:p-5">
       <div className="flex h-full flex-col">
@@ -222,8 +427,29 @@ function ResultCard({ label, value, formatter, icon: Icon }: ResultCardProps) {
             <Icon size={14} className="hidden sm:block" />
           </div>
         </div>
-        <p className="mt-auto overflow-hidden break-words pt-3 text-[1.15rem] font-medium leading-[1] tracking-[-0.04em] text-white sm:pt-4 sm:text-[1.6rem]">
-          <AnimatedMetric value={value} formatter={formatter} />
+        <p className="relative mt-auto break-words pt-3 text-[1.15rem] font-medium leading-[1] tracking-[-0.04em] text-white sm:pt-4 sm:text-[1.6rem]">
+          {celebrate ? <CelebrationBurst key={burst} seed={burst} /> : null}
+          <motion.span
+            key={celebrate ? burst : 'metric'}
+            initial={false}
+            animate={
+              celebrate
+                ? {
+                    scale: [1, 1.16, 1],
+                    textShadow: [
+                      '0 0 0px rgba(61,221,196,0)',
+                      '0 0 24px rgba(61,221,196,0.85)',
+                      '0 0 0px rgba(61,221,196,0)',
+                    ],
+                  }
+                : { scale: 1 }
+            }
+            transition={{ duration: 0.55, ease: 'easeOut', times: [0, 0.35, 1] }}
+            // block (no inline-block): permite el wrap del número en mobile
+            className="relative block origin-left break-words"
+          >
+            <AnimatedMetric value={value} formatter={formatter} />
+          </motion.span>
         </p>
       </div>
     </BorderGlowCard>
@@ -243,6 +469,11 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
   })
 
   const salaryInputValue = formatCurrencyInput(monthlySalaryArs)
+  const salarySliderValue = clamp(monthlySalaryArs, SALARY_SLIDER_MIN, SALARY_SLIDER_MAX)
+  const salaryFillPct =
+    ((salarySliderValue - SALARY_SLIDER_MIN) / (SALARY_SLIDER_MAX - SALARY_SLIDER_MIN)) * 100
+  const hoursFillPct = ((repetitiveHoursPerWeek - 1) / (40 - 1)) * 100
+
   const whatsappHref = buildWhatsAppUrl(
     [
       labels.whatsapp.intro,
@@ -259,7 +490,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
       <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
         <div className="space-y-5">
           <div className="surface-panel surface-panel-soft p-5 sm:p-6">
-            <div className="space-y-5">
+            <div className="space-y-6">
               <div>
                 <label
                   htmlFor={salaryInputId}
@@ -268,7 +499,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                   <Wallet size={16} className="text-[var(--color-accent)]" />
                   {labels.salary.label}
                 </label>
-                <p className="mt-2 text-sm leading-6 text-white/55">
+                <p id={`${salaryInputId}-help`} className="mt-2 text-sm leading-6 text-white/55">
                   {labels.salary.help}
                 </p>
                 <div className="mt-4 rounded-[1.3rem] border border-white/8 bg-white/[0.02] px-4 py-3 transition duration-300 focus-within:border-[var(--color-accent)]/45 focus-within:bg-white/[0.04]">
@@ -285,6 +516,26 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     aria-describedby={`${salaryInputId}-help`}
                   />
                 </div>
+                <div className="mt-4">
+                  <input
+                    type="range"
+                    min={SALARY_SLIDER_MIN}
+                    max={SALARY_SLIDER_MAX}
+                    step={SALARY_SLIDER_STEP}
+                    value={salarySliderValue}
+                    onChange={(event) => {
+                      setMonthlySalaryArs(Number(event.target.value))
+                    }}
+                    aria-label={labels.salary.label}
+                    aria-describedby={`${salaryInputId}-help`}
+                    className="roi-slider h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent"
+                    style={{ '--roi-fill': `${salaryFillPct}%` } as CSSProperties}
+                  />
+                  <div className="mt-2 flex justify-between text-xs text-white/34">
+                    <span>{formatCurrencyArs(SALARY_SLIDER_MIN)}</span>
+                    <span>{formatCurrencyArs(SALARY_SLIDER_MAX)}</span>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -296,11 +547,11 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     <Coins size={16} className="text-[var(--color-accent)]" />
                     {labels.hours.label}
                   </label>
-                  <span className="rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-3 py-1 text-sm font-medium text-[var(--color-accent)]">
+                  <span className="whitespace-nowrap rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-3 py-1 text-sm font-medium tabular-nums text-[var(--color-accent)]">
                     {formatHours(repetitiveHoursPerWeek)} {labels.hours.unit}
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-white/55">
+                <p id={`${hoursInputId}-help`} className="mt-2 text-sm leading-6 text-white/55">
                   {labels.hours.help}
                 </p>
                 <div className="mt-5">
@@ -314,7 +565,8 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     onChange={(event) => {
                       setRepetitiveHoursPerWeek(Number(event.target.value))
                     }}
-                    className="roi-slider h-2 w-full cursor-pointer appearance-none rounded-full bg-white/10"
+                    className="roi-slider h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent"
+                    style={{ '--roi-fill': `${hoursFillPct}%` } as CSSProperties}
                     aria-describedby={`${hoursInputId}-help`}
                   />
                   <div className="mt-2 flex justify-between text-xs text-white/34">
@@ -341,8 +593,9 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
         </div>
 
         <div className="space-y-4">
-          <RoiProjectionChart
+          <RoiLiveChart
             monthlySavingsArs={results.monthlySavingsArs}
+            monthlySalaryArs={monthlySalaryArs}
             labels={labels.chart}
           />
 
@@ -404,6 +657,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
             value={results.annualSavingsArs}
             formatter={formatCurrencyArs}
             icon={Wallet}
+            celebrationThresholds={ANNUAL_CELEBRATION_THRESHOLDS}
           />
         </StaggerItem>
       </StaggerReveal>

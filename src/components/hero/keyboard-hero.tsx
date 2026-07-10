@@ -12,8 +12,12 @@ const KeyboardScene = dynamic(
   { ssr: false },
 )
 
-/** ms post-load+idle antes de montar la escena WebGL (deja asentar la página). */
-const UPGRADE_SETTLE_MS = 2500
+/** ms post-load+idle antes de montar la escena WebGL (deja asentar la página).
+ *  Corto a propósito: cuanto antes ocurra el swap, menos chance de que el
+ *  visitante ya esté mirando fijo el teclado cuando cambia. */
+const UPGRADE_SETTLE_MS = 1200
+/** Apagado del CSS antes de encender el WebGL (swap secuencial, sin overlap). */
+const CSS_OUT_MS = 180
 
 /**
  * Si el render WebGL explota (driver raro, shader que no compila), el hero no
@@ -63,6 +67,10 @@ export function KeyboardHero({
 }: KeyboardHeroProps) {
   const [tier, setTier] = useState<GpuTier | null>(null)
   const [ready, setReady] = useState(false)
+  // Swap SECUENCIAL (fix del reporte «dos teclados superpuestos»): al estar
+  // listo el WebGL, primero se apaga el CSS (CSS_OUT_MS) y recién entonces se
+  // enciende el canvas con un fade corto — nunca se ven los dos a la vez.
+  const [webglIn, setWebglIn] = useState(false)
   const [cssGone, setCssGone] = useState(false)
   const [failed, setFailed] = useState(false)
 
@@ -104,11 +112,16 @@ export function KeyboardHero({
   // con opacidad 1 aunque cssGone haya llegado a true).
   const onContextLost = useCallback(() => setFailed(true), [])
 
-  // Al terminar el crossfade se desmonta el CSS (ya no aporta nada debajo).
+  // Secuencia del swap: ready → (CSS se apaga) → webglIn → (canvas fade in) →
+  // cssGone (el CSS apagado se desmonta; ya no aporta nada debajo).
   useEffect(() => {
     if (!ready) return
-    const t = window.setTimeout(() => setCssGone(true), 600)
-    return () => window.clearTimeout(t)
+    const tIn = window.setTimeout(() => setWebglIn(true), CSS_OUT_MS)
+    const tGone = window.setTimeout(() => setCssGone(true), CSS_OUT_MS + 500)
+    return () => {
+      window.clearTimeout(tIn)
+      window.clearTimeout(tGone)
+    }
   }, [ready])
 
   const webgl = !failed && (tier === 'high' || tier === 'mid')
@@ -127,7 +140,7 @@ export function KeyboardHero({
     <div data-testid="keyboard-hero" className="kb-shell relative" aria-hidden="true">
       {!(webgl && cssGone) && (
         <div
-          className="absolute inset-0 transition-opacity duration-[400ms] ease-out"
+          className="absolute inset-0 transition-opacity duration-[180ms] ease-in"
           style={{ opacity: webgl && ready ? 0 : 1 }}
         >
           <motion.div
@@ -145,8 +158,11 @@ export function KeyboardHero({
       )}
       {webgl && (
         <div
-          className="kb-fade-x absolute inset-0 transition-opacity duration-[400ms] ease-out"
-          style={{ opacity: ready ? 1 : 0 }}
+          className="kb-fade-x absolute inset-0 transition-[opacity,transform] duration-[420ms] ease-out"
+          style={{
+            opacity: webglIn ? 1 : 0,
+            transform: webglIn ? 'scale(1)' : 'scale(0.985)',
+          }}
         >
           <div className="kb-fade-y h-full w-full">
             <WebglBoundary onError={() => setFailed(true)}>

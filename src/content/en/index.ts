@@ -34,7 +34,6 @@ export const en: Dictionary = {
         'I build websites, apps, WhatsApp bots, automation and applied AI for businesses. Custom software working 24/7. Córdoba, Argentina.',
     },
     hero: {
-      eyebrow: 'CÓRDOBA, ARGENTINA — AVAILABLE FOR PROJECTS',
       titlePrefix: 'Software that',
       // Widest FIRST: rotating words re-emit LCP candidates when the painted h1
       // area grows — leading with the longest keeps LCP pinned to first paint.
@@ -109,6 +108,7 @@ export const en: Dictionary = {
           sub: 'It compounds month after month based on the current estimated savings.',
           badge: 'Visible ROI',
           ariaLabel: '12-month cumulative savings chart',
+          milestone: '1 full salary back',
         },
         next: {
           kicker: 'Next step',

@@ -34,7 +34,6 @@ export const es: Dictionary = {
         'Desarrollo webs, apps, bots de WhatsApp, automatizaciones e IA aplicada para negocios. Software a medida que trabaja 24/7. Córdoba, Argentina.',
     },
     hero: {
-      eyebrow: 'CÓRDOBA, ARGENTINA — DISPONIBLE PARA PROYECTOS',
       titlePrefix: 'Software que',
       // La más ancha PRIMERO: la palabra rotativa re-emite candidatos LCP cuando
       // crece el área pintada del h1 — liderando con la más larga, las siguientes
@@ -110,6 +109,7 @@ export const es: Dictionary = {
           sub: 'Se acumula automáticamente mes a mes según el ahorro estimado actual.',
           badge: 'ROI visible',
           ariaLabel: 'Gráfico de ahorro acumulado de 12 meses',
+          milestone: '1 sueldo recuperado',
         },
         next: {
           kicker: 'Siguiente paso',

@@ -4,7 +4,7 @@ import { SectionHeading } from '@/components/ui/section-heading'
 import { getDictionary } from '@/lib/i18n'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import type { Locale } from '@/types/content'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, MessageCircle } from 'lucide-react'
 
 /**
  * Server component: cierre de la home. Columna izquierda con el pitch y el
@@ -34,8 +34,16 @@ export function ContactSection({ locale }: { locale: Locale }) {
               href={buildWhatsAppUrl(contact.whatsappMessage)}
               target="_blank"
               rel="noreferrer"
-              className="group inline-flex items-center gap-2 rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:translate-y-[-1px] hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)]"
+              className="group inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:translate-y-[-1px] hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)]"
             >
+              {/* Pulso sutil: presencia «en línea» del canal directo */}
+              <span className="relative inline-flex" aria-hidden>
+                <MessageCircle size={16} className="relative z-10" />
+                <span
+                  className="absolute inset-0 rounded-full bg-slate-950/35 motion-safe:animate-ping"
+                  style={{ animationDuration: '2.6s' }}
+                />
+              </span>
               {contact.whatsappCta}
               <ArrowRight
                 size={16}

@@ -31,11 +31,21 @@ type SiteHeaderClientProps = {
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 
 function Logo({ href, onNavigate }: { href: string; onNavigate?: () => void }) {
+  const pathname = usePathname()
   return (
     <Link
       href={href}
       prefetch={false}
-      onClick={onNavigate}
+      onClick={(event) => {
+        onNavigate?.()
+        // Ya en la home: el logo vuelve al comienzo con scroll suave (navegar
+        // a la misma ruta no mueve el viewport).
+        if (pathname === href) {
+          event.preventDefault()
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+      }}
+      aria-label="GalfreDev — inicio"
       className="rounded-full text-sm font-semibold tracking-[0.22em] text-white transition duration-300 hover:opacity-85"
     >
       GALFRE
@@ -62,7 +72,10 @@ export function SiteHeaderClient({
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-
+  // Guard del switch de idioma: cruzar root layouts (es↔en) es una recarga
+  // completa sin feedback del router — sin esto, un doble tap toca el switch
+  // ya invertido de la página nueva y rebota al idioma original (bug real).
+  const [switching, setSwitching] = useState(false)
   // Cierra el sheet al navegar a otra ruta (patrón "adjust state during render").
   const [lastPathname, setLastPathname] = useState(pathname)
   if (lastPathname !== pathname) {
@@ -102,21 +115,31 @@ export function SiteHeaderClient({
   }, [open])
 
   const localeSwitch = (mobile = false) => (
-    <Link
+    <a
       href={switchHref}
-      prefetch={false}
       lang={targetLang}
       hrefLang={targetLang}
       aria-label={switchAria}
+      aria-disabled={switching || undefined}
       data-testid="locale-switch"
-      onClick={() => setOpen(false)}
+      onClick={(event) => {
+        // Navegación dura deliberada: el cambio de idioma cruza root layouts
+        // (recarga completa sí o sí). assign() da feedback de carga inmediato
+        // del browser y el guard hace inerte cualquier segundo tap.
+        event.preventDefault()
+        if (switching) return
+        setSwitching(true)
+        setOpen(false)
+        window.location.assign(switchHref)
+      }}
       className={cn(
         'inline-flex items-center justify-center rounded-full border border-[var(--surface-border)] bg-white/[0.035] font-semibold tracking-[0.14em] text-white/72 transition duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:scale-[0.97]',
         mobile ? 'px-5 py-3 text-sm' : 'px-3.5 py-2 text-xs',
+        switching && 'pointer-events-none animate-pulse opacity-60',
       )}
     >
       {localeSwitchLabel}
-    </Link>
+    </a>
   )
 
   const cta = (mobile = false) => (

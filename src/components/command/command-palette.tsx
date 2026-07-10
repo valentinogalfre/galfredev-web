@@ -108,7 +108,9 @@ export function CommandPalette({
       return
     }
     if (item.action === 'switch-locale') {
-      router.push(switchByMap(switchMap, pathname, targetHome))
+      // Cruza root layouts: navegación dura deliberada (mismo criterio que el
+      // switch del header — el router cliente no puede con este salto).
+      window.location.assign(switchByMap(switchMap, pathname, targetHome))
     }
   }
 
