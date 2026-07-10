@@ -24,7 +24,7 @@ export function RootShell({
       <CursorSpotlight />
       <LenisProvider>{children}</LenisProvider>
       <CommandPaletteProvider locale={locale} />
-      <WhatsAppFab />
+      <WhatsAppFab locale={locale} />
       <Analytics />
       <SpeedInsights />
     </body>
