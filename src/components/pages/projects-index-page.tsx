@@ -150,13 +150,7 @@ export function ProjectsIndexPage({ locale }: { locale: Locale }) {
           </div>
 
           <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center text-center">
-            <span className="hero-enter inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.1)] px-4 py-1.5 font-mono text-[9px] tracking-[0.12em] text-[#8ceada] sm:text-[11px] sm:tracking-[0.16em]">
-              <span className="relative inline-flex size-1.5 shrink-0">
-                <span className="absolute inline-flex size-full rounded-full bg-[#3dddc4] opacity-60 motion-safe:animate-ping" />
-                <span className="relative inline-flex size-1.5 rounded-full bg-[#3dddc4] shadow-[0_0_10px_#3dddc4]" />
-              </span>
-              {kicker}
-            </span>
+            <span className="hero-enter section-kicker">{kicker}</span>
 
             <h1
               style={{ animationDelay: '0.08s' }}

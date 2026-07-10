@@ -19,7 +19,6 @@ import { useTypingLoop, type TypingState } from './use-typing-loop'
 type Cta = { label: string; href: string }
 
 type HeroClientProps = {
-  eyebrow: string
   titlePrefix: string
   rotatingWords: string[]
   sub: string
@@ -36,7 +35,6 @@ type HeroClientProps = {
 const USER_LINE_MAX = 14
 
 export function HeroClient({
-  eyebrow,
   titlePrefix,
   rotatingWords,
   sub,
@@ -122,17 +120,9 @@ export function HeroClient({
           style={reducedMotion ? undefined : { opacity: copyOpacity, y: copyY }}
           className="flex w-full flex-col items-center"
         >
-          <span className="hero-enter inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.1)] px-4 py-1.5 font-mono text-[9px] tracking-[0.12em] text-[#8ceada] sm:text-[11px] sm:tracking-[0.16em]">
-            <span className="relative inline-flex size-1.5 shrink-0">
-              <span className="absolute inline-flex size-full rounded-full bg-[#3dddc4] opacity-60 motion-safe:animate-ping" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-[#3dddc4] shadow-[0_0_10px_#3dddc4]" />
-            </span>
-            {eyebrow}
-          </span>
-
           <h1
             style={{ animationDelay: '0.08s' }}
-            className="hero-enter-h1 mt-5 text-balance text-[2.35rem] font-bold leading-[1.04] tracking-[-0.04em] text-white sm:mt-6 sm:text-6xl lg:text-7xl"
+            className="hero-enter-h1 text-balance text-[2.35rem] font-bold leading-[1.04] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl"
           >
             <span>{titlePrefix}</span>{' '}
             <span className="inline-block whitespace-nowrap">

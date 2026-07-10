@@ -110,7 +110,6 @@ export type ContactFormContent = {
 type HomeContent = {
   seo: SeoMeta
   hero: {
-    eyebrow: string
     titlePrefix: string
     rotatingWords: string[]
     sub: string

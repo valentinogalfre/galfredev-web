@@ -14,7 +14,6 @@ export function HeroSection({ locale }: { locale: Locale }) {
 
   return (
     <HeroClient
-      eyebrow={hero.eyebrow}
       titlePrefix={hero.titlePrefix}
       rotatingWords={hero.rotatingWords}
       sub={hero.sub}
