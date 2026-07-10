@@ -37,6 +37,24 @@ html {
   }
 }
 
+/* Lenis (smooth scroll) — recommended base styles */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 main[id],
 section[id] {
   scroll-margin-top: 5.9rem;
@@ -67,17 +85,11 @@ body::before {
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 92%);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
+/* Resets de <a> y form controls: los cubre el preflight de Tailwind v4
+   (color/text-decoration/font inherit en @layer base). Duplicarlos acá SIN
+   @layer los ponía por encima de TODAS las utilities en la cascada y mataba
+   silenciosamente cualquier utility de color o tipografía aplicada a anchors
+   y controles de formulario. */
 
 :focus-visible {
   outline: 2px solid rgba(61, 221, 196, 0.92);
@@ -113,6 +125,320 @@ textarea {
 @keyframes kicker-line-in {
   from { transform: scaleX(0); transform-origin: left; }
   to   { transform: scaleX(1); transform-origin: left; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* ---------- Hero: entrances CSS (pre-hidratación) ---------- */
+
+/* El copy del hero entra con CSS puro, NO con framer initial/animate: framer
+   SSRea opacity:0 y el texto pintaba recién después de hidratar → LCP ~5 s en
+   mobile. Con keyframes el fade arranca en el primer paint (LCP ≈ FCP).
+   Los delays por elemento van inline (animation-delay). */
+.hero-enter {
+  animation: hero-enter 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* El h1 ES el LCP: si su primer paint es opacity:0 Chrome lo descarta como
+   candidato y no lo re-reporta al terminar el fade (solo re-emitiría cuando la
+   palabra rotativa monte nodos nuevos, con timestamp tardío → LCP de ~9 s).
+   Arrancando en 0.01 —imperceptible— pinta desde el primer frame y el LCP
+   queda clavado en el FCP. */
+.hero-enter-h1 {
+  animation: hero-enter-h1 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-enter-fade {
+  animation: hero-enter-fade 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@keyframes hero-enter-h1 {
+  from {
+    opacity: 0.01;
+    transform: translateY(18px);
+  }
+}
+
+@keyframes hero-enter-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter,
+  .hero-enter-h1,
+  .hero-enter-fade {
+    animation: none;
+  }
+}
+
+/* ---------- Hero: teclado 3D CSS (port del mockup aprobado, paleta teal) ---------- */
+
+/* Shell del hero: fija la altura del área del teclado para que el crossfade
+   CSS→WebGL (capas absolutas) no mueva el layout. Espeja las alturas de .kb-stage. */
+.kb-shell {
+  width: 100%;
+  height: 360px;
+}
+
+/* Fade en los bordes del canvas WebGL: el halo del bloom se difumina hacia la
+   página en vez de cortarse en el rectángulo del canvas. Dos capas anidadas
+   (horizontal + vertical) = intersección sin depender de mask-composite. */
+.kb-fade-x {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 44px,
+    #000 calc(100% - 44px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 44px,
+    #000 calc(100% - 44px),
+    transparent
+  );
+}
+
+.kb-fade-y {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 36px,
+    #000 calc(100% - 20px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 36px,
+    #000 calc(100% - 20px),
+    transparent
+  );
+}
+
+.kb-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 360px;
+  perspective: 1400px;
+}
+
+@media (min-width: 1024px) {
+  .kb-shell {
+    height: 380px;
+  }
+
+  .kb-stage {
+    --kb-scale: 1.08;
+    height: 380px;
+  }
+}
+
+.kb-float {
+  transform-style: preserve-3d;
+  animation: kb-float 5.5s ease-in-out infinite;
+}
+
+@keyframes kb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+.kb {
+  transform: rotateX(56deg) rotateZ(-14deg) scale(var(--kb-scale, 1));
+  transform-style: preserve-3d;
+}
+
+.kb-deck {
+  position: relative;
+  width: 560px;
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #12222c, #0d1a22);
+  box-shadow:
+    0 0 0 1px rgba(61, 221, 196, 0.24),
+    -22px 32px 0 -8px rgba(4, 12, 18, 0.92),
+    -40px 60px 80px rgba(0, 0, 0, 0.65),
+    0 0 130px rgba(31, 127, 115, 0.42);
+  transform-style: preserve-3d;
+}
+
+.kb-deck::after {
+  content: '';
+  position: absolute;
+  inset: -45px;
+  border-radius: 40px;
+  background: radial-gradient(ellipse, rgba(42, 145, 132, 0.28), transparent 70%);
+  transform: translateZ(-50px);
+}
+
+.kb-row {
+  display: flex;
+  gap: 7px;
+  margin-bottom: 7px;
+  transform-style: preserve-3d;
+}
+
+.kb-row:last-child {
+  margin-bottom: 0;
+}
+
+.kb-key {
+  display: block;
+  height: 34px;
+  flex: var(--kw, 1);
+  border-radius: 7px;
+  background: linear-gradient(180deg, #1a3441, #12222c);
+  box-shadow:
+    0 -7px 0 rgba(17, 47, 56, 0.85),
+    inset 0 1px 0 rgba(140, 235, 215, 0.13);
+  transform: translateZ(14px);
+  transition:
+    transform 90ms ease-out,
+    background 90ms ease-out,
+    box-shadow 120ms ease-out;
+}
+
+.kb-key[data-lit] {
+  background: linear-gradient(180deg, #2a9184, #176b60);
+  box-shadow:
+    0 -7px 0 #0d453d,
+    0 0 24px rgba(61, 221, 196, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  animation: kb-breathe 3.6s ease-in-out infinite;
+}
+
+.kb-key[data-pressed] {
+  transform: translateZ(3px);
+  background: linear-gradient(180deg, #3dddc4, #1f7f73);
+  box-shadow:
+    0 -3px 0 #0d453d,
+    0 0 32px rgba(61, 221, 196, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  animation: none;
+}
+
+@keyframes kb-breathe {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
+}
+
+/* Easter egg ('galfredev'): light show — todas las teclas toman base teal y
+   ciclan hue en loop, con delay negativo por tecla (--ki) para que se lea como
+   barrido rainbow y no como flash uniforme. Va después de [data-lit]/[data-pressed]
+   para pisarlos mientras dura. */
+.kb-egg .kb-key {
+  background: linear-gradient(180deg, #2a9184, #176b60);
+  box-shadow:
+    0 -7px 0 #0d453d,
+    0 0 24px rgba(61, 221, 196, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  animation: kb-egg-hue 0.9s linear infinite;
+  animation-delay: calc(var(--ki, 0) * -45ms);
+}
+
+@keyframes kb-egg-hue {
+  from { filter: hue-rotate(0deg) saturate(1.7) brightness(1.3); }
+  to { filter: hue-rotate(360deg) saturate(1.7) brightness(1.3); }
+}
+
+.kb-typed {
+  margin-top: -3rem;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.4em;
+  color: #8ceada;
+  text-shadow: 0 0 14px rgba(61, 221, 196, 0.75);
+  min-height: 1.4em;
+}
+
+.kb-typed::after {
+  content: '▌';
+  margin-left: 0.1em;
+  animation: kb-blink 1s steps(1) infinite;
+}
+
+@keyframes kb-blink {
+  50% { opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .kb-shell {
+    height: 230px;
+  }
+
+  .kb-stage {
+    --kb-scale: 0.68;
+    height: 230px;
+  }
+
+  .kb-typed {
+    margin-top: -1.25rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+  }
+}
+
+/* Teclado mini decorativo (404/error): versión compacta del teclado del hero.
+   Mayor especificidad que las reglas responsive de .kb-stage para pisar
+   height/--kb-scale en todos los breakpoints. */
+.kb-mini .kb-stage {
+  --kb-scale: 0.5;
+  height: 160px;
+}
+
+@media (min-width: 640px) {
+  .kb-mini .kb-stage {
+    --kb-scale: 0.6;
+    height: 190px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kb-float,
+  .kb-key[data-lit],
+  .kb-egg .kb-key,
+  .kb-typed::after {
+    animation: none;
+  }
+
+  .kb-key {
+    transition: none;
+  }
 }
 
 .surface-panel {

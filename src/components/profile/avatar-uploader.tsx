@@ -106,7 +106,7 @@ export function AvatarUploader({
   }
 
   return (
-    <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-5">
+    <div className="rounded-[1.7rem] border border-[var(--surface-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-5">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
         <UserAvatar
           user={{
@@ -130,9 +130,9 @@ export function AvatarUploader({
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 px-4 py-2 text-sm text-white transition hover:border-white/20 hover:bg-white/10"
+              className="inline-flex items-center gap-2 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.12)] px-4 py-2 text-sm text-[#8ceada] transition duration-300 hover:border-[rgba(61,221,196,0.45)] hover:bg-[rgba(31,127,115,0.2)] hover:text-white"
             >
-              {loading ? <LoaderCircle size={16} className="animate-spin" /> : <ImagePlus size={16} />}
+              {loading ? <LoaderCircle size={16} aria-hidden className="animate-spin" /> : <ImagePlus size={16} aria-hidden />}
               {previewValue ? 'Cambiar imagen' : 'Subir imagen'}
             </button>
 
@@ -140,9 +140,9 @@ export function AvatarUploader({
               <button
                 type="button"
                 onClick={() => onChange('')}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white/66 transition hover:border-white/20 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.035] px-4 py-2 text-sm text-white/66 transition duration-300 hover:border-white/24 hover:text-white"
               >
-                <Trash2 size={16} />
+                <Trash2 size={16} aria-hidden />
                 Quitar imagen
               </button>
             ) : null}

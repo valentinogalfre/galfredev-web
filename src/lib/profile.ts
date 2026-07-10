@@ -18,7 +18,7 @@ function cleanOptionalString(value: string) {
   return trimmed.length > 0 ? trimmed : null
 }
 
-export function createEmptyProfileState(): ProfileFormState {
+function createEmptyProfileState(): ProfileFormState {
   return {
     fullName: '',
     phone: '',
@@ -63,11 +63,11 @@ export function createProfileState(bundle?: Partial<ProfileBundle>): ProfileForm
   }
 }
 
-export function isValidAvatarDataUrl(value: string) {
+function isValidAvatarDataUrl(value: string) {
   return DATA_URL_IMAGE_PATTERN.test(value)
 }
 
-export function sanitizeInterestList(values: string[]) {
+function sanitizeInterestList(values: string[]) {
   return Array.from(
     new Set(
       values
@@ -78,7 +78,7 @@ export function sanitizeInterestList(values: string[]) {
   )
 }
 
-export function normalizeProfileState(form: ProfileFormState) {
+function normalizeProfileState(form: ProfileFormState) {
   const interests = sanitizeInterestList(form.interests)
   const avatarUrl = cleanString(form.avatarUrl)
 

@@ -1,121 +1,120 @@
 # QA Release Checklist
 
-Checklist manual para validar la web de GalfreDev antes de cerrar release, abrir PR final o promover un deploy como principal.
+Checklist manual para validar la web de GalfreDev antes de cerrar release, abrir PR final o promover un deploy como principal. Complementa (no reemplaza) los gates automáticos: `npm run check` + suite e2e contra build de producción.
 
 ## URLs a testear
 
 - Preview/producción de esta rama: [https://galfre-dev-next.vercel.app](https://galfre-dev-next.vercel.app)
-- Deploy directo de esta publicación: [https://galfre-dev-next-gpi8vykvc-valentinos-projects-50b5dc09.vercel.app](https://galfre-dev-next-gpi8vykvc-valentinos-projects-50b5dc09.vercel.app)
 - Dominio actual en producción: [https://galfredev.com](https://galfredev.com)
 
 ## 1. Smoke general
 
 - [ ] La home carga completa sin pantalla blanca ni errores visibles.
 - [ ] No aparecen errores de hidratación ni overlays rojos en consola.
-- [ ] El header, hero, footer y FAB de WhatsApp renderizan bien.
+- [ ] Header, hero con teclado, footer y FAB de WhatsApp renderizan bien.
 - [ ] Recargar la home varias veces no rompe layout ni animaciones.
-- [ ] Las rutas `/login`, `/privacidad`, `/terminos` y `/404` cargan correctamente.
+- [ ] Las rutas `/login`, `/privacidad`, `/terminos` y un 404 cargan correctamente.
+- [ ] `/en` y una ruta interna en inglés (`/en/services/whatsapp-bots`) cargan completas.
 
-## 2. Hero y primera impresión
+## 2. Hero y teclado 3D
 
-- [ ] El headline rotativo cambia suave y sin saltos verticales.
-- [ ] La tarjeta derecha cambia sincronizada con el texto del hero.
-- [ ] No hay mini-cards cortadas, textos ilegibles ni adornos sucios.
-- [ ] Los CTAs del hero se leen claro y se diferencian bien.
-- [ ] Los micro-hovers del hero se sienten premium y no exagerados.
+- [ ] El teclado CSS aparece de inmediato; el 3D hace crossfade suave cuando carga (sin flash ni salto).
+- [ ] El loop de tipeo escribe palabras en el teclado y en la línea tipeada.
+- [ ] **Device real iOS (Safari):** el teclado 3D carga, no recalienta, y el scroll de salida es fluido.
+- [ ] **Device real Android (Chrome):** ídem — en gama baja debe quedar el teclado CSS (tier `low`), no un canvas trabado.
+- [ ] Con "Reducir movimiento" activado en el sistema: hero estático completo, palabra fija, sin canvas.
+- [ ] Al scrollear lejos del hero, la GPU baja a reposo (verificable en dev tools → performance).
+- [ ] El parallax al mouse (desktop) es sutil; el tap en mobile dispara la onda en el teclado.
 
-## 3. Navbar y navegación
+## 3. Navegación, ⌘K e idiomas
 
-- [ ] Cada item del navbar lleva a la sección correcta.
-- [ ] El menú mobile abre y cierra correctamente.
-- [ ] El menú mobile también se puede cerrar con `Escape`.
-- [ ] Los links del footer a secciones de la home funcionan también desde páginas internas.
-- [ ] El botón de acceso / perfil lleva al flujo correcto según sesión.
+- [ ] Cada item del navbar lleva a la sección/página correcta.
+- [ ] El menú mobile abre, cierra y se puede cerrar con `Escape`.
+- [ ] La command palette abre con `⌘K` / `Ctrl+K` y desde el botón; navega a páginas y secciones.
+- [ ] El switch ES/EN mantiene la página equivalente (servicio ↔ service, proyecto ↔ project).
+- [ ] Los links del footer funcionan también desde páginas internas.
+- [ ] El botón de acceso/perfil lleva al flujo correcto según sesión.
 
-## 4. Secciones de la home
+## 4. Páginas de servicio y micro-demos
 
-- [ ] Propuesta de valor: textos claros, sin cortes ni espacios raros.
-- [ ] Soluciones: cards consistentes, sin copy roto ni CTAs inconsistentes.
-- [ ] Cómo trabajamos: workflow y pasos se ven bien en desktop y mobile.
-- [ ] ROI: cards, gráfico y texto mantienen buena jerarquía.
-- [ ] Valentino: sección sólida, sin overlays raros ni badges mal ubicados.
-- [ ] Perfil teaser: mensaje claro y CTA correcto.
-- [ ] Contacto: formulario bien alineado y fácil de leer.
+- [ ] Las 5 páginas de servicio cargan con su hero, precios/beneficios y CTA.
+- [ ] Cada micro-demo (WhatsApp, web builder, app de turnos, pipeline, panel) es interactiva y no rompe layout.
+- [ ] Las micro-demos aguantan clicks repetidos/simultáneos sin romperse.
+- [ ] El espejo `/en/services/*` muestra las mismas demos con copy en inglés.
 
-## 5. Responsive
+## 5. Bot de demo (home)
 
-- [ ] Desktop grande (`1440px+`) se ve equilibrado y sin vacíos raros.
+- [ ] El chat responde en modo guionado sin keys configuradas.
+- [ ] **Post-activación de keys** (`ANTHROPIC_API_KEY` + `SUPABASE_SERVICE_ROLE_KEY` en Vercel): el bot responde con Claude real (`mode: "live"`), respeta el límite diario y degrada a guionado al agotarlo.
+- [ ] El CTA "Seguir por WhatsApp" abre wa.me con el mensaje correcto.
+
+## 6. Portfolio y sobre-mí
+
+- [ ] `/proyectos` filtra por categoría sin glitches.
+- [ ] Cada caso (`/proyectos/pyron`, `/proyectos/pulso`, …) carga completo con métricas y stack.
+- [ ] `/sobre-mi` (y `/en/about`) cargan historia, stack y certificaciones.
+
+## 7. Responsive
+
+- [ ] Desktop grande (`1920px`) equilibrado y sin vacíos raros.
 - [ ] Laptop (`1280px`) mantiene proporciones correctas.
-- [ ] Tablet (`768px–1024px`) no rompe cards, grids ni textos.
-- [ ] Mobile (`390px aprox.`) mantiene legibilidad y CTAs accesibles.
-- [ ] No hay textos truncados ni solapes en ninguna sección.
+- [ ] Tablet (`768px`) no rompe cards, grids ni demos.
+- [ ] Mobile (`360–390px`) legible, CTAs accesibles y **cero scroll horizontal**.
 
-## 6. Formularios y leads
+## 8. Formularios y leads
 
-- [ ] El formulario no permite envío vacío.
-- [ ] El email inválido muestra error claro.
-- [ ] El teléfono corto o inválido muestra error claro.
-- [ ] El contexto demasiado corto muestra error claro.
-- [ ] Los campos largos o raros no rompen UI.
+- [ ] El formulario no permite envío vacío; errores claros por campo.
+- [ ] Campos largos o raros no rompen UI.
 - [ ] El botón de envío se desactiva durante loading.
-- [ ] Un envío válido muestra éxito y luego continúa a WhatsApp.
+- [ ] Un envío válido muestra éxito y continúa a WhatsApp.
 - [ ] Si falla red/backend, el usuario ve un mensaje claro y seguro.
+- [ ] En iPhone: enfocar los inputs NO hace zoom automático (fuente ≥16px).
 
-## 7. Login, auth y perfil
+## 9. Login, auth y perfil
 
-- [ ] `/perfil` redirige a `/login` si no hay sesión.
-- [ ] `/login` redirige si ya existe sesión.
-- [ ] Magic link acepta email válido y rechaza email inválido.
-- [ ] OAuth (Google/GitHub/LinkedIn) inicia correctamente si está configurado.
+- [ ] `/perfil` redirige a `/login` sin sesión; `/login` redirige con sesión.
+- [ ] Magic link acepta email válido y rechaza inválido.
+- [ ] OAuth (Google/GitHub) inicia correctamente si está configurado.
 - [ ] Logout cierra sesión y vuelve a login.
-- [ ] Guardar perfil funciona con datos válidos.
-- [ ] Los errores del perfil aparecen bien ubicados por campo.
-- [ ] Subir avatar válido funciona.
-- [ ] Avatar inválido o demasiado pesado muestra mensaje claro.
-- [ ] El toast de perfil guardado aparece y se puede cerrar.
+- [ ] Guardar perfil y subir avatar funcionan; errores bien ubicados.
 
-## 8. SEO y accesibilidad
+## 10. SEO y accesibilidad
 
-- [ ] Cada página principal tiene título correcto.
-- [ ] Cada página principal tiene meta description coherente.
-- [ ] Hay un solo `h1` por página importante.
-- [ ] El skip link aparece al navegar con teclado.
+- [ ] Título y meta description correctos por página (es y en).
+- [ ] Un solo `h1` por página.
+- [ ] `robots.txt` y `sitemap.xml` responden; el sitemap incluye ambas variantes de idioma y ninguna ruta privada.
+- [ ] **OG images:** validar home + un servicio + un proyecto en el validador de Twitter/X ([cards-dev](https://cards-dev.twitter.com/validator)) y el de Facebook ([sharing debugger](https://developers.facebook.com/tools/debug/)) — placa correcta por página, sin 404.
+- [ ] **hreflang:** tras el deploy, verificar en Google Search Console (Indexación → Páginas) que las variantes es/en se reconocen como alternates y no como duplicados.
+- [ ] El skip link aparece al navegar con teclado y tiene contraste legible.
 - [ ] Botones, enlaces e inputs muestran foco visible.
-- [ ] El contraste general sigue siendo legible.
-- [ ] `robots.txt` responde correctamente.
-- [ ] `sitemap.xml` responde correctamente.
+- [ ] Lighthouse mobile: Performance ≥90 en home, SEO ≥95, Accessibility ≥95.
 
-## 9. Seguridad y robustez
+## 11. Seguridad y robustez
 
-- [ ] Los errores visibles al usuario no exponen detalles técnicos.
-- [ ] No se ve contenido privado aunque sea un instante sin sesión.
-- [ ] El formulario responde bien ante inputs inesperados.
+- [ ] Los errores visibles no exponen detalles técnicos.
+- [ ] No se ve contenido privado ni un instante sin sesión.
 - [ ] No hay redirects raros en login/logout/callback.
-- [ ] El sitio no depende de variables faltantes para renderizar páginas públicas.
+- [ ] Las páginas públicas renderizan aunque falten variables opcionales (bot en guionado).
 
-## 10. Datos y base
+## 12. Datos y base
 
-- [ ] `lead_intake` recibe leads correctamente.
-- [ ] `marketing_consents` registra consentimientos.
+- [ ] `lead_intake` recibe leads; `marketing_consents` registra consentimientos.
 - [ ] `profiles` y `user_preferences` guardan cambios del perfil.
-- [ ] Si ya aplicaste la migración nueva, existen columnas de trazabilidad extra en `lead_intake`.
-- [ ] Si ya aplicaste la migración nueva, existe la tabla `lead_events`.
+- [ ] Migración `2026-07-04_demo-bot.sql` aplicada → existe la tabla de sesiones del bot y el límite diario persiste.
 
-## 11. Producción / Vercel
+## 13. Producción / Vercel
 
-- [ ] `https://galfre-dev-next.vercel.app` responde con la versión nueva.
-- [ ] `https://galfredev.com` responde con la versión esperada.
-- [ ] Si el dominio principal todavía apunta a otro proyecto, está documentado antes de promoción final.
+- [ ] El deploy nuevo responde en el dominio esperado.
 - [ ] No hay errores críticos en logs de Vercel.
+- [ ] Analytics y Speed Insights reportan (los 404 de `/_vercel/*` solo ocurren en local).
+- [ ] Verificar manualmente https://galfredev.com/pulso/privacidad tras cada deploy (la URL limpia la resuelve solo el CDN de Vercel; la suite e2e local no puede cubrirla — ver e2e/baseline.spec.ts).
 
-## 12. Cierre de release
+## 14. Cierre de release
 
-- [ ] `npm run typecheck` OK
-- [ ] `npm run lint` OK
-- [ ] `npm run build` OK
+- [ ] `npm run check` OK (lint + typecheck + unit + build).
+- [ ] Suite e2e completa verde contra build de producción (`--retries=0`).
 - [ ] La rama está pusheada a GitHub.
-- [ ] El deploy está online y accesible.
-- [ ] El sitio se siente premium, claro y consistente de punta a punta.
+- [ ] El sitio se siente premium, claro y consistente de punta a punta, en ambos idiomas.
 
 ## Notas
 

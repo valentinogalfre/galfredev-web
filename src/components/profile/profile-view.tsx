@@ -59,12 +59,12 @@ type InfoCardProps = {
 
 function InfoCard({ icon, label, value, empty = 'No especificado' }: InfoCardProps) {
   return (
-    <div className="rounded-[1.4rem] border border-white/8 bg-white/[0.03] p-4 transition duration-300 hover:border-white/14 hover:bg-white/[0.05] sm:p-5">
+    <div className="rounded-[1.4rem] border border-[var(--surface-border)] bg-white/[0.03] p-4 transition duration-300 hover:border-[rgba(61,221,196,0.18)] hover:bg-white/[0.05] sm:p-5">
       <div className="flex items-center gap-2.5">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-[0.85rem] border border-white/10 bg-black/20 text-[var(--color-accent)] sm:size-9">
+        <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-[0.85rem] border border-white/10 bg-black/20 text-[#3dddc4] sm:size-9">
           {icon}
         </span>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40 sm:text-[11px]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[rgba(61,221,196,0.66)] sm:text-[11px]">
           {label}
         </p>
       </div>
@@ -84,7 +84,7 @@ function ConsentRow({ label, active }: { label: string; active: boolean }) {
   return (
     <div className="flex items-start gap-3">
       {active ? (
-        <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-[var(--color-accent)]" />
+        <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-[#3dddc4]" />
       ) : (
         <XCircle size={15} className="mt-0.5 shrink-0 text-white/22" />
       )}
@@ -115,7 +115,7 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
 
       {/* ── Header card ─────────────────────────────── */}
       <Reveal variant="section">
-        <div className="rounded-[1.8rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:rounded-[2rem] sm:p-8">
+        <div className="page-panel p-5 sm:p-8">
 
           {/* Avatar row — always horizontal */}
           <div className="flex items-start justify-between gap-4">
@@ -164,7 +164,7 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
                     transition={{ duration: 0.45, delay: 0.14 }}
                     className="flex min-w-0 items-center gap-1.5 truncate text-sm text-white/60"
                   >
-                    <Building2 size={13} className="shrink-0 text-[var(--color-accent)]" />
+                    <Building2 size={13} aria-hidden className="shrink-0 text-[#3dddc4]" />
                     <span className="truncate">{bundle.companyName}</span>
                   </motion.p>
                 ) : null}
@@ -190,7 +190,7 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
             >
               <Link
                 href="/perfil?edit=1"
-                className="group inline-flex items-center gap-2 rounded-full border border-[var(--color-accent)]/24 bg-[var(--color-accent)]/10 px-3 py-2.5 text-xs font-medium text-white transition duration-300 hover:border-[var(--color-accent)]/42 hover:bg-[var(--color-accent)]/18 active:scale-[0.985] sm:px-5 sm:py-3 sm:text-sm"
+                className="group inline-flex items-center gap-2 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.12)] px-3 py-2.5 text-xs font-medium text-[#8ceada] transition duration-300 hover:border-[rgba(61,221,196,0.45)] hover:bg-[rgba(31,127,115,0.2)] hover:text-white active:scale-[0.985] sm:px-5 sm:py-3 sm:text-sm"
               >
                 <Pencil
                   size={13}
@@ -235,12 +235,12 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
       {/* ── Interests ───────────────────────────────── */}
       {interestLabels.length > 0 ? (
         <Reveal variant="surface" delay={0.1}>
-          <div className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-4 sm:rounded-[1.8rem] sm:p-6">
+          <div className="rounded-[1.6rem] border border-[var(--surface-border)] bg-white/[0.03] p-4 sm:rounded-[1.8rem] sm:p-6">
             <div className="flex items-center gap-2.5">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-[0.85rem] border border-white/10 bg-black/20 text-[var(--color-accent)] sm:size-9">
+              <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-[0.85rem] border border-white/10 bg-black/20 text-[#3dddc4] sm:size-9">
                 <Sparkles size={15} />
               </span>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40 sm:text-[11px]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[rgba(61,221,196,0.66)] sm:text-[11px]">
                 Intereses
               </p>
             </div>
@@ -248,7 +248,7 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
               {interestLabels.map((label) => (
                 <span
                   key={label}
-                  className="rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/8 px-3 py-1.5 text-sm text-white/80 sm:px-4 sm:py-2"
+                  className="rounded-full border border-[rgba(61,221,196,0.2)] bg-[rgba(61,221,196,0.06)] px-3 py-1.5 text-sm text-white/80 sm:px-4 sm:py-2"
                 >
                   {label}
                 </span>
@@ -260,8 +260,8 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
 
       {/* ── Consents ────────────────────────────────── */}
       <Reveal variant="surface" delay={0.14}>
-        <div className="rounded-[1.6rem] border border-white/8 bg-white/[0.025] p-4 sm:rounded-[1.8rem] sm:p-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40 sm:text-[11px]">
+        <div className="rounded-[1.6rem] border border-[var(--surface-border)] bg-white/[0.025] p-4 sm:rounded-[1.8rem] sm:p-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[rgba(61,221,196,0.66)] sm:text-[11px]">
             Preferencias de contacto
           </p>
           <div className="mt-4 space-y-3">

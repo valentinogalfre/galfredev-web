@@ -5,6 +5,7 @@ import { StaggerItem, StaggerReveal } from '@/components/motion/stagger-reveal'
 import { calculateRoi } from '@/lib/roi'
 import { formatCurrencyArs } from '@/lib/utils'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
+import type { RoiCalculatorLabels } from '@/types/content'
 import {
   motion,
   useMotionValue,
@@ -73,8 +74,10 @@ function AnimatedMetric({
 
 function RoiProjectionChart({
   monthlySavingsArs,
+  labels,
 }: {
   monthlySavingsArs: number
+  labels: RoiCalculatorLabels['chart']
 }) {
   const data = useMemo(
     () =>
@@ -114,13 +117,11 @@ function RoiProjectionChart({
     <div className="surface-panel surface-panel-soft p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <p className="text-[15px] font-semibold text-white">Proyección de ahorro a 12 meses</p>
-          <p className="mt-1 text-[13px] leading-5 text-white/50">
-            Se acumula automáticamente mes a mes según el ahorro estimado actual.
-          </p>
+          <p className="text-[15px] font-semibold text-white">{labels.title}</p>
+          <p className="mt-1 text-[13px] leading-5 text-white/50">{labels.sub}</p>
         </div>
         <div className="hidden shrink-0 whitespace-nowrap rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-[var(--color-accent)] sm:inline-flex">
-          ROI visible
+          {labels.badge}
         </div>
       </div>
 
@@ -128,7 +129,7 @@ function RoiProjectionChart({
         viewBox={`0 0 ${width} ${height}`}
         className="h-[220px] w-full"
         role="img"
-        aria-label="Gráfico de ahorro acumulado de 12 meses"
+        aria-label={labels.ariaLabel}
       >
         <defs>
           <linearGradient id="roi-line" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -229,7 +230,8 @@ function ResultCard({ label, value, formatter, icon: Icon }: ResultCardProps) {
   )
 }
 
-export function ROICalculator() {
+/** Client component: UI de la calculadora. Todo el copy llega por props. */
+export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
   const salaryInputId = useId()
   const hoursInputId = useId()
   const [monthlySalaryArs, setMonthlySalaryArs] = useState(DEFAULT_SALARY_ARS)
@@ -243,12 +245,12 @@ export function ROICalculator() {
   const salaryInputValue = formatCurrencyInput(monthlySalaryArs)
   const whatsappHref = buildWhatsAppUrl(
     [
-      'Hola, usé la calculadora ROI de GalfreDev.',
-      `Sueldo mensual del recurso: ${formatCurrencyArs(monthlySalaryArs)}`,
-      `Horas semanales en tareas repetitivas: ${formatHours(repetitiveHoursPerWeek)} hs`,
-      `Ahorro mensual estimado: ${formatCurrencyArs(results.monthlySavingsArs)}`,
-      `Ahorro anual proyectado: ${formatCurrencyArs(results.annualSavingsArs)}`,
-      'Quiero automatizar estas tareas.',
+      labels.whatsapp.intro,
+      `${labels.whatsapp.salary} ${formatCurrencyArs(monthlySalaryArs)}`,
+      `${labels.whatsapp.hours} ${formatHours(repetitiveHoursPerWeek)} ${labels.hours.unit}`,
+      `${labels.whatsapp.monthly} ${formatCurrencyArs(results.monthlySavingsArs)}`,
+      `${labels.whatsapp.annual} ${formatCurrencyArs(results.annualSavingsArs)}`,
+      labels.whatsapp.closing,
     ].join('\n'),
   )
 
@@ -264,12 +266,12 @@ export function ROICalculator() {
                   className="flex items-center gap-2 text-sm font-medium text-white"
                 >
                   <Wallet size={16} className="text-[var(--color-accent)]" />
-                  Sueldo mensual del recurso
+                  {labels.salary.label}
                 </label>
                 <p className="mt-2 text-sm leading-6 text-white/55">
-                  Ingresá el costo mensual del empleado o recurso que hoy hace esas tareas.
+                  {labels.salary.help}
                 </p>
-                <div className="mt-4 rounded-[1.3rem] border border-white/8 bg-white/[0.02] px-4 py-3">
+                <div className="mt-4 rounded-[1.3rem] border border-white/8 bg-white/[0.02] px-4 py-3 transition duration-300 focus-within:border-[var(--color-accent)]/45 focus-within:bg-white/[0.04]">
                   <input
                     id={salaryInputId}
                     type="text"
@@ -292,14 +294,14 @@ export function ROICalculator() {
                     className="flex items-center gap-2 text-sm font-medium text-white"
                   >
                     <Coins size={16} className="text-[var(--color-accent)]" />
-                    Horas semanales en tareas repetitivas
+                    {labels.hours.label}
                   </label>
                   <span className="rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-3 py-1 text-sm font-medium text-[var(--color-accent)]">
-                    {formatHours(repetitiveHoursPerWeek)} hs
+                    {formatHours(repetitiveHoursPerWeek)} {labels.hours.unit}
                   </span>
                 </div>
                 <p className="mt-2 text-sm leading-6 text-white/55">
-                  Ajustá cuántas horas por semana se consumen en tareas que podríamos automatizar.
+                  {labels.hours.help}
                 </p>
                 <div className="mt-5">
                   <input
@@ -316,8 +318,8 @@ export function ROICalculator() {
                     aria-describedby={`${hoursInputId}-help`}
                   />
                   <div className="mt-2 flex justify-between text-xs text-white/34">
-                    <span>1 hs</span>
-                    <span>40 hs</span>
+                    <span>{labels.hours.min}</span>
+                    <span>{labels.hours.max}</span>
                   </div>
                 </div>
               </div>
@@ -327,19 +329,22 @@ export function ROICalculator() {
           <div className="ambient-divider" />
 
           <div className="rounded-[1.6rem] border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-4 py-4 text-sm text-white/74">
-            Hoy esas horas repetitivas te están costando aproximadamente{' '}
+            {labels.costNote.before}{' '}
             <span className="font-semibold text-white">
               <AnimatedMetric
                 value={results.monthlyRepetitiveCostArs}
                 formatter={formatCurrencyArs}
               />
             </span>{' '}
-            por mes.
+            {labels.costNote.after}
           </div>
         </div>
 
         <div className="space-y-4">
-          <RoiProjectionChart monthlySavingsArs={results.monthlySavingsArs} />
+          <RoiProjectionChart
+            monthlySavingsArs={results.monthlySavingsArs}
+            labels={labels.chart}
+          />
 
           <motion.a
             initial={{ opacity: 0, y: 14 }}
@@ -353,20 +358,20 @@ export function ROICalculator() {
           >
             <div className="pointer-events-none absolute inset-[1px] rounded-[calc(1.6rem-1px)] border border-[var(--color-accent)]/8" />
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--color-accent)]">
-              Siguiente paso
+              {labels.next.kicker}
             </p>
             <p className="mt-3 text-xl font-medium leading-tight tracking-[-0.04em]">
-              Si automatizás estas tareas, podés recuperar{' '}
+              {labels.next.before}{' '}
               <span className="text-[var(--color-accent)]">
                 <AnimatedMetric
                   value={results.annualSavingsArs}
                   formatter={formatCurrencyArs}
                 />
               </span>{' '}
-              al año. ¿Hablamos?
+              {labels.next.after}
             </p>
             <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-white/84">
-              Quiero automatizar
+              {labels.next.cta}
               <ArrowRight
                 size={16}
                 className="transition-transform duration-300 group-hover:translate-x-0.5"
@@ -379,7 +384,7 @@ export function ROICalculator() {
       <StaggerReveal className="mt-6 grid grid-cols-3 gap-3 sm:gap-4" delay={0.1} stagger={0.09}>
         <StaggerItem className="h-full">
           <ResultCard
-            label="Ahorro / mes"
+            label={labels.results.monthly}
             value={results.monthlySavingsArs}
             formatter={formatCurrencyArs}
             icon={TrendingUp}
@@ -387,15 +392,15 @@ export function ROICalculator() {
         </StaggerItem>
         <StaggerItem className="h-full">
           <ResultCard
-            label="Horas libres / mes"
+            label={labels.results.hoursFree}
             value={results.monthlyHoursRecovered}
-            formatter={(value) => `${formatCompactNumber(value)} hs`}
+            formatter={(value) => `${formatCompactNumber(value)} ${labels.hours.unit}`}
             icon={Coins}
           />
         </StaggerItem>
         <StaggerItem className="h-full">
           <ResultCard
-            label="Ahorro anual"
+            label={labels.results.annual}
             value={results.annualSavingsArs}
             formatter={formatCurrencyArs}
             icon={Wallet}

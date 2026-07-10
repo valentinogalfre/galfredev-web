@@ -371,6 +371,24 @@ comment on column public.lead_intake.entry_point is
 comment on column public.lead_intake.cta_id is
   'CTA o disparador específico usado por el usuario.';
 
+-- Demo bot de la home: contador diario de mensajes por visitante para el
+-- rate limit del modo live (Claude). Solo el service role accede (sin policies).
+create table if not exists public.demo_bot_usage (
+  id uuid primary key default gen_random_uuid(),
+  visitor_id text not null,
+  ip text,
+  day date not null default current_date,
+  message_count int not null default 0,
+  updated_at timestamptz not null default now(),
+  unique (visitor_id, day)
+);
+alter table public.demo_bot_usage enable row level security;
+
+create index if not exists demo_bot_usage_ip_day_idx on public.demo_bot_usage (ip, day);
+
+comment on table public.demo_bot_usage is
+  'Contador diario de mensajes por visitante para el rate limit del demo bot en modo live.';
+
 -- Nota:
 -- Si luego querés un panel interno de administración total de leads,
 -- conviene agregar una tabla de roles internos y políticas específicas

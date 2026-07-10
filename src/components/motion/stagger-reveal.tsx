@@ -40,7 +40,6 @@ export function StaggerReveal({
   stagger = 0.09,
   ...props
 }: StaggerRevealProps) {
-  const reduceMotion = useReducedMotion()
   const hydrated = useSyncExternalStore(
     () => () => undefined,
     () => true,
