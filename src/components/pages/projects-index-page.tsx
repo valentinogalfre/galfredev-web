@@ -13,11 +13,13 @@ import Link from 'next/link'
 const LABELS = {
   es: {
     allFilter: 'Todos',
+    filterGroup: 'Filtrar por servicio',
     caseLabel: 'Ver el caso',
     captureAlt: (name: string) => `Captura de ${name}`,
   },
   en: {
     allFilter: 'All',
+    filterGroup: 'Filter by service',
     caseLabel: 'View case',
     captureAlt: (name: string) => `${name} screenshot`,
   },
@@ -66,7 +68,7 @@ function ProjectCard({
           <ul className="mt-5 space-y-2.5">
             {project.results.slice(0, 2).map((result) => (
               <li key={result} className="flex items-start gap-3 text-sm leading-6 text-white/72">
-                <Check size={15} strokeWidth={2.4} className="mt-1 shrink-0 text-[#3dddc4]" />
+                <Check size={15} strokeWidth={2.4} aria-hidden className="mt-1 shrink-0 text-[#3dddc4]" />
                 {result}
               </li>
             ))}
@@ -176,7 +178,12 @@ export function ProjectsIndexPage({ locale }: { locale: Locale }) {
         <section className="px-4 pb-24 pt-6 sm:px-6 sm:pb-28 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <Reveal variant="surface">
-              <ProjectsFilter allLabel={labels.allFilter} filters={filters} items={items} />
+              <ProjectsFilter
+                allLabel={labels.allFilter}
+                groupLabel={labels.filterGroup}
+                filters={filters}
+                items={items}
+              />
             </Reveal>
           </div>
         </section>

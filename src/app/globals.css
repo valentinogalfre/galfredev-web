@@ -419,6 +419,21 @@ textarea {
   }
 }
 
+/* Teclado mini decorativo (404/error): versión compacta del teclado del hero.
+   Mayor especificidad que las reglas responsive de .kb-stage para pisar
+   height/--kb-scale en todos los breakpoints. */
+.kb-mini .kb-stage {
+  --kb-scale: 0.5;
+  height: 160px;
+}
+
+@media (min-width: 640px) {
+  .kb-mini .kb-stage {
+    --kb-scale: 0.6;
+    height: 190px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .kb-float,
   .kb-key[data-lit],

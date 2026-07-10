@@ -39,8 +39,9 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   return (
     <>
       <SiteHeader locale="es" />
-      <main id="contenido-principal" className="px-4 pb-18 pt-28 sm:px-6 lg:px-8 lg:pt-32">
-        <div className="mx-auto max-w-5xl">
+      <main id="contenido-principal" className="relative overflow-hidden px-4 pb-18 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_at_50%_-12%,rgba(31,127,115,0.2),transparent_58%),radial-gradient(ellipse_at_78%_10%,rgba(255,180,106,0.05),transparent_28%)]" />
+        <div className="relative mx-auto max-w-5xl">
           {showForm ? (
             <ProfileForm
               email={userContext.authUser.email}

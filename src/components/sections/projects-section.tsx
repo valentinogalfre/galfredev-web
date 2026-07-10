@@ -60,7 +60,7 @@ function ProjectCard({
           <ul className="mt-6 space-y-2.5">
             {project.results.slice(0, 2).map((result) => (
               <li key={result} className="flex items-start gap-3 text-sm leading-6 text-white/72">
-                <Check size={15} strokeWidth={2.4} className="mt-1 shrink-0 text-[#3dddc4]" />
+                <Check size={15} strokeWidth={2.4} aria-hidden className="mt-1 shrink-0 text-[#3dddc4]" />
                 {result}
               </li>
             ))}

@@ -28,22 +28,24 @@ export default async function LoginPage() {
   return (
     <>
       <SiteHeader locale="es" />
-      <main id="contenido-principal" className="relative overflow-hidden px-4 pb-18 pt-28 sm:px-6 lg:px-8 lg:pt-32">
-        <div className="absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_top,rgba(31,127,115,0.18),transparent_42%),radial-gradient(circle_at_78%_12%,rgba(255,180,106,0.08),transparent_22%)]" />
-        <div className="relative mx-auto grid min-h-[80svh] max-w-7xl items-center gap-10 lg:grid-cols-[0.88fr_1.12fr]">
-          <div className="space-y-7">
-            <p className="section-kicker">Acceso liviano</p>
-            <h1 className="max-w-[10.5ch] text-balance text-[3.3rem] font-semibold leading-[0.94] tracking-[-0.08em] text-white sm:text-[4.3rem]">
-              Ingresá una vez y dejá tu contexto listo para que la próxima conversación avance más rápido.
+      <main id="contenido-principal" className="relative overflow-hidden px-4 pb-20 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(ellipse_at_50%_-12%,rgba(31,127,115,0.22),transparent_58%),radial-gradient(ellipse_at_78%_10%,rgba(255,180,106,0.06),transparent_28%)]" />
+        <div className="relative mx-auto flex min-h-[76svh] w-full max-w-3xl flex-col items-center justify-center gap-10 text-center">
+          <div className="space-y-5">
+            <p className="section-kicker justify-center">Acceso liviano</p>
+            <h1 className="text-balance text-4xl font-semibold leading-[1.02] tracking-[-0.05em] text-white sm:text-5xl">
+              Ingresá una vez y dejá tu{' '}
+              <em className="inline-block bg-[linear-gradient(95deg,#a5f0e0_5%,#3dddc4_45%,#2a9184_95%)] bg-clip-text pr-1 font-normal italic text-transparent [font-family:var(--font-instrument-serif),Georgia,serif]">
+                contexto listo
+              </em>{' '}
+              para que la próxima conversación avance más rápido.
             </h1>
-            <p className="max-w-xl text-lg leading-8 text-[var(--text-faint)]">
+            <p className="mx-auto max-w-xl text-base leading-8 text-[var(--text-faint)] sm:text-lg">
               El perfil sirve para guardar datos básicos, entender mejor tu operación y adaptar diagnósticos o propuestas sin convertir el sitio en un portal complejo.
             </p>
           </div>
 
-          <div className="lg:justify-self-end">
-            <LoginPanel />
-          </div>
+          <LoginPanel />
         </div>
       </main>
       <SiteFooter locale="es" />

@@ -80,9 +80,9 @@ function OptionGroup({
               type="button"
               onClick={() => onChange(option.value)}
               className={[
-                'rounded-full border px-4 py-2.5 text-sm transition',
+                'rounded-full border px-4 py-2.5 text-sm transition duration-300 active:scale-[0.97]',
                 active
-                  ? 'border-[var(--color-accent)]/40 bg-[var(--color-accent)]/14 text-white shadow-[0_0_0_1px_rgba(31,127,115,0.22)]'
+                  ? 'border-[rgba(61,221,196,0.45)] bg-[rgba(31,127,115,0.18)] text-[#8ceada] shadow-[0_0_24px_rgba(31,127,115,0.25)]'
                   : 'border-white/10 bg-white/[0.03] text-white/62 hover:border-white/20 hover:bg-white/[0.06] hover:text-white',
               ].join(' ')}
             >
@@ -247,12 +247,12 @@ export function ProfileForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-[24px] border border-white/8 bg-[rgba(8,12,20,0.84)] p-4 shadow-[0_24px_90px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:rounded-[34px] sm:p-6 lg:p-8"
+      className="page-panel p-4 sm:p-6 lg:p-8"
     >
       <div className="grid gap-8 xl:grid-cols-[0.82fr_1.18fr]">
         <aside className="order-2 space-y-5 xl:order-1">
-          <div className="rounded-[30px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02))] p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--color-accent)]">
+          <div className="rounded-[1.7rem] border border-[var(--surface-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02))] p-6">
+            <p className="section-kicker">
               {isOnboarding ? 'Onboarding de perfil' : 'Perfil editable'}
             </p>
             <h1 className="mt-3 text-3xl font-semibold tracking-[-0.06em] text-white">
@@ -267,9 +267,9 @@ export function ProfileForm({
             </p>
           </div>
 
-          <div className="rounded-[28px] border border-white/8 bg-white/[0.03] p-5">
+          <div className="rounded-[1.7rem] border border-[var(--surface-border)] bg-white/[0.03] p-5">
             <div className="flex items-center gap-3 text-white">
-              <Mail size={18} className="text-[var(--color-accent)]" />
+              <Mail size={18} aria-hidden className="text-[#3dddc4]" />
               <div>
                 <p className="text-sm font-medium">{email}</p>
                 <p className="text-xs uppercase tracking-[0.24em] text-white/42">
@@ -289,10 +289,10 @@ export function ProfileForm({
                     type="button"
                     onClick={() => setStep(index)}
                     className={[
-                      'w-full rounded-[22px] border px-4 py-4 text-left transition',
+                      'w-full rounded-[1.4rem] border px-4 py-4 text-left transition duration-300',
                       active
-                        ? 'border-[var(--color-accent)]/28 bg-[var(--color-accent)]/10'
-                        : 'border-white/8 bg-black/18 hover:border-white/14 hover:bg-white/[0.04]',
+                        ? 'border-[rgba(61,221,196,0.3)] bg-[rgba(31,127,115,0.12)]'
+                        : 'border-[var(--surface-border)] bg-black/18 hover:border-white/14 hover:bg-white/[0.04]',
                     ].join(' ')}
                   >
                     <div className="flex items-start gap-3">
@@ -300,7 +300,7 @@ export function ProfileForm({
                         className={[
                           'mt-0.5 inline-flex size-8 items-center justify-center rounded-full border text-xs font-semibold',
                           done || active
-                            ? 'border-[var(--color-accent)]/32 bg-[var(--color-accent)]/16 text-white'
+                            ? 'border-[rgba(61,221,196,0.35)] bg-[rgba(31,127,115,0.16)] text-[#8ceada]'
                             : 'border-white/10 text-white/42',
                         ].join(' ')}
                       >
@@ -321,7 +321,7 @@ export function ProfileForm({
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-white/8 bg-white/[0.03] p-5">
+          <div className="rounded-[1.7rem] border border-[var(--surface-border)] bg-white/[0.03] p-5">
             <p className="text-sm font-medium text-white">¿Para qué sirve esto?</p>
             <div className="mt-4 space-y-3">
               {profileOnboardingBenefits.map((item) => (
@@ -352,8 +352,8 @@ export function ProfileForm({
             </div>
           ) : null}
 
-          <div className="rounded-[30px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--color-accent)]">
+          <div className="rounded-[1.7rem] border border-[var(--surface-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-6">
+            <p className="section-kicker">
               {stepMeta[step].eyebrow}
             </p>
             <h2 className="mt-3 text-2xl font-semibold tracking-[-0.05em] text-white">
@@ -388,7 +388,7 @@ export function ProfileForm({
                     <div className="grid gap-4 md:grid-cols-2 md:items-start">
                       <label className="grid gap-2 text-sm text-white/72">
                         <span className="inline-flex items-center gap-2 text-white">
-                          <UserRound size={16} className="text-[var(--color-accent)]" />
+                          <UserRound size={16} aria-hidden className="text-[#3dddc4]" />
                           Nombre
                         </span>
                         <input
@@ -408,7 +408,7 @@ export function ProfileForm({
 
                       <label className="grid gap-2 text-sm text-white/72">
                         <span className="inline-flex items-center gap-2 text-white">
-                          <Phone size={16} className="text-[var(--color-accent)]" />
+                          <Phone size={16} aria-hidden className="text-[#3dddc4]" />
                           WhatsApp o teléfono
                         </span>
                         <input
@@ -431,7 +431,7 @@ export function ProfileForm({
 
                     <label className="grid gap-2 text-sm text-white/72">
                       <span className="inline-flex items-center gap-2 text-white">
-                        <Building2 size={16} className="text-[var(--color-accent)]" />
+                        <Building2 size={16} aria-hidden className="text-[#3dddc4]" />
                         Empresa o marca
                       </span>
                       <input
@@ -551,7 +551,8 @@ export function ProfileForm({
                       <div className="flex items-center gap-2 text-white">
                         <BriefcaseBusiness
                           size={16}
-                          className="text-[var(--color-accent)]"
+                          aria-hidden
+                          className="text-[#3dddc4]"
                         />
                         <p className="text-sm font-medium">
                           Preferencias y consentimiento
@@ -617,9 +618,9 @@ export function ProfileForm({
                 <button
                   type="button"
                   onClick={() => setStep((current) => current - 1)}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-3 text-sm text-white/78 transition hover:border-white/18 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.035] px-5 py-3 text-sm text-white/82 transition duration-300 hover:border-white/24 hover:bg-white/[0.06] hover:text-white"
                 >
-                  <ArrowLeft size={16} />
+                  <ArrowLeft size={16} aria-hidden />
                   Volver
                 </button>
               ) : null}
@@ -632,10 +633,10 @@ export function ProfileForm({
                       setStep(1)
                     }
                   }}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-medium text-slate-950 transition hover:bg-[var(--color-accent-strong)]"
+                  className="inline-flex items-center gap-2 rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:-translate-y-px hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)] active:scale-[0.985]"
                 >
                   Continuar
-                  <ArrowRight size={16} />
+                  <ArrowRight size={16} aria-hidden />
                 </button>
               ) : null}
             </div>
@@ -644,14 +645,14 @@ export function ProfileForm({
               <button
                 type="submit"
                 disabled={status === 'saving'}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-medium text-slate-950 transition hover:bg-[var(--color-accent-strong)] disabled:opacity-70"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:-translate-y-px hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {status === 'saving'
                   ? 'Guardando cambios...'
                   : isOnboarding
                     ? 'Guardar y volver al sitio'
                     : 'Guardar perfil'}
-                <ArrowRight size={16} />
+                <ArrowRight size={16} aria-hidden />
               </button>
             ) : null}
           </div>

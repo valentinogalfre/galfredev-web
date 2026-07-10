@@ -21,10 +21,13 @@ const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
  */
 export function ProjectsFilter({
   allLabel,
+  groupLabel,
   filters,
   items,
 }: {
   allLabel: string
+  /** Describe el grupo de chips para lectores de pantalla (p. ej. "Filtrar por servicio"). */
+  groupLabel: string
   filters: FilterChip[]
   items: FilterItem[]
 }) {
@@ -43,7 +46,7 @@ export function ProjectsFilter({
 
   return (
     <div>
-      <div role="group" aria-label={allLabel} className="flex flex-wrap gap-2">
+      <div role="group" aria-label={groupLabel} className="flex flex-wrap gap-2">
         <button
           type="button"
           aria-pressed={active === null}

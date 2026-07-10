@@ -1,3 +1,6 @@
+import { KeyboardCss } from '@/components/hero/keyboard-css'
+import type { TypingState } from '@/components/hero/use-typing-loop'
+import { getDictionary } from '@/lib/i18n'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -9,16 +12,29 @@ export const metadata: Metadata = {
   },
 }
 
+/** Estado estático del teclado decorativo: "404" ya tipeado, sin tecla hundida. */
+const TYPING_404: TypingState = {
+  word: '404',
+  typed: '404',
+  pressedKey: null,
+  wordIndex: 0,
+}
+
 export default function NotFound() {
+  const { notFound } = getDictionary('es').common
+
   return (
     <main id="contenido-principal" className="relative overflow-hidden px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pt-32">
-      <div className="absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(circle_at_top,rgba(31,127,115,0.16),transparent_38%),radial-gradient(circle_at_76%_12%,rgba(255,180,106,0.08),transparent_24%)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(circle_at_top,rgba(31,127,115,0.16),transparent_38%),radial-gradient(circle_at_76%_12%,rgba(255,180,106,0.08),transparent_24%)]" />
       <div className="page-panel relative mx-auto max-w-3xl p-8 text-center sm:p-12">
         <p className="section-kicker justify-center">Error 404</p>
         <h1 className="mt-5 text-balance text-4xl font-semibold tracking-[-0.06em] text-white sm:text-[3.4rem]">
-          Esta página no existe.
+          {notFound.title}
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-[var(--text-faint)]">
+
+        <KeyboardCss typing={TYPING_404} className="kb-mini mt-2" />
+
+        <p className="mx-auto mt-2 max-w-2xl text-lg leading-8 text-[var(--text-faint)]">
           Volvé al inicio para seguir viendo cómo GalfreDev puede ayudarte con automatización,
           software e IA aplicada.
         </p>
@@ -26,13 +42,13 @@ export default function NotFound() {
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.16)]"
+            className="inline-flex items-center justify-center rounded-full border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.16)] transition duration-300 hover:-translate-y-px hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)]"
           >
-            Volver al inicio
+            {notFound.back}
           </Link>
           <Link
             href="/#contacto"
-            className="inline-flex items-center justify-center rounded-full border border-white/12 bg-white/[0.035] px-5 py-3 text-sm text-white/82 transition hover:border-white/24 hover:text-white"
+            className="inline-flex items-center justify-center rounded-full border border-white/12 bg-white/[0.035] px-5 py-3 text-sm text-white/82 transition duration-300 hover:border-white/24 hover:text-white"
           >
             Ir al contacto
           </Link>

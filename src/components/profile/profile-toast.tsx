@@ -26,10 +26,10 @@ export function ProfileToast({ initialVisible }: ProfileToastProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.24 }}
-          className="fixed bottom-6 right-4 z-[70] w-[min(92vw,24rem)] rounded-[28px] border border-emerald-400/16 bg-[rgba(7,16,29,0.96)] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:right-6"
+          className="fixed bottom-6 right-4 z-[70] w-[min(92vw,24rem)] rounded-[1.7rem] border border-[rgba(61,221,196,0.22)] bg-[var(--surface-strong)] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:right-6"
         >
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex size-10 items-center justify-center rounded-full bg-emerald-400/12 text-emerald-200">
+            <span aria-hidden className="mt-0.5 inline-flex size-10 items-center justify-center rounded-full bg-[rgba(31,127,115,0.16)] text-[#3dddc4]">
               <CheckCircle2 size={18} />
             </span>
             <div className="min-w-0 flex-1">
