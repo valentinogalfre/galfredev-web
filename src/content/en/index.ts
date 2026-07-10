@@ -108,6 +108,7 @@ export const en: Dictionary = {
           sub: 'It compounds month after month based on the current estimated savings.',
           badge: 'Visible ROI',
           ariaLabel: '12-month cumulative savings chart',
+          milestone: '1 full salary back',
         },
         next: {
           kicker: 'Next step',

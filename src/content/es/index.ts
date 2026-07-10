@@ -109,6 +109,7 @@ export const es: Dictionary = {
           sub: 'Se acumula automáticamente mes a mes según el ahorro estimado actual.',
           badge: 'ROI visible',
           ariaLabel: 'Gráfico de ahorro acumulado de 12 meses',
+          milestone: '1 sueldo recuperado',
         },
         next: {
           kicker: 'Siguiente paso',

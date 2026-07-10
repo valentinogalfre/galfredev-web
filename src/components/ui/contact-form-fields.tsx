@@ -1,6 +1,14 @@
 'use client'
 
-import { Check, ChevronDown } from 'lucide-react'
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+} from 'framer-motion'
+import { ChevronDown } from 'lucide-react'
 import {
   type InputHTMLAttributes,
   type ReactNode,
@@ -13,43 +21,161 @@ import {
 
 // text-base (16px): por debajo de 16px iOS Safari hace auto-zoom al enfocar
 // el campo — en el form de conversión principal eso es un salto de layout.
-const fieldClassName =
-  'w-full rounded-[22px] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-base text-white outline-none transition placeholder:text-white/24 focus:border-[var(--color-accent)] focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-70'
+// El padding asimétrico (más arriba) deja lugar al label flotante interno.
+const controlClassName =
+  'field-focus-quiet w-full rounded-[22px] border bg-[rgba(255,255,255,0.045)] px-4 pt-[1.45rem] pb-[0.55rem] text-base text-white outline-none transition-colors duration-300 placeholder:text-white/26 focus:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-70'
 
-type FieldShellProps = {
-  label: string
-  error?: string
-  helper?: string
-  children: ReactNode
-  fieldId?: string
-  labelId?: string
+function borderClassName(error?: string) {
+  return error
+    ? 'border-rose-400/55'
+    : 'border-white/10 focus:border-[rgba(61,221,196,0.55)]'
 }
 
-function FieldShell({
+/**
+ * Anillo que «se dibuja» alrededor del campo al enfocarlo: un conic-gradient
+ * teal barre los 360° enmascarado al borde (técnica padding-box XOR). Con
+ * reduced-motion no se renderiza: queda el cambio de color de borde nativo.
+ */
+function FieldRing({ focused }: { focused: boolean }) {
+  const reducedMotion = useReducedMotion()
+  const sweep = useMotionValue(0)
+  const opacity = useMotionValue(0)
+  const background = useMotionTemplate`conic-gradient(from -90deg, rgba(61,221,196,0.95) 0deg, rgba(61,221,196,0.8) ${sweep}deg, rgba(61,221,196,0) ${sweep}deg)`
+
+  useEffect(() => {
+    if (reducedMotion) return
+
+    if (focused) {
+      sweep.jump(0)
+      const sweepControls = animate(sweep, 360, {
+        duration: 0.55,
+        ease: [0.3, 0.5, 0.3, 1],
+      })
+      const opacityControls = animate(opacity, 1, { duration: 0.12 })
+
+      return () => {
+        sweepControls.stop()
+        opacityControls.stop()
+      }
+    }
+
+    const controls = animate(opacity, 0, { duration: 0.3, ease: 'easeOut' })
+    return () => controls.stop()
+  }, [focused, reducedMotion, sweep, opacity])
+
+  if (reducedMotion) return null
+
+  return (
+    <motion.span
+      aria-hidden
+      className="pointer-events-none absolute inset-0 rounded-[22px]"
+      style={{
+        background,
+        opacity,
+        padding: 1.5,
+        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        WebkitMaskComposite: 'xor',
+        mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        maskComposite: 'exclude',
+      }}
+    />
+  )
+}
+
+type FloatingLabelProps = {
+  label: string
+  floated: boolean
+  focused: boolean
+  error?: boolean
+  htmlFor?: string
+  id?: string
+  /** top (px) del label en reposo — centrado en inputs, arriba en textarea. */
+  restTop: number
+}
+
+/**
+ * Label flotante: en reposo ocupa el lugar del placeholder; al enfocar o con
+ * valor sube y se achica con un tween corto. Sigue siendo un <label htmlFor>
+ * real (o <span id> para el listbox), así que la accesibilidad no cambia.
+ */
+function FloatingLabel({
   label,
+  floated,
+  focused,
+  error,
+  htmlFor,
+  id,
+  restTop,
+}: FloatingLabelProps) {
+  const reducedMotion = useReducedMotion()
+  const Tag = htmlFor ? motion.label : motion.span
+
+  return (
+    <Tag
+      htmlFor={htmlFor}
+      id={id}
+      initial={false}
+      animate={{
+        top: floated ? 8 : restTop,
+        fontSize: floated ? '10.5px' : '16px',
+        letterSpacing: floated ? '0.12em' : '0em',
+        color: error
+          ? 'rgba(253,164,175,0.92)'
+          : floated
+            ? focused
+              ? 'rgba(61,221,196,0.95)'
+              : 'rgba(255,255,255,0.58)'
+            : 'rgba(255,255,255,0.46)',
+      }}
+      transition={
+        reducedMotion ? { duration: 0 } : { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
+      }
+      className="pointer-events-none absolute left-4 z-10 origin-left font-medium leading-none"
+    >
+      {label}
+    </Tag>
+  )
+}
+
+/** Helper/error bajo el campo: el error entra y sale animado. */
+function FieldNote({ error, helper }: { error?: string; helper?: string }) {
+  const reducedMotion = useReducedMotion()
+
+  return (
+    <AnimatePresence initial={false} mode="wait">
+      {error ? (
+        <motion.p
+          key={`error-${error}`}
+          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          className="px-1 text-[13px] leading-5 text-rose-200"
+        >
+          {error}
+        </motion.p>
+      ) : helper ? (
+        <p key="helper" className="px-1 text-[13px] leading-5 text-white/40">
+          {helper}
+        </p>
+      ) : null}
+    </AnimatePresence>
+  )
+}
+
+function FieldWrap({
+  children,
   error,
   helper,
-  children,
-  fieldId,
-  labelId,
-}: FieldShellProps) {
+}: {
+  children: ReactNode
+  error?: string
+  helper?: string
+}) {
   return (
-    <div className="grid gap-2 text-sm text-white/72">
-      {fieldId ? (
-        <label id={labelId} htmlFor={fieldId} className="text-sm font-medium text-white">
-          {label}
-        </label>
-      ) : (
-        <span id={labelId} className="text-sm font-medium text-white">
-          {label}
-        </span>
-      )}
+    <div className="grid content-start gap-1.5 text-sm text-white/72">
       {children}
-      {error ? (
-        <p className="text-sm text-rose-200">{error}</p>
-      ) : helper ? (
-        <p className="text-sm text-white/42">{helper}</p>
-      ) : null}
+      <FieldNote error={error} helper={helper} />
     </div>
   )
 }
@@ -69,20 +195,48 @@ export function TextInputField({
   helper,
   className,
   id,
+  placeholder,
+  onFocus,
+  onBlur,
   ...props
 }: TextInputFieldProps) {
   const generatedId = useId()
   const fieldId = id ?? generatedId
+  const [focused, setFocused] = useState(false)
+  const hasValue = props.value != null && String(props.value).length > 0
+  const floated = focused || hasValue
 
   return (
-    <FieldShell label={label} error={error} helper={helper} fieldId={fieldId}>
-      <input
-        {...props}
-        id={fieldId}
-        aria-invalid={Boolean(error)}
-        className={[fieldClassName, className].filter(Boolean).join(' ')}
-      />
-    </FieldShell>
+    <FieldWrap error={error} helper={helper}>
+      <div className="relative">
+        <input
+          {...props}
+          id={fieldId}
+          placeholder={focused ? placeholder : undefined}
+          aria-invalid={Boolean(error)}
+          onFocus={(event) => {
+            setFocused(true)
+            onFocus?.(event)
+          }}
+          onBlur={(event) => {
+            setFocused(false)
+            onBlur?.(event)
+          }}
+          className={[controlClassName, borderClassName(error), className]
+            .filter(Boolean)
+            .join(' ')}
+        />
+        <FloatingLabel
+          htmlFor={fieldId}
+          label={label}
+          floated={floated}
+          focused={focused}
+          error={Boolean(error)}
+          restTop={20}
+        />
+        <FieldRing focused={focused} />
+      </div>
+    </FieldWrap>
   )
 }
 
@@ -101,26 +255,53 @@ export function TextAreaField({
   helper,
   className,
   id,
+  placeholder,
+  onFocus,
+  onBlur,
   ...props
 }: TextAreaFieldProps) {
   const generatedId = useId()
   const fieldId = id ?? generatedId
+  const [focused, setFocused] = useState(false)
+  const hasValue = props.value != null && String(props.value).length > 0
+  const floated = focused || hasValue
 
   return (
-    <FieldShell label={label} error={error} helper={helper} fieldId={fieldId}>
-      <textarea
-        {...props}
-        id={fieldId}
-        aria-invalid={Boolean(error)}
-        className={[
-          fieldClassName,
-          'min-h-[144px] resize-y rounded-[24px]',
-          className,
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      />
-    </FieldShell>
+    <FieldWrap error={error} helper={helper}>
+      <div className="relative">
+        <textarea
+          {...props}
+          id={fieldId}
+          placeholder={focused ? placeholder : undefined}
+          aria-invalid={Boolean(error)}
+          onFocus={(event) => {
+            setFocused(true)
+            onFocus?.(event)
+          }}
+          onBlur={(event) => {
+            setFocused(false)
+            onBlur?.(event)
+          }}
+          className={[
+            controlClassName,
+            borderClassName(error),
+            'min-h-[144px] resize-y rounded-[24px] pt-[1.7rem]',
+            className,
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        />
+        <FloatingLabel
+          htmlFor={fieldId}
+          label={label}
+          floated={floated}
+          focused={focused}
+          error={Boolean(error)}
+          restTop={19}
+        />
+        <FieldRing focused={focused} />
+      </div>
+    </FieldWrap>
   )
 }
 
@@ -151,6 +332,8 @@ export function SelectField({
   onChange,
 }: SelectFieldProps) {
   const [open, setOpen] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const reducedMotion = useReducedMotion()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const buttonId = useId()
   const listboxId = useId()
@@ -179,9 +362,10 @@ export function SelectField({
   }, [])
 
   const selectedOption = options.find((option) => option.value === value)
+  const floated = open || focused || Boolean(selectedOption)
 
   return (
-    <FieldShell label={label} error={error} helper={helper} labelId={labelId}>
+    <FieldWrap error={error} helper={helper}>
       <div ref={wrapperRef} className="relative">
         <button
           id={buttonId}
@@ -191,11 +375,13 @@ export function SelectField({
           aria-haspopup="listbox"
           aria-controls={listboxId}
           aria-labelledby={`${labelId} ${buttonId}`}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           className={[
-            fieldClassName,
-            'flex min-h-[52px] items-center justify-between text-left',
-            open ? 'border-[var(--color-accent)] bg-white/[0.07]' : '',
-            !selectedOption ? 'text-white/42' : '',
+            controlClassName,
+            borderClassName(error),
+            'flex min-h-[56px] items-center justify-between text-left',
+            open ? 'border-[rgba(61,221,196,0.55)] bg-white/[0.07]' : '',
           ].join(' ')}
           onClick={() => {
             if (!disabled) {
@@ -203,7 +389,9 @@ export function SelectField({
             }
           }}
         >
-          <span>{selectedOption?.label ?? placeholder}</span>
+          <span className={selectedOption ? 'truncate' : 'truncate text-white/42'}>
+            {selectedOption?.label ?? (floated ? placeholder : '')}
+          </span>
           <ChevronDown
             size={18}
             className={[
@@ -212,58 +400,95 @@ export function SelectField({
             ].join(' ')}
           />
         </button>
+        <FloatingLabel
+          id={labelId}
+          label={label}
+          floated={floated}
+          focused={focused || open}
+          error={Boolean(error)}
+          restTop={20}
+        />
+        <FieldRing focused={focused || open} />
 
-        {open ? (
-          <div
-            id={listboxId}
-            role="listbox"
-            aria-labelledby={labelId}
-            className="absolute left-0 right-0 z-20 mt-2 overflow-hidden rounded-[24px] border border-white/12 bg-[#0f1520] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl"
-          >
-            <button
-              type="button"
-              role="option"
-              aria-selected={!selectedOption}
-              className="flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm text-white/52 transition hover:bg-white/[0.05] hover:text-white"
-              onClick={() => {
-                onChange('')
-                setOpen(false)
-              }}
+        <AnimatePresence>
+          {open ? (
+            <motion.div
+              id={listboxId}
+              role="listbox"
+              aria-labelledby={labelId}
+              initial={
+                reducedMotion ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.98 }
+              }
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.12 } }}
+              transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+              className="absolute left-0 right-0 z-20 mt-2 origin-top overflow-hidden rounded-[24px] border border-white/12 bg-[#0f1520] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl"
             >
-              <span>{placeholder}</span>
-            </button>
+              <button
+                type="button"
+                role="option"
+                aria-selected={!selectedOption}
+                className="flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm text-white/52 transition hover:bg-white/[0.05] hover:text-white"
+                onClick={() => {
+                  onChange('')
+                  setOpen(false)
+                }}
+              >
+                <span>{placeholder}</span>
+              </button>
 
-            {options.map((option) => {
-              const active = option.value === value
+              {options.map((option) => {
+                const active = option.value === value
 
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  role="option"
-                  aria-selected={active}
-                  className={[
-                    'mt-1 flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition',
-                    active
-                      ? 'bg-[var(--color-accent)]/14 text-white'
-                      : 'text-white/72 hover:bg-white/[0.05] hover:text-white',
-                  ].join(' ')}
-                  onClick={() => {
-                    onChange(option.value)
-                    setOpen(false)
-                  }}
-                >
-                  <span>{option.label}</span>
-                  {active ? (
-                    <Check size={16} className="text-[var(--color-accent)]" />
-                  ) : null}
-                </button>
-              )
-            })}
-          </div>
-        ) : null}
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    className={[
+                      'mt-1 flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-left text-sm transition',
+                      active
+                        ? 'bg-[var(--color-accent)]/14 text-white'
+                        : 'text-white/72 hover:bg-white/[0.05] hover:text-white',
+                    ].join(' ')}
+                    onClick={() => {
+                      onChange(option.value)
+                      setOpen(false)
+                    }}
+                  >
+                    <span>{option.label}</span>
+                    {active ? (
+                      <CheckDraw checked className="size-4 text-[var(--color-accent)]" />
+                    ) : null}
+                  </button>
+                )
+              })}
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
-    </FieldShell>
+    </FieldWrap>
+  )
+}
+
+/** Tilde SVG que se dibuja (pathLength) al pasar a checked. */
+function CheckDraw({ checked, className }: { checked: boolean; className?: string }) {
+  const reducedMotion = useReducedMotion()
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
+      <motion.path
+        d="M4.5 12.5l5 5L19.5 7"
+        stroke="currentColor"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={false}
+        animate={{ pathLength: checked ? 1 : 0, opacity: checked ? 1 : 0 }}
+        transition={reducedMotion ? { duration: 0 } : { duration: 0.26, ease: 'easeOut' }}
+      />
+    </svg>
   )
 }
 
@@ -284,6 +509,8 @@ export function ConsentCheckboxCard({
   error,
   onChange,
 }: ConsentCheckboxCardProps) {
+  const reducedMotion = useReducedMotion()
+
   return (
     <div className="space-y-2">
       <button
@@ -300,7 +527,10 @@ export function ConsentCheckboxCard({
           disabled ? 'cursor-not-allowed opacity-70' : '',
         ].join(' ')}
       >
-        <span
+        <motion.span
+          initial={false}
+          animate={reducedMotion ? { scale: 1 } : { scale: checked ? [1, 1.18, 1] : 1 }}
+          transition={{ duration: 0.28, ease: 'easeOut' }}
           className={[
             'mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-md border transition',
             checked
@@ -308,8 +538,8 @@ export function ConsentCheckboxCard({
               : 'border-white/18 bg-transparent text-transparent',
           ].join(' ')}
         >
-          <Check size={14} strokeWidth={3} />
-        </span>
+          <CheckDraw checked={checked} className="size-3.5" />
+        </motion.span>
         <span className="text-sm leading-6 text-white/72">
           {label}
           {required ? ' *' : ''}

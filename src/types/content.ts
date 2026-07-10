@@ -66,7 +66,14 @@ export type RoiCalculatorLabels = {
   salary: { label: string; help: string }
   hours: { label: string; help: string; unit: string; min: string; max: string }
   costNote: { before: string; after: string }
-  chart: { title: string; sub: string; badge: string; ariaLabel: string }
+  chart: {
+    title: string
+    sub: string
+    badge: string
+    ariaLabel: string
+    /** Etiqueta del hito donde el ahorro acumulado ≥ 1 sueldo mensual. */
+    milestone: string
+  }
   next: { kicker: string; before: string; after: string; cta: string }
   results: { monthly: string; hoursFree: string; annual: string }
   whatsapp: {

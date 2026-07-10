@@ -522,6 +522,22 @@ body::before {
   color: var(--text-soft);
 }
 
+/**
+ * Campos con anillo animado propio (form de contacto): el outline global
+ * :focus-visible duplicaría el indicador. Con reduced-motion el anillo no
+ * existe → vuelve el outline global como indicador de foco.
+ */
+.field-focus-quiet:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-focus-quiet:focus-visible {
+    outline: 2px solid rgba(61, 221, 196, 0.92);
+    outline-offset: 3px;
+  }
+}
+
 .ambient-divider {
   height: 1px;
   width: 100%;
@@ -550,10 +566,21 @@ body::before {
   line-height: 2;
 }
 
+/* Slider con fill dinámico: --roi-fill la setea el componente por valor. */
+.roi-slider {
+  --roi-fill: 50%;
+  touch-action: pan-y;
+}
+
 .roi-slider::-webkit-slider-runnable-track {
   height: 0.55rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(31, 127, 115, 0.6), rgba(31, 127, 115, 0.08));
+  background: linear-gradient(
+    90deg,
+    rgba(61, 221, 196, 0.5),
+    rgba(61, 221, 196, 0.85) var(--roi-fill),
+    rgba(255, 255, 255, 0.09) var(--roi-fill)
+  );
 }
 
 .roi-slider::-webkit-slider-thumb {
@@ -566,12 +593,30 @@ body::before {
   border: 2px solid rgba(61, 221, 196, 0.85);
   background: #e6fffa;
   box-shadow: 0 0 0 6px rgba(31, 127, 115, 0.16);
+  transition:
+    transform 180ms var(--ease-premium),
+    box-shadow 180ms var(--ease-premium);
+}
+
+.roi-slider:hover::-webkit-slider-thumb {
+  box-shadow: 0 0 0 8px rgba(31, 127, 115, 0.22);
+}
+
+.roi-slider:active::-webkit-slider-thumb {
+  transform: scale(1.16);
+  box-shadow: 0 0 0 10px rgba(31, 127, 115, 0.26);
 }
 
 .roi-slider::-moz-range-track {
   height: 0.55rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(31, 127, 115, 0.6), rgba(31, 127, 115, 0.08));
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.roi-slider::-moz-range-progress {
+  height: 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(61, 221, 196, 0.5), rgba(61, 221, 196, 0.85));
 }
 
 .roi-slider::-moz-range-thumb {
@@ -581,6 +626,25 @@ body::before {
   border: 2px solid rgba(61, 221, 196, 0.85);
   background: #e6fffa;
   box-shadow: 0 0 0 6px rgba(31, 127, 115, 0.16);
+  transition:
+    transform 180ms var(--ease-premium),
+    box-shadow 180ms var(--ease-premium);
+}
+
+.roi-slider:hover::-moz-range-thumb {
+  box-shadow: 0 0 0 8px rgba(31, 127, 115, 0.22);
+}
+
+.roi-slider:active::-moz-range-thumb {
+  transform: scale(1.16);
+  box-shadow: 0 0 0 10px rgba(31, 127, 115, 0.26);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roi-slider::-webkit-slider-thumb,
+  .roi-slider::-moz-range-thumb {
+    transition: none;
+  }
 }
 
 @media (max-width: 767px) {
