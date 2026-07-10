@@ -1,7 +1,7 @@
 import { Parallax } from '@/components/motion/parallax'
 import { Reveal } from '@/components/motion/reveal'
 import { StickyStack } from '@/components/motion/sticky-stack'
-import { ProjectFrame, type ProjectFrameKind } from '@/components/ui/project-frame'
+import { ProjectFrame, PROJECT_FRAME_KINDS } from '@/components/ui/project-frame'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { getDictionary, localizedPath } from '@/lib/i18n'
 import type { Locale, ProjectContent, ProjectId } from '@/types/content'
@@ -9,13 +9,6 @@ import { ArrowRight, Check } from 'lucide-react'
 import Link from 'next/link'
 
 const ORDER: ProjectId[] = ['pyron', 'pulso', 'bot-ime', 'orbita']
-
-const FRAME_KINDS: Record<ProjectId, ProjectFrameKind> = {
-  pyron: 'browser',
-  pulso: 'phone',
-  'bot-ime': 'chat',
-  orbita: 'browser',
-}
 
 const MAX_CHIPS = 4
 
@@ -44,7 +37,7 @@ function ProjectCard({
           <Parallax offset={14} className="w-full">
             <ProjectFrame
               project={{ id: project.id, name: project.name, image: project.image }}
-              kind={FRAME_KINDS[project.id]}
+              kind={PROJECT_FRAME_KINDS[project.id]}
               captureAlt={captureAlt}
             />
           </Parallax>

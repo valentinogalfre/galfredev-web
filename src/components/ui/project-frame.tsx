@@ -5,6 +5,14 @@ import { join } from 'node:path'
 
 export type ProjectFrameKind = 'browser' | 'phone' | 'chat'
 
+/** Marco canónico por proyecto (home y páginas de servicio comparten esto). */
+export const PROJECT_FRAME_KINDS: Record<ProjectId, ProjectFrameKind> = {
+  pyron: 'browser',
+  pulso: 'phone',
+  'bot-ime': 'chat',
+  orbita: 'browser',
+}
+
 type FrameProject = Pick<ProjectContent, 'id' | 'name' | 'image'>
 
 type ProjectFrameProps = {
