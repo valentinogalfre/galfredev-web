@@ -42,10 +42,14 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/opengraph-image',
+        // Static brand OG (the hero keyboard, rendered): light JPEG (<300KB)
+        // because WhatsApp caches heavy images poorly. Global default;
+        // services/projects override it with their per-segment
+        // opengraph-image file convention (file-based wins over config).
+        url: '/og-home.jpg',
         width: 1200,
         height: 630,
-        alt: enTitle,
+        alt: 'GalfreDev — Software that never sleeps. WhatsApp bots, websites, apps & AI.',
       },
     ],
   },
@@ -53,7 +57,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: enTitle,
     description: enDescription,
-    images: ['/opengraph-image'],
+    images: ['/og-home.jpg'],
   },
 }
 
@@ -71,6 +75,9 @@ export default function RootLayout({
             '@id': ORG_ID,
             name: siteCopy.brand,
             url: env.siteUrl,
+            // Google usa logo para el ícono en resultados enriquecidos.
+            logo: `${env.siteUrl}/logo-512.png`,
+            image: `${env.siteUrl}/og-home.jpg`,
             email: siteCopy.email,
             description: enDescription,
             serviceType: [
