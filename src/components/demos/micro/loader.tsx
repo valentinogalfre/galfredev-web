@@ -1,10 +1,7 @@
 'use client'
 
-import type { Locale } from '@/types/content'
+import type { Locale, ServiceId } from '@/types/content'
 import dynamic from 'next/dynamic'
-
-/** Servicios que ya tienen micro-demo live (Task 21 suma las otras dos). */
-export type LiveDemoId = 'bots-whatsapp' | 'webs' | 'apps'
 
 /**
  * Skeleton del slot mientras baja el chunk de la demo (ssr: false). Sin texto
@@ -37,9 +34,17 @@ const PhoneApp = dynamic(
   () => import('./phone-app').then((mod) => mod.PhoneApp),
   { ssr: false, loading: DemoSkeleton },
 )
+const Pipeline = dynamic(
+  () => import('./pipeline').then((mod) => mod.Pipeline),
+  { ssr: false, loading: DemoSkeleton },
+)
+const Panel = dynamic(
+  () => import('./panel').then((mod) => mod.Panel),
+  { ssr: false, loading: DemoSkeleton },
+)
 
-/** Switch client de las demos live, lazy por servicio. */
-export function MicroDemoLoader({ id, locale }: { id: LiveDemoId; locale: Locale }) {
+/** Switch client de las micro-demos live (las 5), lazy por servicio. */
+export function MicroDemoLoader({ id, locale }: { id: ServiceId; locale: Locale }) {
   switch (id) {
     case 'bots-whatsapp':
       return <WhatsappSim locale={locale} />
@@ -47,5 +52,9 @@ export function MicroDemoLoader({ id, locale }: { id: LiveDemoId; locale: Locale
       return <WebBuilder locale={locale} />
     case 'apps':
       return <PhoneApp locale={locale} />
+    case 'automatizaciones-ia':
+      return <Pipeline locale={locale} />
+    case 'software-a-medida':
+      return <Panel locale={locale} />
   }
 }

@@ -1,21 +1,15 @@
 import { getDictionary } from '@/lib/i18n'
 import type { Locale, ServiceId } from '@/types/content'
-import { MicroDemoLoader, type LiveDemoId } from './loader'
+import { MicroDemoLoader } from './loader'
 
 type MicroDemoSlotProps = {
   id: ServiceId
   locale: Locale
 }
 
-/** Demos live existentes; el resto conserva el placeholder (Task 21). */
-function liveDemoId(id: ServiceId): LiveDemoId | null {
-  return id === 'bots-whatsapp' || id === 'webs' || id === 'apps' ? id : null
-}
-
 /**
- * Slot de la micro-demo por servicio: switch real de demos interactivas
- * (bots-whatsapp / webs / apps) con lazy-load por chunk; automatizaciones-ia
- * y software-a-medida conservan el placeholder hasta Task 21.
+ * Slot de la micro-demo por servicio: switch real de demos interactivas para
+ * los 5 servicios (Task 21 completó la suite) con lazy-load por chunk.
  * Contrato estable: props { id, locale }, data-testid="micro-demo-slot" en el
  * elemento raíz y data-testid="micro-demo" en la raíz de cada demo live.
  *
@@ -24,12 +18,6 @@ function liveDemoId(id: ServiceId): LiveDemoId | null {
  */
 export function MicroDemoSlot({ id, locale }: MicroDemoSlotProps) {
   const service = getDictionary(locale).services[id]
-  const demoId = liveDemoId(id)
-  const note = locale === 'es' ? 'Demo interactiva' : 'Interactive demo'
-  const soon =
-    locale === 'es'
-      ? 'Muy pronto vas a poder probarla acá mismo.'
-      : 'Very soon you will be able to try it right here.'
 
   return (
     <div
@@ -67,18 +55,9 @@ export function MicroDemoSlot({ id, locale }: MicroDemoSlotProps) {
         </span>
       </div>
 
-      {demoId ? (
-        <div className="relative">
-          <MicroDemoLoader id={demoId} locale={locale} />
-        </div>
-      ) : (
-        <div className="relative flex min-h-[230px] flex-col items-center justify-center gap-4 px-6 py-14 text-center sm:min-h-[280px]">
-          <span className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(61,221,196,0.28)] bg-[rgba(31,127,115,0.12)] px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#8ceada] sm:text-[11px]">
-            {note}
-          </span>
-          <p className="max-w-sm text-sm leading-7 text-white/55">{soon}</p>
-        </div>
-      )}
+      <div className="relative">
+        <MicroDemoLoader id={id} locale={locale} />
+      </div>
     </div>
   )
 }

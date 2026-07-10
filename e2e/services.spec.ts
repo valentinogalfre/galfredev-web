@@ -85,3 +85,54 @@ test('la micro-demo de apps navega tabs', async ({ page }) => {
   await demo.getByRole('button', { name: '10:30' }).click()
   await expect(demo.getByText(/turno confirmado/i)).toBeVisible()
 })
+
+test('la micro-demo de automatizaciones procesa leads', async ({ page }) => {
+  await page.goto('/servicios/automatizaciones-ia')
+  const demo = page.getByTestId('micro-demo')
+  await demo.scrollIntoViewIfNeeded()
+  await demo.getByRole('button', { name: /disparar/i }).click()
+  // El paquete recorre los 5 nodos (~2.5s) y al llegar a Métricas cuenta.
+  await expect(demo.getByText(/procesados: 1/i)).toBeVisible({ timeout: 10_000 })
+})
+
+test('la micro-demo de automatizaciones aguanta disparos simultáneos', async ({ page }) => {
+  await page.goto('/servicios/automatizaciones-ia')
+  const demo = page.getByTestId('micro-demo')
+  await demo.scrollIntoViewIfNeeded()
+  const fire = demo.getByRole('button', { name: /disparar/i })
+  // Spamear: 3 paquetes en vuelo a la vez; los 3 llegan y el contador suma 3.
+  await fire.click()
+  await fire.click()
+  await fire.click()
+  await expect(demo.getByText(/procesados: 3/i)).toBeVisible({ timeout: 10_000 })
+})
+
+test('la micro-demo de software a medida recalcula stats', async ({ page }) => {
+  await page.goto('/servicios/software-a-medida')
+  const demo = page.getByTestId('micro-demo')
+  await demo.scrollIntoViewIfNeeded()
+  // Tabla semántica: header + 3 órdenes seed.
+  await expect(demo.getByRole('row')).toHaveCount(4)
+  await demo.getByRole('button', { name: /nueva orden/i }).click()
+  // Entra una fila nueva (Café Aroma) y el total recalcula: 285.000 → 380.000.
+  await expect(demo.getByRole('row')).toHaveCount(5)
+  await expect(demo.getByText('$ 380.000')).toBeVisible()
+})
+
+test('la micro-demo de software a medida cicla estados y edita montos', async ({ page }) => {
+  await page.goto('/servicios/software-a-medida')
+  const demo = page.getByTestId('micro-demo')
+  await demo.scrollIntoViewIfNeeded()
+  // Ciclar el estado de Logística Sur: pendiente → en curso.
+  const badge = demo.getByRole('button', { name: /cambiar estado de logística sur/i })
+  await expect(badge).toHaveText(/pendiente/i)
+  await badge.click()
+  await expect(badge).toHaveText(/en curso/i)
+  // Editar el monto inline: Enter confirma y el total recalcula.
+  await demo.getByRole('button', { name: /editar monto de logística sur/i }).click()
+  const input = demo.getByRole('textbox', { name: /editar monto de logística sur/i })
+  await input.fill('100000')
+  await input.press('Enter')
+  // Total: 285.000 - 60.000 + 100.000 = 325.000
+  await expect(demo.getByText('$ 325.000')).toBeVisible()
+})
