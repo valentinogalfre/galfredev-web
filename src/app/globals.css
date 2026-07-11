@@ -803,3 +803,35 @@ body::before {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.24);
 }
+
+/* ---------- Paridad Windows: scrollbar y selección de marca ---------- */
+/* En macOS la scrollbar es overlay invisible; en Windows la barra clásica
+   clara rompía la estética oscura. Va fuera de @layer a propósito (debe ganar
+   siempre; no colisiona con utilities). */
+html {
+  scrollbar-color: rgba(42, 145, 132, 0.55) #070d17;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070d17;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(42, 145, 132, 0.6), rgba(31, 127, 115, 0.45));
+  border: 3px solid #070d17;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(61, 221, 196, 0.6);
+}
+
+::selection {
+  background: rgba(61, 221, 196, 0.28);
+  color: #f5f7fb;
+}
