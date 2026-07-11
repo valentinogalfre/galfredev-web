@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import type { CSSProperties, ReactNode } from 'react'
+import { Fragment, type CSSProperties, type ReactNode } from 'react'
 
 type MarqueeProps = {
   children: ReactNode
@@ -10,6 +10,14 @@ type MarqueeProps = {
   reverse?: boolean
   /** Pausar al hover (default). Con false, la banda nunca se detiene. */
   pauseOnHover?: boolean
+  /**
+   * Veces que se repite el contenido DENTRO de cada mitad del loop. El loop
+   * (translateX -50%) solo es continuo si una mitad es más ancha que el
+   * contenedor: con contenido corto (p. ej. la banda del footer) subí esto
+   * hasta cubrir cualquier pantalla — si una mitad queda angosta, aparece un
+   * hueco al final de cada vuelta.
+   */
+  repeat?: number
   className?: string
 }
 
@@ -18,8 +26,12 @@ export function Marquee({
   speed = 30,
   reverse = false,
   pauseOnHover = true,
+  repeat = 1,
   className,
 }: MarqueeProps) {
+  const copies = Array.from({ length: Math.max(1, repeat) }, (_, i) => (
+    <Fragment key={i}>{children}</Fragment>
+  ))
   return (
     <div className={cn('flex overflow-hidden', className)}>
       <div
@@ -34,9 +46,9 @@ export function Marquee({
           } as CSSProperties
         }
       >
-        <div className="flex shrink-0 items-center">{children}</div>
+        <div className="flex shrink-0 items-center">{copies}</div>
         <div className="flex shrink-0 items-center" aria-hidden="true" inert>
-          {children}
+          {copies}
         </div>
       </div>
     </div>

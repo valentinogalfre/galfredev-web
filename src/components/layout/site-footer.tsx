@@ -38,7 +38,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
       {/* Banda fina, mismo lenguaje que la marquee del hero (mono chica, sin
           pausa al hover): la versión serif gigante se sentía enorme y tosca. */}
       <div aria-hidden="true" className="border-b border-[var(--surface-border)] py-3.5">
-        <Marquee speed={30} pauseOnHover={false} className="select-none">
+        <Marquee speed={30} pauseOnHover={false} repeat={6} className="select-none">
           {dict.home.hero.typedWords.map((word) => (
             <span
               key={word}
