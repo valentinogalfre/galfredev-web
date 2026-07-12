@@ -70,7 +70,7 @@ export function ProjectsFilter({
 
       <motion.div layout className="mt-8 grid gap-5 sm:mt-10 md:grid-cols-2 md:gap-6">
         <AnimatePresence mode="popLayout" initial={false}>
-          {visible.map((item) => (
+          {visible.map((item, index) => (
             <motion.div
               key={item.id}
               layout
@@ -79,7 +79,11 @@ export function ProjectsFilter({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.32, ease: EASE }}
-              className="h-full"
+              // Mobile: las cards se APILAN al scrollear (sticky escalonado —
+              // cada una queda pegada bajo el header y la siguiente la cubre;
+              // los fondos son opacos a propósito). En md+ vuelve la grilla.
+              className="h-full max-md:sticky max-md:top-[var(--stack-top)] max-md:shadow-[0_-18px_50px_rgba(0,0,0,0.45)]"
+              style={{ ['--stack-top' as string]: `${4.5 + index * 0.9}rem` }}
             >
               {item.card}
             </motion.div>
