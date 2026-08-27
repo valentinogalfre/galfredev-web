@@ -1,5 +1,6 @@
 import { Parallax } from '@/components/motion/parallax'
 import { Reveal } from '@/components/motion/reveal'
+import { IdentityPills, StackStrip } from '@/components/ui/identity'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { siteCopy } from '@/content/site-content'
 import { getDictionary, localizedPath } from '@/lib/i18n'
@@ -17,6 +18,7 @@ import Link from 'next/link'
 export function AboutTeaserSection({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale)
   const { about } = dict.home
+  const { identity } = dict.about
   const aboutPagePath = locale === 'es' ? '/sobre-mi' : '/about'
   const kicker =
     dict.common.nav.find((item) => item.href === aboutPagePath)?.label ?? about.title
@@ -62,9 +64,14 @@ export function AboutTeaserSection({ locale }: { locale: Locale }) {
         <Reveal variant="section">
           <SectionHeading eyebrow={kicker} title={about.title} description={about.teaser} />
 
+          {/* Identidad en un vistazo: rol + base. La disponibilidad y el detalle
+              (historia, stack por área) viven en la página Sobre mí. */}
+          <IdentityPills identity={identity} className="mt-6" />
+          <StackStrip items={identity.stack} className="mt-5" />
+
           <Link
             href={localizedPath(locale, about.cta.href)}
-            className="group mt-6 inline-flex items-center gap-2 rounded-full sm:mt-8 border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:translate-y-[-1px] hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)]"
+            className="group mt-7 inline-flex items-center gap-2 rounded-full sm:mt-9 border border-[rgba(61,221,196,0.18)] bg-[linear-gradient(180deg,rgba(50,148,134,0.98),rgba(31,127,115,0.92))] px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_14px_40px_rgba(31,127,115,0.18)] transition duration-300 hover:translate-y-[-1px] hover:shadow-[0_18px_48px_rgba(31,127,115,0.24)]"
           >
             {about.cta.label}
             <ArrowRight

@@ -1,5 +1,6 @@
 import { siteCopy, socialLinks } from '@/content/site-content'
 import { env } from '@/lib/env'
+import { getDictionary } from '@/lib/i18n'
 import type { Locale, ProjectContent, ServiceContent } from '@/types/content'
 
 /** @id compartidos: los schemas de página referencian estas entidades (que
@@ -59,16 +60,24 @@ export function projectSchema(prj: ProjectContent, locale: Locale, url: string):
   }
 }
 
-export function personSchema(): JsonLdObject {
+/** Identidad profesional del founder. jobTitle/knowsAbout replican la placa de
+ *  Sobre mí (dict.about.identity): una sola versión de "qué es" en toda la app. */
+export function personSchema(locale: Locale): JsonLdObject {
+  const { identity, seo } = getDictionary(locale).about
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
     '@id': PERSON_ID,
     name: siteCopy.founderName,
-    jobTitle: 'Founder & Software Developer',
+    jobTitle: identity.role,
+    description: seo.description,
     url: env.siteUrl,
     image: `${env.siteUrl}${siteCopy.founderImage}`,
     email: siteCopy.email,
+    nationality: { '@type': 'Country', name: 'Argentina' },
+    homeLocation: { '@type': 'City', name: 'Córdoba' },
+    knowsAbout: identity.stack,
     worksFor: { '@id': ORG_ID },
     sameAs: socialLinks
       .filter((item) => !item.href.startsWith('mailto:'))
