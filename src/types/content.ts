@@ -146,9 +146,21 @@ type HomeContent = {
   }
 }
 
+/** Identidad profesional: placa del hero de Sobre mí + chips del teaser de la home.
+ *  Es la carta de presentación (rol, base, disponibilidad, stack de cabecera);
+ *  el detalle por área vive en stackGroups. */
+export type AboutIdentity = {
+  role: string
+  location: string
+  status: string
+  /** Stack de cabecera, en el orden en que se lee la tira: 5 items como máximo. */
+  stack: string[]
+}
+
 type AboutContent = {
   seo: SeoMeta
   title: string
+  identity: AboutIdentity
   story: string[]
   stackGroups: { label: string; items: string[] }[]
   certifications: { id: string; title: string; issuer: string; date: string; image: string }[]

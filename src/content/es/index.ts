@@ -135,7 +135,7 @@ export const es: Dictionary = {
     about: {
       title: 'Quién está detrás',
       teaser:
-        'Soy Valentino Galfré: estudiante de Ingeniería en Sistemas y desarrollador. Construyo software real para negocios reales — de la idea a producción.',
+        'Soy Valentino Galfré, Full-Stack Developer en Córdoba, Argentina. Construyo agentes de IA, bots y automatizaciones que no quedan en una demo: terminan en producción, atendiendo clientes reales todos los días.',
       cta: { label: 'Conocé mi historia', href: '/sobre-mi' },
     },
     contact: {
@@ -549,29 +549,36 @@ export const es: Dictionary = {
 
   about: {
     seo: {
-      title: 'Valentino Galfré — desarrollador de software | GalfreDev',
+      title: 'Valentino Galfré — Full-Stack Developer | GalfreDev',
       description:
-        'Quién está detrás de GalfreDev: Valentino Galfré, estudiante de Ingeniería en Sistemas y desarrollador. De la idea a producción, desde Córdoba.',
+        'Full-Stack Developer en Córdoba, Argentina. Construyo agentes de IA, bots y automatizaciones en producción con TypeScript, Claude, Mastra, Next.js y React Native.',
     },
     title: 'Del código al negocio',
+    identity: {
+      role: 'Full-Stack Developer',
+      location: 'Córdoba, Argentina 🇦🇷',
+      status: 'Disponible para proyectos',
+      stack: ['TypeScript', 'Claude', 'Mastra', 'Next.js', 'React Native'],
+    },
     story: [
-      'Soy Valentino Galfré, desarrollador de software de Córdoba, Argentina. Estudio Ingeniería en Sistemas de Información en la UTN FRC, pero mi verdadera escuela es construir: convierto ideas en software que funciona en producción, para negocios reales.',
-      'Me formé también en Coderhouse: AI Automation en 2026, Python en 2024, inglés avanzado para desarrollo en 2023, y hoy estoy cursando Backend Developer. Aprendo rápido y construyendo: cada proyecto sube la vara del siguiente.',
-      'Lo que me mueve es simple: no soporto ver negocios perdiendo tiempo y plata en tareas que una máquina hace mejor. Por eso me enfoqué en automatización e IA aplicada — no como palabra de moda, sino como herramienta concreta para que una operación funcione sola.',
-      'Trabajo de punta a punta: entiendo el problema, diseño la solución, la construyo y la dejo funcionando en producción. Sin intermediarios ni traducciones perdidas entre el que habla con el cliente y el que programa. Hablás conmigo, y el que construye soy yo.',
+      'Soy Valentino Galfré, Full-Stack Developer. Construyo agentes de IA, bots y automatizaciones que no quedan en una demo: terminan en producción, atendiendo clientes reales todos los días.',
+      'Trabajo de punta a punta sobre TypeScript: Next.js y React Native del lado del producto, Node.js y PostgreSQL del lado del servidor, y Claude y Mastra cuando la solución necesita razonar y no solo seguir reglas. El stack lo elige el problema, no la moda.',
+      'Eso ya está corriendo hoy: un sistema de gestión que emite facturación electrónica AFIP con CAE real y etiquetas QR que cualquiera puede verificar; un asistente de WhatsApp que responde 24/7 por 33 profesionales de un instituto médico cordobés; una plataforma que genera y agenda contenido con IA para varias marcas desde un solo panel; y una app iOS con 186 tests en verde.',
+      'En paralelo estudio Ingeniería en Sistemas de Información en la UTN FRC y me formé en Coderhouse — AI Automation, Python e inglés técnico avanzado, hoy cursando Backend Developer. Pero la escuela que más enseña es esta: cada proyecto en producción sube la vara del siguiente.',
+      'Hablás conmigo y el que construye soy yo. Sin intermediarios ni traducciones perdidas entre el que entiende el problema y el que escribe el código.',
     ],
     stackGroups: [
       {
-        label: 'Backend y datos',
-        items: ['Node.js', 'TypeScript', 'Python', 'PostgreSQL', 'Supabase'],
+        label: 'Agentes e IA aplicada',
+        items: ['Claude', 'Mastra', 'Anthropic SDK', 'WhatsApp Cloud API', 'Automatizaciones'],
       },
       {
-        label: 'Frontend y experiencia',
-        items: ['Next.js', 'React Native', 'Framer Motion', 'Tailwind CSS', 'SEO técnico'],
+        label: 'Producto y frontend',
+        items: ['TypeScript', 'Next.js', 'React Native', 'Expo', 'Tailwind CSS', 'SEO técnico'],
       },
       {
-        label: 'Automatización e IA',
-        items: ['APIs', 'Bots', 'Integraciones', 'Workflows', 'IA aplicada'],
+        label: 'Backend e infraestructura',
+        items: ['Node.js', 'PostgreSQL', 'Supabase', 'Redis', 'Docker', 'Vercel'],
       },
     ],
     certifications: [

@@ -105,7 +105,7 @@ export default function RootLayout({
               .map((item) => item.href),
           }}
         />
-        <JsonLd data={personSchema()} />
+        <JsonLd data={personSchema('en')} />
       </RootShell>
     </html>
   )

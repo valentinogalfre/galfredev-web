@@ -3,6 +3,7 @@ import { SiteHeader } from '@/components/layout/site-header'
 import { Parallax } from '@/components/motion/parallax'
 import { Reveal } from '@/components/motion/reveal'
 import { StaggerItem, StaggerReveal } from '@/components/motion/stagger-reveal'
+import { IdentityPills, StackStrip } from '@/components/ui/identity'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { siteCopy } from '@/content/site-content'
 import { getDictionary, localizedPath } from '@/lib/i18n'
@@ -88,12 +89,28 @@ export function AboutPage({ locale }: { locale: Locale }) {
                 </em>
               </h1>
 
+              {/* Placa de identidad: rol, base y disponibilidad. Es la carta de
+                  presentación profesional y va antes del lede — quien entra ve
+                  QUÉ es antes de leer la historia. */}
+              <IdentityPills
+                identity={about.identity}
+                withStatus
+                style={{ animationDelay: '0.14s' }}
+                className="hero-enter mt-6 justify-center lg:justify-start"
+              />
+
               <p
-                style={{ animationDelay: '0.16s' }}
+                style={{ animationDelay: '0.22s' }}
                 className="hero-enter mx-auto mt-6 max-w-xl text-pretty text-[1.02rem] leading-[1.75] text-[var(--text-soft)] sm:text-[1.12rem] sm:leading-8 lg:mx-0"
               >
                 {lede}
               </p>
+
+              <StackStrip
+                items={about.identity.stack}
+                style={{ animationDelay: '0.3s' }}
+                className="hero-enter mt-7 justify-center lg:justify-start"
+              />
             </div>
 
             {/* Foto founder: mismo tratamiento que el teaser de la home (marco teal + glow) */}

@@ -134,7 +134,7 @@ export const en: Dictionary = {
     about: {
       title: "Who's behind this",
       teaser:
-        "I'm Valentino Galfré: an Information Systems Engineering student and developer. I build real software for real businesses — from idea to production.",
+        "I'm Valentino Galfré, a Full-Stack Developer based in Córdoba, Argentina. I build AI agents, bots and automations that don't stop at a demo — they ship to production and serve real customers every day.",
       cta: { label: 'Get to know my story', href: '/about' },
     },
     contact: {
@@ -545,29 +545,36 @@ export const en: Dictionary = {
 
   about: {
     seo: {
-      title: 'Valentino Galfré — Software Developer | GalfreDev',
+      title: 'Valentino Galfré — Full-Stack Developer | GalfreDev',
       description:
-        'The person behind GalfreDev: Valentino Galfré, Information Systems Engineering student and developer. From idea to production, from Córdoba.',
+        'Full-Stack Developer based in Córdoba, Argentina. I build AI agents, bots and automations running in production with TypeScript, Claude, Mastra, Next.js and React Native.',
     },
     title: 'From code to business',
+    identity: {
+      role: 'Full-Stack Developer',
+      location: 'Córdoba, Argentina 🇦🇷',
+      status: 'Available for projects',
+      stack: ['TypeScript', 'Claude', 'Mastra', 'Next.js', 'React Native'],
+    },
     story: [
-      "I'm Valentino Galfré, a software developer from Córdoba, Argentina. I study Information Systems Engineering at UTN FRC, but my real school is building: I turn ideas into software that runs in production, for real businesses.",
-      "I also trained at Coderhouse: AI Automation in 2026, Python in 2024, advanced English for development in 2023, and I'm currently taking their Backend Developer course. I learn fast and by building — every project raises the bar for the next one.",
-      "What drives me is simple: I can't stand watching businesses lose time and money on tasks a machine does better. That's why I focused on automation and applied AI — not as a buzzword, but as a concrete tool to make an operation run on its own.",
-      "I work end to end: I understand the problem, design the solution, build it and leave it running in production. No middlemen, nothing lost in translation between the person who talks to the client and the person who codes. You talk to me, and I'm the one who builds.",
+      "I'm Valentino Galfré, a Full-Stack Developer. I build AI agents, bots and automations that don't stop at a demo — they ship to production and serve real customers every day.",
+      'I work end to end on TypeScript: Next.js and React Native on the product side, Node.js and PostgreSQL on the server side, and Claude and Mastra when the solution needs to reason rather than just follow rules. The problem picks the stack, not the hype.',
+      "That's already running today: a management system issuing real AFIP electronic invoices with CAE and QR labels anyone can verify; a WhatsApp assistant answering 24/7 for 33 practitioners at a medical institute in Córdoba; a platform that generates and schedules AI content for several brands from a single dashboard; and an iOS app with 186 tests passing.",
+      "Alongside that I study Information Systems Engineering at UTN FRC and trained at Coderhouse — AI Automation, Python and advanced technical English, currently taking Backend Developer. But the school that teaches most is this one: every project in production raises the bar for the next.",
+      "You talk to me, and I'm the one who builds. No middlemen, nothing lost in translation between the person who understands the problem and the person who writes the code.",
     ],
     stackGroups: [
       {
-        label: 'Backend & data',
-        items: ['Node.js', 'TypeScript', 'Python', 'PostgreSQL', 'Supabase'],
+        label: 'Agents & applied AI',
+        items: ['Claude', 'Mastra', 'Anthropic SDK', 'WhatsApp Cloud API', 'Automations'],
       },
       {
-        label: 'Frontend & experience',
-        items: ['Next.js', 'React Native', 'Framer Motion', 'Tailwind CSS', 'Technical SEO'],
+        label: 'Product & frontend',
+        items: ['TypeScript', 'Next.js', 'React Native', 'Expo', 'Tailwind CSS', 'Technical SEO'],
       },
       {
-        label: 'Automation & AI',
-        items: ['APIs', 'Bots', 'Integrations', 'Workflows', 'Applied AI'],
+        label: 'Backend & infrastructure',
+        items: ['Node.js', 'PostgreSQL', 'Supabase', 'Redis', 'Docker', 'Vercel'],
       },
     ],
     certifications: [
