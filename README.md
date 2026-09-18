@@ -250,4 +250,4 @@ npm ci
 npm run lint && npm run typecheck && npm test && npm run build
 ```
 
-**Promover a producción:** PR `develop → main` (o `git checkout main && git merge --ff-only develop && git push`). El push a `main` dispara el deploy en Vercel; `develop` genera un preview.
+**Promover a producción:** PR `develop → main` (o `git checkout main && git merge --ff-only develop && git push`). Sin deploy automático hoy (el proyecto de Vercel fue dado de baja; el sitio vive en `galfredevs/galfredev` → `apps/www`).
