@@ -232,6 +232,7 @@ export const es: Dictionary = {
       id: 'bots-whatsapp',
       slug: 'bots-whatsapp',
       name: 'Bots de WhatsApp',
+      card: 'Responde al instante, filtra curiosos y te deja clientes listos para cerrar.',
       seo: {
         title: 'Bots de WhatsApp para negocios | GalfreDev',
         description:
@@ -276,6 +277,7 @@ export const es: Dictionary = {
       id: 'webs',
       slug: 'webs',
       name: 'Webs',
+      card: 'Rápidas, animadas y pensadas para aparecer en Google. Como esta.',
       seo: {
         title: 'Desarrollo web profesional en Córdoba | GalfreDev',
         description:
@@ -320,6 +322,7 @@ export const es: Dictionary = {
       id: 'apps',
       slug: 'apps',
       name: 'Apps',
+      card: 'Apps y sistemas web que reemplazan planillas, papeles y cuadernos.',
       seo: {
         title: 'Desarrollo de apps iOS, Android y sistemas web | GalfreDev',
         description:
@@ -364,6 +367,7 @@ export const es: Dictionary = {
       id: 'automatizaciones-ia',
       slug: 'automatizaciones-ia',
       name: 'Automatizaciones e IA',
+      card: 'Tus herramientas conectadas y con IA: lo que hoy hacés a mano, se hace solo.',
       seo: {
         title: 'Automatizaciones e IA aplicada para negocios | GalfreDev',
         description:
@@ -408,6 +412,7 @@ export const es: Dictionary = {
       id: 'software-a-medida',
       slug: 'software-a-medida',
       name: 'Software a medida',
+      card: 'El sistema completo cuando lo genérico queda chico: backend, panel y facturación.',
       seo: {
         title: 'Software a medida para empresas | GalfreDev',
         description:

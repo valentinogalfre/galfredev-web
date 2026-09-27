@@ -21,12 +21,14 @@ function ProjectCard({
   href,
   caseLabel,
   captureAlt,
+  onlineLabel,
 }: {
   project: ProjectContent
   index: number
   href: string
   caseLabel: string
   captureAlt: string
+  onlineLabel: string
 }) {
   const extraChips = project.stack.length - MAX_CHIPS
   const extraChipsMobile = project.stack.length - MAX_CHIPS_MOBILE
@@ -44,6 +46,7 @@ function ProjectCard({
               project={{ id: project.id, name: project.name, image: project.image }}
               kind={PROJECT_FRAME_KINDS[project.id]}
               captureAlt={captureAlt}
+              onlineLabel={onlineLabel}
               compactOnMobile
             />
           </Parallax>
@@ -148,13 +151,15 @@ export function ProjectsSection({ locale }: { locale: Locale }) {
         href={localizedPath(locale, `${basePath}${project.slug}`)}
         caseLabel={caseLabel}
         captureAlt={captureAlt(project.name)}
+        onlineLabel={locale === 'es' ? 'en línea' : 'online'}
       />
     )
   })
 
   return (
     <section id={sectionId} className="px-4 py-14 sm:px-6 sm:py-28 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      {/* max-w-7xl como Servicios/ROI/Contacto: el título alinea con el resto. */}
+      <div className="mx-auto max-w-7xl">
         <Reveal variant="section">
           <SectionHeading
             eyebrow={kicker}

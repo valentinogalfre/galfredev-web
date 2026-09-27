@@ -168,7 +168,7 @@ export function LoginPanel() {
         <form className="space-y-4" onSubmit={handleMagicLink} noValidate>
           <label className="block">
             <span className="mb-2 block text-sm text-white/68">Email</span>
-            <div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-white/80 transition duration-300 focus-within:border-[var(--color-accent)] focus-within:bg-white/[0.07]">
+            <div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-white/80 transition duration-300 focus-within:border-[#3dddc4]/70 focus-within:bg-white/[0.07] focus-within:shadow-[0_0_0_3px_rgba(61,221,196,0.2)]">
               <Mail size={16} aria-hidden className="text-white/40" />
               <input
                 type="email"
@@ -184,7 +184,7 @@ export function LoginPanel() {
                 }}
                 placeholder="tu@empresa.com"
                 autoComplete="email"
-                className="w-full bg-transparent text-base outline-none placeholder:text-white/28"
+                className="w-full bg-transparent text-base outline-hidden placeholder:text-white/28"
               />
             </div>
           </label>

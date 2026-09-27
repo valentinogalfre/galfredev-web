@@ -45,7 +45,7 @@ function Logo({ href, onNavigate }: { href: string; onNavigate?: () => void }) {
           window.scrollTo({ top: 0, behavior: 'smooth' })
         }
       }}
-      aria-label="GalfreDev — inicio"
+      aria-label={href.startsWith('/en') ? 'GalfreDev — home' : 'GalfreDev — inicio'}
       className="rounded-full text-sm font-semibold tracking-[0.22em] text-white transition duration-300 hover:opacity-85"
     >
       GALFRE
@@ -172,56 +172,60 @@ export function SiteHeaderClient({
               : 'border-transparent bg-transparent',
         )}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-[4.5rem] lg:px-8">
-          <Logo href={homeHref} onNavigate={() => setOpen(false)} />
+        {/* Mismo patrón de contenedor que las secciones (padding afuera,
+            max-w-7xl adentro): logo y CTA alinean con el borde del contenido. */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 lg:h-[4.5rem]">
+            <Logo href={homeHref} onNavigate={() => setOpen(false)} />
 
-          <nav
-            aria-label={labels.mainNav}
-            className="hidden items-center gap-7 lg:flex"
-          >
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch={false}
-                className="group relative rounded-sm py-2 text-sm font-medium tracking-[-0.01em] text-white/64 transition duration-300 hover:text-white"
+            <nav
+              aria-label={labels.mainNav}
+              className="hidden items-center gap-7 lg:flex"
+            >
+              {nav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  prefetch={false}
+                  className="group relative rounded-sm py-2 text-sm font-medium tracking-[-0.01em] text-white/64 transition duration-300 hover:text-white"
+                >
+                  {item.label}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,rgba(61,221,196,0),rgba(61,221,196,0.85),rgba(61,221,196,0))] opacity-0 transition-opacity duration-300 group-hover:opacity-90"
+                  />
+                </Link>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <button
+                type="button"
+                data-testid="palette-trigger"
+                onClick={openCommandPalette}
+                aria-label={labels.openPalette}
+                className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/[0.035] px-3 text-white/64 transition duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:scale-[0.97]"
               >
-                {item.label}
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,rgba(61,221,196,0),rgba(61,221,196,0.85),rgba(61,221,196,0))] opacity-0 transition-opacity duration-300 group-hover:opacity-90"
-                />
-              </Link>
-            ))}
-          </nav>
+                <Search size={15} aria-hidden="true" />
+                <kbd className="hidden font-sans text-[0.68rem] font-medium tracking-[0.08em] text-white/44 md:inline">
+                  ⌘K
+                </kbd>
+              </button>
 
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <button
-              type="button"
-              data-testid="palette-trigger"
-              onClick={openCommandPalette}
-              aria-label={labels.openPalette}
-              className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/[0.035] px-3 text-white/64 transition duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:scale-[0.97]"
-            >
-              <Search size={15} aria-hidden="true" />
-              <kbd className="hidden font-sans text-[0.68rem] font-medium tracking-[0.08em] text-white/44 md:inline">
-                ⌘K
-              </kbd>
-            </button>
+              <div className="hidden lg:block">{localeSwitch()}</div>
+              <div className="hidden lg:block">{cta()}</div>
 
-            <div className="hidden lg:block">{localeSwitch()}</div>
-            <div className="hidden lg:block">{cta()}</div>
-
-            <button
-              type="button"
-              onClick={() => setOpen((value) => !value)}
-              aria-label={open ? labels.closeMenu : labels.openMenu}
-              aria-expanded={open}
-              aria-controls="mobile-navigation"
-              className="inline-flex size-9 items-center justify-center rounded-full border border-[var(--surface-border)] bg-white/[0.035] text-white transition duration-300 hover:border-white/20 hover:bg-white/[0.07] active:scale-[0.94] lg:hidden"
-            >
-              {open ? <X size={17} aria-hidden="true" /> : <Menu size={17} aria-hidden="true" />}
-            </button>
+              <button
+                type="button"
+                onClick={() => setOpen((value) => !value)}
+                aria-label={open ? labels.closeMenu : labels.openMenu}
+                aria-expanded={open}
+                aria-controls="mobile-navigation"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-[var(--surface-border)] bg-white/[0.035] text-white transition duration-300 hover:border-white/20 hover:bg-white/[0.07] active:scale-[0.94] lg:hidden"
+              >
+                {open ? <X size={17} aria-hidden="true" /> : <Menu size={17} aria-hidden="true" />}
+              </button>
+            </div>
           </div>
         </div>
       </header>

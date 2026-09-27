@@ -18,6 +18,9 @@ export type ServiceContent = {
   id: ServiceId
   slug: string // slug localizado para la URL
   name: string // nombre corto (nav, cards)
+  /** Resumen para la card de la home: entra completo en 2-3 líneas (el sub
+   *  del hero, más largo, se cortaba a mitad de frase). */
+  card: string
   seo: SeoMeta
   hero: { eyebrow: string; title: string; italic: string; sub: string }
   benefits: { title: string; detail: string }[]

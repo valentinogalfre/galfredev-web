@@ -35,11 +35,13 @@ function ProjectCard({
   href,
   caseLabel,
   captureAlt,
+  onlineLabel,
 }: {
   project: ProjectContent
   href: string
   caseLabel: string
   captureAlt: string
+  onlineLabel: string
 }) {
   const extraChips = project.stack.length - MAX_CHIPS
 
@@ -52,6 +54,7 @@ function ProjectCard({
               project={{ id: project.id, name: project.name, image: project.image }}
               kind={PROJECT_FRAME_KINDS[project.id]}
               captureAlt={captureAlt}
+              onlineLabel={onlineLabel}
             />
           </Parallax>
         </div>
@@ -134,6 +137,7 @@ export function ProjectsIndexPage({ locale }: { locale: Locale }) {
           href={localizedPath(locale, `${projectsBase}${project.slug}`)}
           caseLabel={labels.caseLabel}
           captureAlt={labels.captureAlt(project.name)}
+          onlineLabel={locale === 'es' ? 'en línea' : 'online'}
         />
       ),
     }
