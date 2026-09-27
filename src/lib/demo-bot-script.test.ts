@@ -38,3 +38,35 @@ describe('scriptedReply', () => {
     expect(scriptedReply('en', 'I enjoy soccer')).toMatch(/continue on WhatsApp/)
   })
 })
+
+// Contrato: las palabras clave matchean palabras, no fragmentos. «hi» dentro
+// de «this»/«chica» o «app» dentro de «happy» no pueden disparar respuestas
+// equivocadas (es el camino vivo del chat mientras no haya API key).
+describe('scriptedReply · límites de palabra', () => {
+  it('«this»/«chica» no son un saludo', () => {
+    expect(scriptedReply('en', 'Is this for small shops?')).not.toMatch(/GalfreDev's assistant/)
+    expect(scriptedReply('es', 'Tengo una tienda chica')).not.toMatch(/asistente de GalfreDev/)
+  })
+
+  it('«happy» no es una pregunta sobre apps', () => {
+    expect(scriptedReply('en', 'I am happy')).toMatch(/continue on WhatsApp/)
+  })
+
+  it('«bottom» no es un bot', () => {
+    expect(scriptedReply('en', 'bottom line?')).toMatch(/continue on WhatsApp/)
+  })
+
+  it('las formas derivadas siguen matcheando (plurales, acentos, compuestas)', () => {
+    expect(scriptedReply('es', 'Necesito bots para mi negocio')).toMatch(/filtran leads/)
+    expect(scriptedReply('en', 'We need a new website')).toMatch(/websites that sell/)
+    expect(scriptedReply('es', 'Quiero una aplicación')).toMatch(/apps móviles/)
+    expect(scriptedReply('en', 'Do you build apps?')).toMatch(/mobile apps/)
+    expect(scriptedReply('es', 'Busco automatización de reportes')).toMatch(/tareas repetitivas/)
+    expect(scriptedReply('es', 'Hola, buen día')).toMatch(/asistente de GalfreDev/)
+  })
+
+  it('«caro»/«expensive» son preguntas de precio', () => {
+    expect(scriptedReply('es', '¿Es caro?')).toMatch(/rango real por WhatsApp/)
+    expect(scriptedReply('en', 'Is this expensive?')).toMatch(/real range on WhatsApp/)
+  })
+})
