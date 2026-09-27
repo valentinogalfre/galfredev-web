@@ -48,7 +48,7 @@ type OptionGroupProps = {
 }
 
 const fieldClassName =
-  'w-full rounded-[22px] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-white outline-none transition placeholder:text-white/24 focus:border-[var(--color-accent)] focus:bg-white/[0.07]'
+  'w-full rounded-[22px] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-white outline-hidden transition placeholder:text-white/24 focus:border-[#3dddc4]/70 focus:bg-white/[0.07] focus:shadow-[0_0_0_3px_rgba(61,221,196,0.2)]'
 
 function OptionGroup({
   label,
@@ -235,7 +235,7 @@ export function ProfileForm({
       }
 
       startTransition(() => {
-        router.push(result.redirectTo ?? '/?profile=updated')
+        router.push(result.redirectTo ?? '/perfil')
         router.refresh()
       })
     } catch {
