@@ -25,8 +25,10 @@ export function isSameOriginRequest(request: Request) {
 }
 
 export function isJsonRequest(request: Request) {
-  const contentType = request.headers.get('content-type')
-  return typeof contentType === 'string' && contentType.includes('application/json')
+  // Media type exacto (sin parámetros): un substring dejaba pasar
+  // `text/plain; x=application/json`, que el navegador manda sin preflight.
+  const mediaType = request.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase()
+  return mediaType === 'application/json'
 }
 
 export function normalizeSource(value: string | undefined, fallback: string) {
