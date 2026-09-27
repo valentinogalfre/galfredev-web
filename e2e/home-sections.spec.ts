@@ -44,6 +44,10 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
   await page.route('**/api/lead', (route) =>
     route.fulfill({ status: 200, json: { ok: true, message: 'ok' } }),
   )
+  // El contrato es el form: sin el HDR la escena 3D del hero no arranca su
+  // render por software (loop de tareas de ~200 ms que, con varios workers,
+  // volvía flaky cada click del test).
+  await page.route('**/hdr/city.hdr', (route) => route.abort())
 
   await page.goto('/#contacto')
 
@@ -51,22 +55,30 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
   // expandirlo primero (reintentando el tap hasta que aria-expanded confirme
   // hidratación, como abajo). En desktop el toggle no existe a la vista (el
   // form está siempre visible) y este paso no aplica.
+  // Reintentos idempotentes: se clickea SOLO si el estado todavía no cambió.
+  // Clickear a ciegas en cada intento (con 300 ms de espera) hacía oscilar el
+  // toggle bajo carga: el primer click aplicaba tarde y el reintento lo volvía
+  // a cerrar/destildar hasta agotar el timeout del test.
   const formToggle = page.getByTestId('contact-form-toggle')
   if (await formToggle.isVisible()) {
     await expect(async () => {
-      await formToggle.click({ force: true })
-      await expect(formToggle).toHaveAttribute('aria-expanded', 'true', { timeout: 300 })
-    }).toPass()
+      if ((await formToggle.getAttribute('aria-expanded')) !== 'true') {
+        await formToggle.click({ force: true })
+      }
+      await expect(formToggle).toHaveAttribute('aria-expanded', 'true', { timeout: 1_500 })
+    }).toPass({ timeout: 15_000 })
   }
 
   // Gate de hidratación: los inputs son controlados — un fill antes de que React
   // hidrate se borra. El checkbox solo togglea con los handlers vivos, así que
-  // reintentar el click hasta que aria-checked cambie garantiza hidratación.
+  // esperar a que aria-checked cambie garantiza hidratación.
   const privacy = page.getByRole('checkbox', { name: /política de privacidad/ })
   await expect(async () => {
-    await privacy.click()
-    await expect(privacy).toHaveAttribute('aria-checked', 'true', { timeout: 300 })
-  }).toPass()
+    if ((await privacy.getAttribute('aria-checked')) !== 'true') {
+      await privacy.click()
+    }
+    await expect(privacy).toHaveAttribute('aria-checked', 'true', { timeout: 1_500 })
+  }).toPass({ timeout: 15_000 })
 
   await page.getByLabel('Nombre y apellido').fill('Prueba Playwright')
   await page.getByLabel('Email', { exact: true }).fill('prueba@example.com')
