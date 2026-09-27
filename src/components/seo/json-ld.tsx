@@ -2,6 +2,8 @@ import { siteCopy, socialLinks } from '@/content/site-content'
 import { env } from '@/lib/env'
 import { getDictionary } from '@/lib/i18n'
 import type { Locale, ProjectContent, ServiceContent } from '@/types/content'
+import { existsSync } from 'node:fs'
+import path from 'node:path'
 
 /** @id compartidos: los schemas de página referencian estas entidades (que
  *  viven en el layout) sin re-declararlas — una sola Organization/Person por
@@ -52,7 +54,11 @@ export function projectSchema(prj: ProjectContent, locale: Locale, url: string):
     name: prj.name,
     description: `${prj.tagline} ${prj.problem}`,
     url,
-    image: `${env.siteUrl}${prj.image}`,
+    // La captura solo se declara si existe en /public: hasta que lleguen las
+    // reales (README › Pendientes) apuntaba a un 404 en las 8 páginas de casos.
+    ...(existsSync(path.join(process.cwd(), 'public', prj.image))
+      ? { image: `${env.siteUrl}${prj.image}` }
+      : {}),
     applicationCategory: 'BusinessApplication',
     operatingSystem: prj.id === 'pulso' ? 'iOS' : 'Web',
     inLanguage: inLanguage(locale),

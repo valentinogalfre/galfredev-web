@@ -1,5 +1,6 @@
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
+import { socialMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -9,6 +10,13 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/privacidad',
   },
+  ...socialMetadata({
+    title: 'Política de privacidad | GalfreDev',
+    description:
+      'Cómo trata GalfreDev los datos de contacto, preferencias y consentimientos dentro del sitio y sus formularios.',
+    path: '/privacidad',
+    locale: 'es',
+  }),
 }
 
 export default function PrivacyPage() {

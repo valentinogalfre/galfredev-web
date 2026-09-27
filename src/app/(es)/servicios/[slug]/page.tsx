@@ -2,9 +2,13 @@ import { ServicePage } from '@/components/pages/service-page'
 import { breadcrumbSchema, JsonLd, serviceSchema } from '@/components/seo/json-ld'
 import { env } from '@/lib/env'
 import { getDictionary, serviceByLocalizedSlug } from '@/lib/i18n'
-import { hreflangAlternates } from '@/lib/seo'
+import { hreflangAlternates, socialMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+
+// Solo los slugs del diccionario: uno desconocido es 404 directo, sin
+// renderizarse ni cachearse on-demand (antes cualquier slug generaba su OG).
+export const dynamicParams = false
 
 export function generateStaticParams() {
   return Object.values(getDictionary('es').services).map((service) => ({
@@ -33,6 +37,13 @@ export async function generateMetadata({
       canonical: `/servicios/${slug}`,
       ...hreflangAlternates(`/servicios/${slug}`, `/services/${enSlug}`),
     },
+    ...socialMetadata({
+      title: service.seo.title,
+      description: service.seo.description,
+      path: `/servicios/${slug}`,
+      locale: 'es',
+      segmentImage: true,
+    }),
   }
 }
 
