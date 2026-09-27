@@ -68,20 +68,56 @@ export const en: Dictionary = {
           description:
             'We pinpoint where time, control or revenue is leaking and what to tackle first.',
           outcome: 'A real problem defined, with clear priority and impact.',
+          when: 'Week 1',
+          stage: 'Diagnosis',
+          stageWhen: 'wk 1',
+          log: {
+            run: 'diagnosis · mapping the operation…',
+            ok: '3 leaks found: bookings, collections, follow-up',
+          },
+          day: 7,
         },
         {
           title: 'Focused implementation',
           description:
             'We build the solution with just the right level of automation, integration or software.',
           outcome: 'Up and running fast, and operationally sound.',
+          when: 'Weeks 2–4',
+          stage: 'Build',
+          stageWhen: 'wk 2–4',
+          log: {
+            run: 'build · bot + integrations…',
+            ok: 'WhatsApp bot in production · 24/7',
+          },
+          day: 28,
         },
         {
           title: 'Tuning and continuous improvement',
           description:
             'We measure what worked, remove real friction and define the next useful step.',
           outcome: 'The solution keeps pace with your growth instead of freezing.',
+          when: 'Month 2 onward',
+          stage: 'Improve',
+          stageWhen: 'mo 2 +',
+          log: {
+            run: 'continuous improvement · measuring…',
+            ok: 'live metrics dashboard · next step defined',
+          },
+          day: 60,
         },
       ],
+      console: {
+        name: 'process.run',
+        command: 'galfredev run process --business your-smb',
+        comment: '# example of a typical project · runs with your scroll',
+        status: {
+          idle: 'queued',
+          running: 'running',
+          waiting: 'waiting for scroll',
+          done: 'complete',
+        },
+        dayLabel: 'day',
+      },
     },
     roi: {
       title: "What's the return?",

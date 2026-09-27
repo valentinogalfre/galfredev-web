@@ -69,20 +69,56 @@ export const es: Dictionary = {
           description:
             'Ubicamos dónde se pierde tiempo, control o facturación y qué conviene atacar primero.',
           outcome: 'Problema real definido, prioridad e impacto claros.',
+          when: 'Semana 1',
+          stage: 'Diagnóstico',
+          stageWhen: 'sem 1',
+          log: {
+            run: 'diagnóstico · relevando operación…',
+            ok: '3 fugas detectadas: turnos, cobranzas, seguimiento',
+          },
+          day: 7,
         },
         {
           title: 'Implementación enfocada',
           description:
             'Armamos la solución con el nivel justo de automatización, integración o software.',
           outcome: 'En marcha rápido y con sentido operativo.',
+          when: 'Semanas 2–4',
+          stage: 'Implementación',
+          stageWhen: 'sem 2–4',
+          log: {
+            run: 'implementación · bot + integraciones…',
+            ok: 'bot de WhatsApp en producción · 24/7',
+          },
+          day: 28,
         },
         {
           title: 'Ajuste y mejora continua',
           description:
             'Medimos qué funcionó, corregimos fricción real y definimos el siguiente paso útil.',
           outcome: 'La solución acompaña el crecimiento sin congelarse.',
+          when: 'Mes 2 en adelante',
+          stage: 'Mejora',
+          stageWhen: 'mes 2 +',
+          log: {
+            run: 'mejora continua · midiendo…',
+            ok: 'tablero de métricas en vivo · próximo paso definido',
+          },
+          day: 60,
         },
       ],
+      console: {
+        name: 'proceso.run',
+        command: 'galfredev run proceso --negocio tu-pyme',
+        comment: '# ejemplo de un proyecto típico · avanza con tu scroll',
+        status: {
+          idle: 'en cola',
+          running: 'corriendo',
+          waiting: 'esperando scroll',
+          done: 'completo',
+        },
+        dayLabel: 'día',
+      },
     },
     roi: {
       title: '¿Cuánto te devuelve?',

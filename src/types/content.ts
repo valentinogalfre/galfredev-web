@@ -117,6 +117,32 @@ export type ContactFormContent = {
   }
 }
 
+/** Paso de «Cómo trabajo»: copy de la lista + lo que imprime la consola. */
+export type ProcessStep = {
+  title: string
+  description: string
+  outcome: string
+  /** Cuándo pasa, en la lista: «Semana 1». */
+  when: string
+  /** Nombre corto en la consola: «Diagnóstico». */
+  stage: string
+  /** Cuándo, abreviado para la consola: «sem 1». */
+  stageWhen: string
+  /** Líneas del log (ilustrativas): mientras corre y al terminar. */
+  log: { run: string; ok: string }
+  /** Día del proyecto al que cuenta el contador de la consola. */
+  day: number
+}
+
+/** Textos de la consola proceso.run (el comentario aclara que es un ejemplo). */
+export type ProcessConsole = {
+  name: string
+  command: string
+  comment: string
+  status: { idle: string; running: string; waiting: string; done: string }
+  dayLabel: string
+}
+
 type HomeContent = {
   seo: SeoMeta
   hero: {
@@ -133,7 +159,7 @@ type HomeContent = {
   services: { title: string; sub: string }
   projects: { title: string; sub: string }
   botDemo: { title: string; sub: string; inputPlaceholder: string; limitNote: string }
-  process: { title: string; steps: { title: string; description: string; outcome: string }[] }
+  process: { title: string; steps: ProcessStep[]; console: ProcessConsole }
   roi: { title: string; sub: string; eyebrow: string; calculator: RoiCalculatorLabels }
   about: { title: string; teaser: string; cta: Cta }
   contact: {
