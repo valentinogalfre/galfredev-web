@@ -66,12 +66,19 @@ src/app/
 │   ├── lead/              # Captación de leads (origin check, sanitización, consents)
 │   └── profile/           # Actualización de perfil autenticado
 ├── sitemap.ts             # Sitemap bilingüe (excluye rutas privadas)
-├── robots.ts
-└── opengraph-image.tsx    # OG dinámica global (cada servicio/proyecto tiene la suya por slug)
+└── robots.ts
 ```
 
-Los slugs es↔en se mapean en `src/lib/route-pairs.ts` (hreflang y switch de idioma
-salen de ahí — una sola fuente de verdad).
+La OG global es estática (`public/og-home.jpg`); cada servicio y proyecto genera
+la suya con `opengraph-image.tsx` por slug.
+
+Los pares de rutas es↔en se declaran por página (hreflang en `generateMetadata`),
+en `src/app/sitemap.ts` y en `src/lib/locale-switch.ts` (switch de idioma): si se
+agrega una página espejada, se toca en los tres lugares.
+
+`src/proxy.ts` (el middleware de Next 16) refresca la sesión de Supabase solo en
+las rutas que la leen en el servidor (`/perfil`, `/login`, `/auth/*`,
+`/api/profile`, `/api/lead`); el resto del sitio es estático y no lo invoca.
 
 ### Contenido: diccionarios tipados
 
@@ -107,14 +114,17 @@ pipeline de automatización, panel de software a medida), cargadas con
   Claude con límite diario por sesión de visitante (persistido en Supabase,
   migración `data/migrations/2026-07-04_demo-bot.sql`).
 - Sin keys: modo guionado (`src/lib/demo-bot-script.ts`) — el chat del home
-  funciona igual, con respuestas predefinidas. El contrato es «siempre 200 con
-  `{reply, mode}`», y el front degrada solo si la API no está.
+  funciona igual, con respuestas predefinidas. Con input válido la API siempre
+  responde 200 con `{reply, mode}` (400/403 ante formato u origen inválidos), y
+  el front degrada solo si la API no está.
 
 ### SEO
 
 - `hreflang` es↔en + `x-default` en toda página espejada (`src/lib/seo.ts`).
-- JSON-LD por tipo: `Service` en servicios, `SoftwareApplication` en casos,
-  `BreadcrumbList` en ambas, `Person`/`WebSite` en home/sobre-mí.
+- JSON-LD por tipo: `ProfessionalService` + `Person` en el layout, `Service` en
+  servicios, `SoftwareApplication` en casos y `BreadcrumbList` en ambas.
+- Open Graph y Twitter por página (`socialMetadata` en `src/lib/seo.ts`): cada
+  URL comparte su propio título, descripción y og:url.
 - OG images dinámicas por slug (`opengraph-image.tsx` por ruta, placa común en
   `src/lib/og-card.tsx`).
 - Sitemap bilingüe completo sin rutas privadas.
@@ -187,7 +197,7 @@ npx playwright test --retries=0
 | `lead_intake` | Leads capturados desde el formulario de contacto |
 | `lead_events` | Eventos de seguimiento comercial |
 | `marketing_consents` | Consentimientos explícitos |
-| `demo_bot_sessions` | Límite diario del bot de demo por sesión de visitante |
+| `demo_bot_usage` | Límite diario del bot de demo por sesión de visitante |
 
 Esquema base en [`data/schema.sql`](./data/schema.sql); migraciones
 incrementales en [`data/migrations`](./data/migrations).
@@ -203,9 +213,23 @@ Cosas que requieren acción humana fuera del repo:
 2. **Migración del bot** — aplicar
    [`data/migrations/2026-07-04_demo-bot.sql`](./data/migrations/2026-07-04_demo-bot.sql)
    en Supabase (crea la tabla de sesiones del bot con su límite diario).
-3. **Keys en Vercel** — cargar `ANTHROPIC_API_KEY` y
-   `SUPABASE_SERVICE_ROLE_KEY` en el dashboard para pasar el bot de guionado a
-   Claude real.
+3. **Keys de producción** — cargar `ANTHROPIC_API_KEY` y
+   `SUPABASE_SERVICE_ROLE_KEY` en el servicio `www` de Railway (monorepo) para
+   pasar el bot de guionado a Claude real.
+4. **Endurecer los inserts de leads** — pasar los inserts de `/api/lead` al
+   cliente service-role y ajustar las policies de `lead_intake`. Orden: (1)
+   `SUPABASE_SERVICE_ROLE_KEY` en producción, (2) inserts por service-role
+   deployados, (3) recién ahí cambiar las policies (detalle en el monorepo).
+5. **Límite del bot atómico** — con la API key activa, el límite diario se lee
+   y se escribe en dos pasos: requests en paralelo de la misma sesión lo pasan.
+   Reservar el mensaje con un `update … where message_count < N returning`
+   antes de llamar a Claude (y sumar un tope diario global).
+6. **Política de privacidad** — sumar que el chat de demo se procesa con
+   Anthropic, qué analítica mide visitas y cuánto se guardan las IPs del
+   límite del bot; hoy `/privacidad` y `/terminos` existen solo en español.
+7. **Probar el login en producción** — el proxy ahora refresca la sesión solo
+   en las rutas que la leen y maneja cookies partidas en chunks: validar login
+   con Google/GitHub, `/perfil` y «Cerrar sesión».
 
 ---
 
