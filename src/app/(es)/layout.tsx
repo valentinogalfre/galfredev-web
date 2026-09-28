@@ -54,7 +54,8 @@ export const metadata: Metadata = {
     title: 'GalfreDev | Automatización, software a medida e IA aplicada',
     description:
       'Automatización para negocios, bots para WhatsApp, integraciones y software a medida en Argentina.',
-    images: ['/og-home.jpg'],
+    // Sin images: X cae a og:image, que cada segmento con opengraph-image
+    // sobreescribe (con la de la home fija, todas compartían la misma).
   },
 }
 

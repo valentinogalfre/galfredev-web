@@ -258,6 +258,7 @@ export function Panel({ locale }: { locale: Locale }) {
       {/* Tabla de órdenes: semántica real (table/row/cell) */}
       <div
         ref={scrollRef}
+        data-lenis-prevent
         className="mt-2.5 max-h-[236px] overflow-y-auto rounded-xl border border-white/[0.07] [scrollbar-width:thin]"
       >
         <table aria-label={copy.tableLabel} className="w-full border-collapse text-left text-xs">

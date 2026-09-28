@@ -26,6 +26,8 @@ type ProjectFrameProps = {
    * queda idéntico. Solo afecta al kind 'phone'.
    */
   compactOnMobile?: boolean
+  /** Estado del header del frame de chat (localizado: "en línea" / "online"). */
+  onlineLabel?: string
 }
 
 /**
@@ -282,7 +284,13 @@ function Visual({ project, kind, captureAlt }: ProjectFrameProps) {
  * captura de cada proyecto. Mientras no existan los PNG reales renderiza un
  * placeholder tintado por proyecto con mini-UI abstracta según el kind.
  */
-export function ProjectFrame({ project, kind, captureAlt, compactOnMobile }: ProjectFrameProps) {
+export function ProjectFrame({
+  project,
+  kind,
+  captureAlt,
+  compactOnMobile,
+  onlineLabel = 'en línea',
+}: ProjectFrameProps) {
   const tint = TINTS[project.id]
   const glowShadow = { boxShadow: `0 32px 90px -30px ${tint.shadow}` }
 
@@ -333,7 +341,7 @@ export function ProjectFrame({ project, kind, captureAlt, compactOnMobile }: Pro
             </p>
             <p className="mt-0.5 flex items-center gap-1.5 text-[10px] leading-none text-white/45">
               <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#25d366]" />
-              en línea
+              {onlineLabel}
             </p>
           </div>
         </div>

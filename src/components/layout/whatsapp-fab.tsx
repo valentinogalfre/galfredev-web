@@ -4,6 +4,7 @@ import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import type { Locale } from '@/types/content'
 import { AnimatePresence, motion } from 'framer-motion'
 import { MessageCircle } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 /** El FAB vive en RootShell (ambos árboles es/en): sus textos van por locale. */
@@ -38,6 +39,10 @@ export function WhatsAppFab({ locale }: { locale: Locale }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // El FAB vive en RootShell y sobrevive a las navegaciones cliente: la
+  // sección se busca de nuevo en cada ruta (si no, entrar por /servicios/* y
+  // volver a /#contacto dejaba el FAB encima del toggle del formulario).
+  const pathname = usePathname()
   useEffect(() => {
     const contact =
       document.getElementById('contacto') ?? document.getElementById('contact')
@@ -47,8 +52,12 @@ export function WhatsAppFab({ locale }: { locale: Locale }) {
       { threshold: 0.15 },
     )
     io.observe(contact)
-    return () => io.disconnect()
-  }, [])
+    return () => {
+      io.disconnect()
+      // Al salir de la ruta la sección deja de existir: el FAB vuelve a mostrarse.
+      setContactInView(false)
+    }
+  }, [pathname])
 
   return (
     <AnimatePresence>

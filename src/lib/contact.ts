@@ -78,7 +78,11 @@ const defaultLeadValidationMessages: LeadValidationMessages = {
     'Necesitamos tu consentimiento de privacidad para guardar este lead.',
 }
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// Lineal a propósito: el dominio son etiquetas no vacías separadas por puntos
+// y ninguna clase de caracteres se superpone con su separador (el patrón
+// anterior, `[^\s@]+\.[^\s@]+`, hacía backtracking cuadrático: 13 s con 100k
+// caracteres en un endpoint público).
+const emailRegex = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/
 const phoneDigitsRegex = /\D/g
 const singleLineControlCharsRegex = /[\u0000-\u001F\u007F]+/g
 const multilineControlCharsRegex = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]+/g
@@ -173,12 +177,14 @@ export function validateLeadForm(
     errors.fullName = messages.fullNameTooLong
   }
 
+  // El largo se corta ANTES del regex: nunca se evalúa un patrón sobre input
+  // sin acotar.
   if (!normalized.email) {
     errors.email = messages.emailRequired
-  } else if (!emailRegex.test(normalized.email)) {
-    errors.email = messages.emailInvalid
   } else if (normalized.email.length > MAX_EMAIL_LENGTH) {
     errors.email = messages.emailTooLong
+  } else if (!emailRegex.test(normalized.email)) {
+    errors.email = messages.emailInvalid
   }
 
   const phoneDigits = normalized.phone.replace(phoneDigitsRegex, '')

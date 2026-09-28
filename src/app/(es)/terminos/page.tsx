@@ -1,5 +1,6 @@
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
+import { socialMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -9,6 +10,13 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/terminos',
   },
+  ...socialMetadata({
+    title: 'Términos de uso | GalfreDev',
+    description:
+      'Condiciones generales de uso del sitio de GalfreDev, sus formularios, canales de contacto y alcance informativo.',
+    path: '/terminos',
+    locale: 'es',
+  }),
 }
 
 export default function TermsPage() {

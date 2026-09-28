@@ -9,7 +9,7 @@ import {
   useTransform,
   type MotionValue,
 } from 'framer-motion'
-import { useRef, useSyncExternalStore, type ReactNode } from 'react'
+import { useEffect, useRef, useSyncExternalStore, type ReactNode, type Ref } from 'react'
 
 type ProjectsDeckProps = {
   items: ReactNode[]
@@ -36,12 +36,14 @@ function DeckCard({
   total,
   progress,
   stackAnimated,
+  cardRef,
 }: {
   children: ReactNode
   index: number
   total: number
   progress: MotionValue<number>
   stackAnimated: boolean
+  cardRef?: Ref<HTMLDivElement>
 }) {
   const isLast = index === total - 1
   // Desktop (sticky stack): la card i retrocede exactamente mientras la card
@@ -58,14 +60,17 @@ function DeckCard({
       className={cn(
         // Mobile <lg: slide del carousel snap con peek de la siguiente card.
         'w-[80vw] max-w-[430px] shrink-0 snap-start lg:w-auto lg:max-w-none',
+        // pointer-events-none: el tramo vacío del wrapper h-screen (runway del
+        // sticky) no puede tapar los clicks de lo que sigue; la card los reactiva.
         stackAnimated
-          ? 'lg:sticky lg:top-[10vh] lg:flex lg:h-screen lg:items-start'
+          ? 'lg:pointer-events-none lg:sticky lg:top-[10vh] lg:flex lg:h-screen lg:items-start'
           : 'lg:static lg:block lg:h-auto',
       )}
     >
       <motion.div
+        ref={cardRef}
         style={{ scale: stackAnimated ? scale : 1 }}
-        className="relative h-full w-full origin-top lg:h-auto"
+        className="pointer-events-auto relative h-full w-full origin-top lg:h-auto"
       >
         {children}
         <motion.div
@@ -94,6 +99,29 @@ export function ProjectsDeck({ items, className }: ProjectsDeckProps) {
   const shortViewport = useMediaQuery('(max-height: 699px)')
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const stackAnimated = isDesktop && !reduceMotion && !shortViewport
+
+  // Cola del stack: la última card vive en un wrapper h-screen y dejaba
+  // ~(100vh − alto de la card) de vacío antes de la sección siguiente. Se
+  // absorbe con un margin negativo medido: el alto de la lista no cambia (el
+  // sticky y el progress del scroll quedan idénticos) y lo que sigue arranca
+  // pegado a la última card. Directo al DOM: medir no re-renderiza el deck.
+  const lastCardRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const list = listRef.current
+    const card = lastCardRef.current
+    const wrapper = card?.parentElement
+    if (!list || !card || !wrapper || !stackAnimated) return
+    const observer = new ResizeObserver(() => {
+      const tail = Math.max(0, wrapper.offsetHeight - card.offsetHeight)
+      list.style.marginBottom = `${-tail}px`
+    })
+    observer.observe(card)
+    observer.observe(wrapper)
+    return () => {
+      observer.disconnect()
+      list.style.marginBottom = ''
+    }
+  }, [stackAnimated])
 
   // Progreso vertical de la página sobre la lista (motor del sticky stack).
   const { scrollYProgress } = useScroll({
@@ -128,6 +156,7 @@ export function ProjectsDeck({ items, className }: ProjectsDeckProps) {
             total={items.length}
             progress={scrollYProgress}
             stackAnimated={stackAnimated}
+            cardRef={index === items.length - 1 ? lastCardRef : undefined}
           >
             {item}
           </DeckCard>

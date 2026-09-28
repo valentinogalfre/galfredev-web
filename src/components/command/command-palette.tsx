@@ -42,7 +42,7 @@ function PaletteGroup({
   return (
     <Command.Group
       heading={heading}
-      className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-[0.68rem] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-white/40"
+      className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-[0.68rem] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-white/55"
     >
       {items.map((item) => (
         <Command.Item
@@ -131,7 +131,7 @@ export function CommandPalette({
         placeholder={placeholder}
         className="w-full border-b border-[var(--surface-border)] bg-transparent px-4 py-4 text-base text-white outline-none placeholder:text-white/36 sm:text-sm"
       />
-      <Command.List className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
+      <Command.List data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
         <Command.Empty className="px-3 py-8 text-center text-sm text-white/44">
           {emptyLabel}
         </Command.Empty>

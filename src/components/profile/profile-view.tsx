@@ -15,6 +15,7 @@ import {
   BriefcaseBusiness,
   Building2,
   CheckCircle2,
+  LogOut,
   Mail,
   MessageCircle,
   Pencil,
@@ -218,6 +219,16 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-white/40">
               {authUser.providerLabel}
             </span>
+            {/* POST: cerrar sesión cambia estado (nunca un link/prefetch). */}
+            <form action="/auth/signout" method="post" className="ml-auto">
+              <button
+                type="submit"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs text-white/60 transition duration-300 hover:border-white/24 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3dddc4] active:scale-[0.985]"
+              >
+                <LogOut size={13} aria-hidden />
+                Cerrar sesión
+              </button>
+            </form>
           </motion.div>
         </div>
       </Reveal>

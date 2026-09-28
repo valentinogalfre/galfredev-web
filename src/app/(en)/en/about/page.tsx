@@ -2,7 +2,7 @@ import { AboutPage } from '@/components/pages/about-page'
 import { breadcrumbSchema, JsonLd } from '@/components/seo/json-ld'
 import { env } from '@/lib/env'
 import { getDictionary } from '@/lib/i18n'
-import { hreflangAlternates } from '@/lib/seo'
+import { hreflangAlternates, socialMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 const { seo } = getDictionary('en').about
@@ -16,6 +16,12 @@ export const metadata: Metadata = {
     canonical: '/en/about',
     ...hreflangAlternates('/sobre-mi', '/about'),
   },
+  ...socialMetadata({
+    title: seo.title,
+    description: seo.description,
+    path: '/en/about',
+    locale: 'en',
+  }),
 }
 
 export default function Page() {

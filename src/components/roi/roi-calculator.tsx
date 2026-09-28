@@ -11,9 +11,9 @@ import {
   useInView,
   useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
   useSpring,
 } from 'framer-motion'
+import { useSafeReducedMotion } from '@/components/motion/hydration'
 import { ArrowRight, Coins, TrendingUp, Wallet } from 'lucide-react'
 import {
   useEffect,
@@ -97,7 +97,7 @@ function AnimatedMetric({
   value: number
   formatter: (value: number) => string
 }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
   const display = useSpringNumber(
     value,
     { stiffness: 110, damping: 22, mass: 0.8 },
@@ -187,7 +187,7 @@ function RoiLiveChart({
   monthlySalaryArs: number
   labels: RoiCalculatorLabels['chart']
 }) {
-  const reducedMotion = Boolean(useReducedMotion())
+  const reducedMotion = Boolean(useSafeReducedMotion())
   const containerRef = useRef<HTMLDivElement>(null)
   const inView = useInView(containerRef, { once: true, amount: 0.3 })
   const grown = inView || reducedMotion
@@ -254,7 +254,7 @@ function RoiLiveChart({
           <p className="text-[15px] font-semibold text-white">{labels.title}</p>
           <p className="mt-1 text-[13px] leading-5 text-white/50">{labels.sub}</p>
         </div>
-        <div className="hidden shrink-0 whitespace-nowrap rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-[var(--color-accent)] sm:inline-flex">
+        <div className="hidden shrink-0 whitespace-nowrap rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-[#3dddc4] sm:inline-flex">
           {labels.badge}
         </div>
       </div>
@@ -417,7 +417,7 @@ function ResultCard({
   icon: Icon,
   celebrationThresholds,
 }: ResultCardProps) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
   const burst = useThresholdBurst(value, celebrationThresholds ?? [])
   const celebrate = burst > 0 && !reducedMotion
 
@@ -522,7 +522,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                 >
                   {labels.salary.help}
                 </p>
-                <div className="mt-3 rounded-[1.3rem] border border-white/8 bg-white/[0.02] px-4 py-2.5 transition duration-300 focus-within:border-[var(--color-accent)]/45 focus-within:bg-white/[0.04] sm:mt-4 sm:py-3">
+                <div className="mt-3 rounded-[1.3rem] border border-white/8 bg-white/[0.02] px-4 py-2.5 transition duration-300 focus-within:border-[#3dddc4]/70 focus-within:bg-white/[0.04] focus-within:shadow-[0_0_0_3px_rgba(61,221,196,0.2)] sm:mt-4 sm:py-3">
                   <input
                     id={salaryInputId}
                     type="text"
@@ -532,7 +532,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     onChange={(event) => {
                       setMonthlySalaryArs(parseCurrencyInput(event.target.value))
                     }}
-                    className="w-full bg-transparent text-xl font-medium tracking-[-0.04em] text-white outline-none placeholder:text-white/24 sm:text-2xl"
+                    className="w-full bg-transparent text-xl font-medium tracking-[-0.04em] text-white outline-hidden placeholder:text-white/24 sm:text-2xl"
                     aria-describedby={`${salaryInputId}-help`}
                   />
                 </div>
@@ -569,7 +569,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                     <Coins size={16} className="text-[var(--color-accent)]" />
                     {labels.hours.label}
                   </label>
-                  <span className="whitespace-nowrap rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-3 py-1 text-sm font-medium tabular-nums text-[var(--color-accent)]">
+                  <span className="whitespace-nowrap rounded-full border border-[var(--color-accent)]/18 bg-[var(--color-accent)]/10 px-3 py-1 text-sm font-medium tabular-nums text-[#3dddc4]">
                     {formatHours(repetitiveHoursPerWeek)} {labels.hours.unit}
                   </span>
                 </div>
@@ -636,12 +636,12 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
             className="surface-panel-interactive group relative block overflow-hidden rounded-[1.6rem] border border-[var(--color-accent)]/20 bg-[linear-gradient(180deg,rgba(31,127,115,0.13),rgba(31,127,115,0.05))] p-4 text-white backdrop-blur-sm hover:border-[var(--color-accent)]/32 hover:shadow-[0_0_48px_rgba(31,127,115,0.12)] sm:p-5"
           >
             <div className="pointer-events-none absolute inset-[1px] rounded-[calc(1.6rem-1px)] border border-[var(--color-accent)]/8" />
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--color-accent)] sm:text-xs">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#3dddc4] sm:text-xs">
               {labels.next.kicker}
             </p>
             <p className="mt-2 text-lg font-medium leading-tight tracking-[-0.04em] sm:mt-3 sm:text-xl">
               {labels.next.before}{' '}
-              <span className="text-[var(--color-accent)]">
+              <span className="text-[#3dddc4]">
                 <AnimatedMetric
                   value={results.annualSavingsArs}
                   formatter={formatCurrencyArs}

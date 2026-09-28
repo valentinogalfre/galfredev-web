@@ -172,6 +172,7 @@ export function ServicePage({
                               }}
                               kind={PROJECT_FRAME_KINDS[project.id]}
                               captureAlt={labels.captureAlt(project.name)}
+                              onlineLabel={locale === 'es' ? 'en línea' : 'online'}
                             />
                           </Parallax>
                         </div>

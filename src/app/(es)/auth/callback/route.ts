@@ -1,6 +1,6 @@
-import { env, hasSupabaseEnv } from '@/lib/env'
+import { hasSupabaseEnv } from '@/lib/env'
 import { getPostLoginRedirect, isProfileComplete } from '@/lib/profile'
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 type ProfileRow = {
@@ -20,35 +20,28 @@ type PreferencesRow = {
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const response = NextResponse.redirect(new URL('/', requestUrl.origin))
+  // El proveedor devuelve ?error=… cuando el usuario cancela o rechaza el
+  // acceso: vuelve al login con aviso en vez de caer mudo en la home.
+  const providerError = requestUrl.searchParams.get('error')
+  const redirectTo = (path: string) => NextResponse.redirect(new URL(path, requestUrl.origin))
 
-  if (!hasSupabaseEnv() || !code) {
-    return response
+  if (!hasSupabaseEnv()) {
+    return redirectTo('/')
+  }
+
+  if (providerError || !code) {
+    return redirectTo(providerError ? '/login?error=auth' : '/')
   }
 
   try {
-    const supabase = createServerClient(
-      env.supabaseUrl,
-      env.supabasePublishableKey,
-      {
-        cookies: {
-          get(name: string) {
-            return request.cookies.get(name)?.value
-          },
-          set(name: string, value: string, options: CookieOptions) {
-            response.cookies.set({ name, value, ...options })
-          },
-          remove(name: string, options: CookieOptions) {
-            response.cookies.set({ name, value: '', ...options })
-          },
-        },
-      },
-    )
-
+    // Cliente compartido (getAll/setAll sobre cookies()): las cookies de la
+    // sesión nueva viajan en la respuesta que devuelva este handler, incluido
+    // el redirect, sin copiarlas a mano.
+    const supabase = await createSupabaseServerClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
-      return NextResponse.redirect(new URL('/login?error=auth', requestUrl.origin))
+      return redirectTo('/login?error=auth')
     }
 
     const {
@@ -56,7 +49,7 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.redirect(new URL('/login', requestUrl.origin))
+      return redirectTo('/login')
     }
 
     const [{ data: profile }, { data: preferences }] = await Promise.all([
@@ -87,14 +80,8 @@ export async function GET(request: NextRequest) {
       }),
     )
 
-    const redirectResponse = NextResponse.redirect(new URL(nextPath, requestUrl.origin))
-
-    response.cookies.getAll().forEach((cookie) => {
-      redirectResponse.cookies.set(cookie)
-    })
-
-    return redirectResponse
+    return redirectTo(nextPath)
   } catch {
-    return NextResponse.redirect(new URL('/login?error=auth', requestUrl.origin))
+    return redirectTo('/login?error=auth')
   }
 }

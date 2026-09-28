@@ -1,7 +1,7 @@
 import { ProjectsIndexPage } from '@/components/pages/projects-index-page'
 import { breadcrumbSchema, JsonLd } from '@/components/seo/json-ld'
 import { env } from '@/lib/env'
-import { hreflangAlternates } from '@/lib/seo'
+import { hreflangAlternates, socialMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -13,6 +13,13 @@ export const metadata: Metadata = {
     canonical: '/proyectos',
     ...hreflangAlternates('/proyectos', '/projects'),
   },
+  ...socialMetadata({
+    title: 'Proyectos | GalfreDev',
+    description:
+      'Casos reales en producción: bots de WhatsApp, apps, webs y software a medida construidos por GalfreDev, usados todos los días.',
+    path: '/proyectos',
+    locale: 'es',
+  }),
 }
 
 export default function Page() {

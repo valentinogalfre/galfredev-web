@@ -48,10 +48,13 @@ function ServiceCard({
   const Icon = SERVICE_ICONS[service.id]
 
   return (
+    // Nombre accesible = el título; la descripción queda como descripción
+    // (un aria-label con solo el nombre tapaba todo el contenido de la card).
     <Link
       href={href}
       className="group block h-full rounded-[2rem]"
-      aria-label={service.name}
+      aria-labelledby={`servicio-${service.id}`}
+      aria-describedby={`servicio-${service.id}-desc`}
     >
       <BorderGlowCard className={cn('h-full', featured ? 'p-6 sm:p-8' : 'p-6 sm:p-7')}>
         <div className="flex h-full flex-col">
@@ -71,6 +74,7 @@ function ServiceCard({
           </div>
 
           <h3
+            id={`servicio-${service.id}`}
             className={cn(
               'mt-6 font-medium tracking-[-0.045em] text-white',
               featured
@@ -81,8 +85,11 @@ function ServiceCard({
             {service.name}
           </h3>
 
-          <p className="mt-3 line-clamp-2 text-sm leading-7 text-white/58">
-            {service.hero.sub}
+          <p
+            id={`servicio-${service.id}-desc`}
+            className="mt-3 line-clamp-3 text-pretty text-sm leading-7 text-white/60"
+          >
+            {service.card}
           </p>
 
           {featured ? (

@@ -114,6 +114,7 @@ export function ProjectPage({
                 project={{ id: project.id, name: project.name, image: project.image }}
                 kind={PROJECT_FRAME_KINDS[project.id]}
                 captureAlt={labels.captureAlt(project.name)}
+                onlineLabel={locale === 'es' ? 'en línea' : 'online'}
               />
             </Parallax>
           </div>
@@ -206,8 +207,8 @@ export function ProjectPage({
                       <h3 className="text-lg font-medium leading-snug tracking-[-0.02em] text-white">
                         {service.name}
                       </h3>
-                      <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/55">
-                        {service.hero.sub}
+                      <p className="mt-2 line-clamp-3 text-pretty text-sm leading-6 text-white/60">
+                        {service.card}
                       </p>
                       <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-[#3dddc4]">
                         {labels.serviceLabel}

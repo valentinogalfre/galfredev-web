@@ -69,20 +69,56 @@ export const es: Dictionary = {
           description:
             'Ubicamos dónde se pierde tiempo, control o facturación y qué conviene atacar primero.',
           outcome: 'Problema real definido, prioridad e impacto claros.',
+          when: 'Semana 1',
+          stage: 'Diagnóstico',
+          stageWhen: 'sem 1',
+          log: {
+            run: 'diagnóstico · relevando operación…',
+            ok: '3 fugas detectadas: turnos, cobranzas, seguimiento',
+          },
+          day: 7,
         },
         {
           title: 'Implementación enfocada',
           description:
             'Armamos la solución con el nivel justo de automatización, integración o software.',
           outcome: 'En marcha rápido y con sentido operativo.',
+          when: 'Semanas 2–4',
+          stage: 'Implementación',
+          stageWhen: 'sem 2–4',
+          log: {
+            run: 'implementación · bot + integraciones…',
+            ok: 'bot de WhatsApp en producción · 24/7',
+          },
+          day: 28,
         },
         {
           title: 'Ajuste y mejora continua',
           description:
             'Medimos qué funcionó, corregimos fricción real y definimos el siguiente paso útil.',
           outcome: 'La solución acompaña el crecimiento sin congelarse.',
+          when: 'Mes 2 en adelante',
+          stage: 'Mejora',
+          stageWhen: 'mes 2 +',
+          log: {
+            run: 'mejora continua · midiendo…',
+            ok: 'tablero de métricas en vivo · próximo paso definido',
+          },
+          day: 60,
         },
       ],
+      console: {
+        name: 'proceso.run',
+        command: 'galfredev run proceso --negocio tu-pyme',
+        comment: '# ejemplo de un proyecto típico · avanza con tu scroll',
+        status: {
+          idle: 'en cola',
+          running: 'corriendo',
+          waiting: 'esperando scroll',
+          done: 'completo',
+        },
+        dayLabel: 'día',
+      },
     },
     roi: {
       title: '¿Cuánto te devuelve?',
@@ -232,6 +268,7 @@ export const es: Dictionary = {
       id: 'bots-whatsapp',
       slug: 'bots-whatsapp',
       name: 'Bots de WhatsApp',
+      card: 'Responde al instante, filtra curiosos y te deja clientes listos para cerrar.',
       seo: {
         title: 'Bots de WhatsApp para negocios | GalfreDev',
         description:
@@ -276,6 +313,7 @@ export const es: Dictionary = {
       id: 'webs',
       slug: 'webs',
       name: 'Webs',
+      card: 'Rápidas, animadas y pensadas para aparecer en Google. Como esta.',
       seo: {
         title: 'Desarrollo web profesional en Córdoba | GalfreDev',
         description:
@@ -320,6 +358,7 @@ export const es: Dictionary = {
       id: 'apps',
       slug: 'apps',
       name: 'Apps',
+      card: 'Apps y sistemas web que reemplazan planillas, papeles y cuadernos.',
       seo: {
         title: 'Desarrollo de apps iOS, Android y sistemas web | GalfreDev',
         description:
@@ -364,6 +403,7 @@ export const es: Dictionary = {
       id: 'automatizaciones-ia',
       slug: 'automatizaciones-ia',
       name: 'Automatizaciones e IA',
+      card: 'Tus herramientas conectadas y con IA: lo que hoy hacés a mano, se hace solo.',
       seo: {
         title: 'Automatizaciones e IA aplicada para negocios | GalfreDev',
         description:
@@ -408,6 +448,7 @@ export const es: Dictionary = {
       id: 'software-a-medida',
       slug: 'software-a-medida',
       name: 'Software a medida',
+      card: 'El sistema completo cuando lo genérico queda chico: backend, panel y facturación.',
       seo: {
         title: 'Software a medida para empresas | GalfreDev',
         description:

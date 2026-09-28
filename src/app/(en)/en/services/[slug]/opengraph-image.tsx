@@ -5,6 +5,10 @@ export const alt = 'GalfreDev'
 export const size = OG_SIZE
 export const contentType = 'image/png'
 
+// Solo los slugs del diccionario: uno desconocido es 404 directo, sin
+// renderizarse ni cachearse on-demand (antes cualquier slug generaba su OG).
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return Object.values(getDictionary('en').services).map((service) => ({
     slug: service.slug,

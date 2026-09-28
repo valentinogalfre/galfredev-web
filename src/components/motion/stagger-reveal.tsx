@@ -1,80 +1,58 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { motion, useReducedMotion } from 'framer-motion'
-import { useSyncExternalStore, type ReactNode } from 'react'
+import { Children, useLayoutEffect, type CSSProperties, type ReactNode } from 'react'
+import { useRevealOnView } from './reveal'
 
 type StaggerRevealProps = {
   children: ReactNode
   className?: string
+  /** Segundos antes del primer item. */
   delay?: number
+  /** Segundos entre items. */
   stagger?: number
   id?: string
 }
 
-const containerVariants = (stagger: number, delay: number) => ({
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: stagger,
-      delayChildren: delay,
-    },
-  },
-})
+/**
+ * Contenedor que revela sus StaggerItem en cascada al entrar a la vista
+ * (mismo motor que Reveal: visible sin JS, solo se arma lo que no se ve).
+ * El índice de cada item sale del orden en el DOM → `--stagger-i`.
+ */
+export function StaggerReveal({ children, className, delay = 0, stagger = 0.08, id }: StaggerRevealProps) {
+  const ref = useRevealOnView<HTMLDivElement>('stagger')
+  const count = Children.count(children)
 
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
-
-const itemVariants = (y: number, reduced: boolean) => ({
-  hidden: reduced ? { opacity: 0 } : { opacity: 0, y },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: reduced ? 0.38 : 0.72, ease: EASE },
-  },
-})
-
-export function StaggerReveal({
-  children,
-  className,
-  delay = 0,
-  stagger = 0.09,
-  ...props
-}: StaggerRevealProps) {
-  const hydrated = useSyncExternalStore(
-    () => () => undefined,
-    () => true,
-    () => false,
-  )
+  // Solo escrituras (sin medir) y solo cuando cambia la cantidad de items.
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    Array.from(el.children).forEach((child, index) => {
+      ;(child as HTMLElement).style.setProperty('--stagger-i', String(index))
+    })
+  }, [ref, count])
 
   return (
-    <motion.div
-      variants={containerVariants(stagger, delay)}
-      initial={hydrated ? 'hidden' : false}
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.12 }}
+    <div
+      ref={ref}
+      id={id}
       className={cn(className)}
-      {...props}
+      style={
+        {
+          '--stagger-delay': `${delay}s`,
+          '--stagger-step': `${stagger}s`,
+        } as CSSProperties
+      }
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
 
-export function StaggerItem({
-  children,
-  className,
-}: {
-  children: ReactNode
-  className?: string
-}) {
-  const reduceMotion = useReducedMotion()
-
+export function StaggerItem({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <motion.div
-      variants={itemVariants(18, reduceMotion ?? false)}
-      className={cn(className)}
-    >
+    <div data-stagger-item="" className={cn(className)}>
       {children}
-    </motion.div>
+    </div>
   )
 }

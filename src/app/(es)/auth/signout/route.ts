@@ -1,44 +1,26 @@
-import { env, hasSupabaseEnv } from '@/lib/env'
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { hasSupabaseEnv } from '@/lib/env'
+import { isSameOriginRequest } from '@/lib/security'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-function getCookieValue(cookieHeader: string | null, name: string) {
-  return cookieHeader
-    ?.split('; ')
-    .find((cookie) => cookie.startsWith(`${name}=`))
-    ?.split('=')[1]
-}
-
-export async function GET(request: Request) {
+/**
+ * Cerrar sesión cambia estado: solo POST (el form del perfil). Un GET podía
+ * dispararse con un link ajeno o con el prefetch de un <Link>.
+ */
+export async function POST(request: Request) {
   const requestUrl = new URL(request.url)
-  const response = NextResponse.redirect(new URL('/login', requestUrl.origin))
+  // 303: después del POST del form, el navegador sigue el redirect con GET.
+  const response = NextResponse.redirect(new URL('/login', requestUrl.origin), 303)
 
-  if (!hasSupabaseEnv()) {
+  if (!hasSupabaseEnv() || !isSameOriginRequest(request)) {
     return response
   }
 
   try {
-    const supabase = createServerClient(
-      env.supabaseUrl,
-      env.supabasePublishableKey,
-      {
-        cookies: {
-          get(name: string) {
-            return getCookieValue(request.headers.get('cookie'), name)
-          },
-          set(name: string, value: string, options: CookieOptions) {
-            response.cookies.set({ name, value, ...options })
-          },
-          remove(name: string, options: CookieOptions) {
-            response.cookies.set({ name, value: '', ...options })
-          },
-        },
-      },
-    )
-
+    const supabase = await createSupabaseServerClient()
     await supabase.auth.signOut()
   } catch {
-    return response
+    // Sin sesión o Supabase caído: igual se vuelve al login.
   }
 
   return response
