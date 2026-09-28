@@ -989,7 +989,9 @@ test('la consola del proceso completa las 3 etapas al scrollear', async ({ page 
 })
 
 test.describe('movimiento reducido', () => {
-  test.use({ reducedMotion: 'reduce' })
+  // reducedMotion va en contextOptions: como opción suelta de test.use se
+  // ignora en silencio (matchMedia seguía en false).
+  test.use({ contextOptions: { reducedMotion: 'reduce' } })
 
   // Contrato: con prefers-reduced-motion la consola muestra el proceso
   // completo sin depender del scroll, y la home hidrata sin mismatch (#418).

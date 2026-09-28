@@ -96,3 +96,48 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
     page.getByText('Tu consulta quedó registrada. Te llevamos a WhatsApp para continuar.'),
   ).toBeVisible()
 })
+
+// Contrato: «Cómo trabajo» corre como una ejecución. Con el último paso ya
+// pasada la mitad de la pantalla, la consola termina completa y con el
+// resultado de las 3 etapas en el log.
+test('la consola del proceso completa las 3 etapas al scrollear', async ({ page }) => {
+  await page.route('**/hdr/city.hdr', (route) => route.abort())
+  await page.goto('/')
+  const consoleEl = page.getByTestId('process-console')
+  await expect(consoleEl).toHaveAttribute('data-status', 'idle')
+  await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(0)
+
+  await page.evaluate(() => {
+    const titles = document.querySelectorAll('[data-testid="process-run"] h3')
+    const last = titles[titles.length - 1] as HTMLElement
+    const top = window.scrollY + last.getBoundingClientRect().top - window.innerHeight * 0.3
+    window.scrollTo({ top, behavior: 'instant' })
+  })
+
+  await expect(consoleEl).toHaveAttribute('data-status', 'done', { timeout: 10_000 })
+  await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(3)
+})
+
+test.describe('movimiento reducido', () => {
+  // reducedMotion va en contextOptions: como opción suelta de test.use se
+  // ignora en silencio (matchMedia seguía en false).
+  test.use({ contextOptions: { reducedMotion: 'reduce' } })
+
+  // Contrato: con prefers-reduced-motion la consola muestra el proceso
+  // completo sin depender del scroll, y la home hidrata sin mismatch (#418).
+  test('la consola arranca completa y la home hidrata sin errores', async ({ page }) => {
+    const hydrationErrors: string[] = []
+    page.on('console', (message) => {
+      if (message.type() === 'error' && /418|hydrat/i.test(message.text())) {
+        hydrationErrors.push(message.text())
+      }
+    })
+    page.on('pageerror', (error) => hydrationErrors.push(error.message))
+    await page.route('**/hdr/city.hdr', (route) => route.abort())
+    await page.goto('/')
+    const consoleEl = page.getByTestId('process-console')
+    await expect(consoleEl).toHaveAttribute('data-status', 'done')
+    await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(3)
+    expect(hydrationErrors).toEqual([])
+  })
+})
