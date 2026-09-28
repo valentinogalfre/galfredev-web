@@ -118,6 +118,31 @@ test('la consola del proceso completa las 3 etapas al scrollear', async ({ page 
   await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(3)
 })
 
+// Contrato: en mobile la consola (sticky, arriba de los pasos, en la misma
+// columna) no cambia de alto entre estados; si cambiara, empujaría los pasos
+// mientras se scrollea (la última línea del log ocupa 1 o 2 renglones).
+test('la consola del proceso no cambia de alto al avanzar (mobile)', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'en desktop la consola vive en su propia columna')
+  await page.route('**/hdr/city.hdr', (route) => route.abort())
+  await page.goto('/')
+  const consoleEl = page.getByTestId('process-console')
+  const height = () => consoleEl.evaluate((el) => (el as HTMLElement).offsetHeight)
+  const scrollToStep = (index: number) =>
+    page.evaluate((i) => {
+      const title = document.querySelectorAll('[data-testid="process-run"] h3')[i] as HTMLElement
+      const top = window.scrollY + title.getBoundingClientRect().top - window.innerHeight * 0.4
+      window.scrollTo({ top, behavior: 'instant' })
+    }, index)
+
+  const heights = [await height()]
+  for (const [index, done] of [[0, 1], [1, 2], [2, 3]] as const) {
+    await scrollToStep(index)
+    await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(done, { timeout: 10_000 })
+    heights.push(await height())
+  }
+  expect(new Set(heights).size).toBe(1)
+})
+
 test.describe('movimiento reducido', () => {
   // reducedMotion va en contextOptions: como opción suelta de test.use se
   // ignora en silencio (matchMedia seguía en false).

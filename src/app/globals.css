@@ -1000,6 +1000,20 @@ body::before {
   .run-log .run-line:not(:last-child) {
     display: none;
   }
+
+  /* Alto fijo de 2 renglones: la última línea ocupa 1 o 2 según el texto y,
+     como los pasos van debajo en la misma columna, el cambio los empujaba. */
+  .run-log {
+    height: calc(2 * 1.85em + 1.375rem);
+    overflow: hidden;
+  }
+
+  .run-log .run-line:last-child > span:last-child {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
 }
 
 @keyframes run-spin {
