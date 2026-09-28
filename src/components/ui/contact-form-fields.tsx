@@ -6,8 +6,8 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
 } from 'framer-motion'
+import { useSafeReducedMotion } from '@/components/motion/hydration'
 import { ChevronDown } from 'lucide-react'
 import {
   type InputHTMLAttributes,
@@ -37,7 +37,7 @@ function borderClassName(error?: string) {
  * reduced-motion no se renderiza: queda el cambio de color de borde nativo.
  */
 function FieldRing({ focused }: { focused: boolean }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
   const sweep = useMotionValue(0)
   const opacity = useMotionValue(0)
   const background = useMotionTemplate`conic-gradient(from -90deg, rgba(61,221,196,0.95) 0deg, rgba(61,221,196,0.8) ${sweep}deg, rgba(61,221,196,0) ${sweep}deg)`
@@ -107,7 +107,7 @@ function FloatingLabel({
   id,
   restTop,
 }: FloatingLabelProps) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
   const Tag = htmlFor ? motion.label : motion.span
 
   return (
@@ -139,7 +139,7 @@ function FloatingLabel({
 
 /** Helper/error bajo el campo: el error entra y sale animado. */
 function FieldNote({ error, helper }: { error?: string; helper?: string }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
 
   return (
     <AnimatePresence initial={false} mode="wait">
@@ -333,7 +333,7 @@ export function SelectField({
 }: SelectFieldProps) {
   const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState(false)
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const buttonId = useId()
   const listboxId = useId()
@@ -474,7 +474,7 @@ export function SelectField({
 
 /** Tilde SVG que se dibuja (pathLength) al pasar a checked. */
 function CheckDraw({ checked, className }: { checked: boolean; className?: string }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
 
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
@@ -509,7 +509,7 @@ export function ConsentCheckboxCard({
   error,
   onChange,
 }: ConsentCheckboxCardProps) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
 
   return (
     <div className="space-y-2">

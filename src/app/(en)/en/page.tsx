@@ -9,7 +9,7 @@ import { ProjectsSection } from '@/components/sections/projects-section'
 import { RoiCalculatorSection } from '@/components/sections/roi-calculator-section'
 import { ServicesSection } from '@/components/sections/services-section'
 import { getDictionary } from '@/lib/i18n'
-import { hreflangAlternates } from '@/lib/seo'
+import { hreflangAlternates, socialMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 const homeSeo = getDictionary('en').home.seo
@@ -21,6 +21,12 @@ export const metadata: Metadata = {
     canonical: '/en',
     ...hreflangAlternates('/', '/'),
   },
+  ...socialMetadata({
+    title: homeSeo.title,
+    description: homeSeo.description,
+    path: '/en',
+    locale: 'en',
+  }),
 }
 
 // Home en inglés: mismas secciones que la home es, con el dict en.

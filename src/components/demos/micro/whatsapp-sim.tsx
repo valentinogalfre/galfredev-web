@@ -241,6 +241,7 @@ export function WhatsappSim({ locale }: { locale: Locale }) {
         role="log"
         aria-live="polite"
         aria-label={copy.logLabel}
+        data-lenis-prevent
         className="h-[300px] overflow-y-auto bg-[radial-gradient(120%_90%_at_50%_0%,rgba(61,221,196,0.05),transparent_55%)] px-4 py-5 [scrollbar-width:thin] sm:h-[330px] sm:px-5"
       >
         {branch === null ? (

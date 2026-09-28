@@ -2,9 +2,13 @@ import { ProjectPage } from '@/components/pages/project-page'
 import { breadcrumbSchema, JsonLd, projectSchema } from '@/components/seo/json-ld'
 import { env } from '@/lib/env'
 import { getDictionary, projectByLocalizedSlug } from '@/lib/i18n'
-import { hreflangAlternates } from '@/lib/seo'
+import { hreflangAlternates, socialMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+
+// Solo los slugs del diccionario: uno desconocido es 404 directo, sin
+// renderizarse ni cachearse on-demand (antes cualquier slug generaba su OG).
+export const dynamicParams = false
 
 export function generateStaticParams() {
   return Object.values(getDictionary('es').projects).map((project) => ({
@@ -31,6 +35,13 @@ export async function generateMetadata({
       // Los proyectos comparten slug en ambos idiomas.
       ...hreflangAlternates(`/proyectos/${slug}`, `/projects/${slug}`),
     },
+    ...socialMetadata({
+      title: project.seo.title,
+      description: project.seo.description,
+      path: `/proyectos/${slug}`,
+      locale: 'es',
+      segmentImage: true,
+    }),
   }
 }
 

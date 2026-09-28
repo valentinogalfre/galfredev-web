@@ -11,7 +11,7 @@ import {
 } from 'framer-motion'
 import { Volume2, VolumeX } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { KeyboardHero } from './keyboard-hero'
 import { useHeroSound } from './use-hero-sound'
 import { usePhysicalKeys } from './use-physical-keys'
@@ -34,6 +34,20 @@ type HeroClientProps = {
 
 /** Chars que entran en la typed-line cuando tipea el usuario (letter-spacing ancho). */
 const USER_LINE_MAX = 14
+
+function subscribeVisibility(onChange: () => void) {
+  document.addEventListener('visibilitychange', onChange)
+  return () => document.removeEventListener('visibilitychange', onChange)
+}
+
+/** Pestaña visible (false con la pestaña en segundo plano). */
+function usePageVisible() {
+  return useSyncExternalStore(
+    subscribeVisibility,
+    () => document.visibilityState === 'visible',
+    () => true,
+  )
+}
 
 export function HeroClient({
   titlePrefix,
@@ -79,7 +93,13 @@ export function HeroClient({
 
   const { liveKey, buffer, typingPaused, pressSeq, egg } = usePhysicalKeys(inView)
   // Única fuente de verdad del hero: alimenta titular, teclado y línea tipeada.
-  const typing = useTypingLoop(typedWords, { paused: typingPaused })
+  // Fuera de vista o con la pestaña oculta el loop se pausa (retoma donde
+  // quedó): nadie lo ve, y con el sonido prendido seguía clickeando mientras
+  // se leían otras secciones — además de ~8 renders/s del hero y la escena 3D.
+  const pageVisible = usePageVisible()
+  const typing = useTypingLoop(typedWords, {
+    paused: typingPaused || !inView || !pageVisible,
+  })
   const rotatingWord = rotatingWords[typing.wordIndex % rotatingWords.length]
 
   // Salida cinematográfica por scroll: 0 con el hero clavado arriba → 1 cuando
@@ -238,7 +258,7 @@ export function HeroClient({
       <div className="relative z-10 border-t border-[rgba(61,221,196,0.14)] py-3">
         <Marquee
           speed={44}
-          className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/38"
+          className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/50"
         >
           {marqueeItems.map((project) => (
             <span key={project.name} className="flex items-center">

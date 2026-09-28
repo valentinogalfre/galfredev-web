@@ -1,5 +1,5 @@
 import { env, hasSupabaseEnv } from '@/lib/env'
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
@@ -7,43 +7,37 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.next({ request })
   }
 
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+  let response = NextResponse.next({ request })
 
-  const supabase = createServerClient(
-    env.supabaseUrl,
-    env.supabasePublishableKey,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options })
-          response = NextResponse.next({ request })
-          response.cookies.set({ name, value, ...options })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options })
-          response = NextResponse.next({ request })
-          response.cookies.set({ name, value: '', ...options })
-        },
+  const supabase = createServerClient(env.supabaseUrl, env.supabasePublishableKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll()
+      },
+      // El lote llega entero: una sesión OAuth suele venir partida en chunks
+      // (sb-…-auth-token.0, .1). Recrear la respuesta por cookie (el adapter
+      // get/set/remove anterior) conservaba solo el último chunk y el refresh
+      // dejaba al usuario deslogueado.
+      setAll(cookiesToSet, headers) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+        response = NextResponse.next({ request })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        )
+        // no-store: una respuesta que setea la sesión jamás se cachea en CDN.
+        Object.entries(headers).forEach(([key, value]) => response.headers.set(key, value))
       },
     },
-  )
+  })
 
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
-  const isProfilePage = pathname.startsWith('/perfil')
-  const isDashboardPage = pathname.startsWith('/dashboard')
+  const isProtected = pathname.startsWith('/perfil') || pathname.startsWith('/dashboard')
 
-  if (!user && (isProfilePage || isDashboardPage)) {
+  if (!user && isProtected) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 

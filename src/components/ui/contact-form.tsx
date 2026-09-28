@@ -23,9 +23,9 @@ import {
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useSpring,
 } from 'framer-motion'
+import { useSafeReducedMotion } from '@/components/motion/hydration'
 import { ArrowRight, MessageCircle } from 'lucide-react'
 import { useEffect, useRef, useState, type FocusEvent } from 'react'
 
@@ -42,7 +42,7 @@ function SuccessCelebration({
   ctaLabel: string
   ctaHref: string
 }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
 
   const particles = Array.from({ length: 10 }, (_, index) => {
     const angle = (index / 10) * Math.PI * 2 + 0.6
@@ -146,7 +146,7 @@ export function ContactForm({ labels }: { labels: ContactFormContent }) {
   const [fieldErrors, setFieldErrors] = useState<LeadFieldErrors>({})
   const startTimeRef = useRef<number>(0)
   const formRef = useRef<HTMLFormElement>(null)
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useSafeReducedMotion()
 
   // Spotlight: un glow teal que viaja al campo enfocado dentro del form.
   const spotX = useMotionValue(0)

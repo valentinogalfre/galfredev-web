@@ -23,6 +23,10 @@ export function formatCurrencyArsCompact(value: number) {
     style: 'currency',
     currency: 'ARS',
     notation: 'compact',
+    // Mínimo explícito: con solo el máximo, el default de decimales depende de
+    // la versión de V8. Node 22 (el build en Railway) daba «$289,0 k» y el
+    // navegador «$289 k» → texto distinto entre server y cliente (React #418).
+    minimumFractionDigits: 0,
     maximumFractionDigits: 1,
   }).format(value)
 }

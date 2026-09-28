@@ -44,6 +44,10 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
   await page.route('**/api/lead', (route) =>
     route.fulfill({ status: 200, json: { ok: true, message: 'ok' } }),
   )
+  // El contrato es el form: sin el HDR la escena 3D del hero no arranca su
+  // render por software (loop de tareas de ~200 ms que, con varios workers,
+  // volvía flaky cada click del test).
+  await page.route('**/hdr/city.hdr', (route) => route.abort())
 
   await page.goto('/#contacto')
 
@@ -51,22 +55,30 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
   // expandirlo primero (reintentando el tap hasta que aria-expanded confirme
   // hidratación, como abajo). En desktop el toggle no existe a la vista (el
   // form está siempre visible) y este paso no aplica.
+  // Reintentos idempotentes: se clickea SOLO si el estado todavía no cambió.
+  // Clickear a ciegas en cada intento (con 300 ms de espera) hacía oscilar el
+  // toggle bajo carga: el primer click aplicaba tarde y el reintento lo volvía
+  // a cerrar/destildar hasta agotar el timeout del test.
   const formToggle = page.getByTestId('contact-form-toggle')
   if (await formToggle.isVisible()) {
     await expect(async () => {
-      await formToggle.click({ force: true })
-      await expect(formToggle).toHaveAttribute('aria-expanded', 'true', { timeout: 300 })
-    }).toPass()
+      if ((await formToggle.getAttribute('aria-expanded')) !== 'true') {
+        await formToggle.click({ force: true })
+      }
+      await expect(formToggle).toHaveAttribute('aria-expanded', 'true', { timeout: 1_500 })
+    }).toPass({ timeout: 15_000 })
   }
 
   // Gate de hidratación: los inputs son controlados — un fill antes de que React
   // hidrate se borra. El checkbox solo togglea con los handlers vivos, así que
-  // reintentar el click hasta que aria-checked cambie garantiza hidratación.
+  // esperar a que aria-checked cambie garantiza hidratación.
   const privacy = page.getByRole('checkbox', { name: /política de privacidad/ })
   await expect(async () => {
-    await privacy.click()
-    await expect(privacy).toHaveAttribute('aria-checked', 'true', { timeout: 300 })
-  }).toPass()
+    if ((await privacy.getAttribute('aria-checked')) !== 'true') {
+      await privacy.click()
+    }
+    await expect(privacy).toHaveAttribute('aria-checked', 'true', { timeout: 1_500 })
+  }).toPass({ timeout: 15_000 })
 
   await page.getByLabel('Nombre y apellido').fill('Prueba Playwright')
   await page.getByLabel('Email', { exact: true }).fill('prueba@example.com')
@@ -83,4 +95,74 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
   await expect(
     page.getByText('Tu consulta quedó registrada. Te llevamos a WhatsApp para continuar.'),
   ).toBeVisible()
+})
+
+// Contrato: «Cómo trabajo» corre como una ejecución. Con el último paso ya
+// pasada la mitad de la pantalla, la consola termina completa y con el
+// resultado de las 3 etapas en el log.
+test('la consola del proceso completa las 3 etapas al scrollear', async ({ page }) => {
+  await page.route('**/hdr/city.hdr', (route) => route.abort())
+  await page.goto('/')
+  const consoleEl = page.getByTestId('process-console')
+  await expect(consoleEl).toHaveAttribute('data-status', 'idle')
+  await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(0)
+
+  await page.evaluate(() => {
+    const titles = document.querySelectorAll('[data-testid="process-run"] h3')
+    const last = titles[titles.length - 1] as HTMLElement
+    const top = window.scrollY + last.getBoundingClientRect().top - window.innerHeight * 0.3
+    window.scrollTo({ top, behavior: 'instant' })
+  })
+
+  await expect(consoleEl).toHaveAttribute('data-status', 'done', { timeout: 10_000 })
+  await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(3)
+})
+
+// Contrato: en mobile la consola (sticky, arriba de los pasos, en la misma
+// columna) no cambia de alto entre estados; si cambiara, empujaría los pasos
+// mientras se scrollea (la última línea del log ocupa 1 o 2 renglones).
+test('la consola del proceso no cambia de alto al avanzar (mobile)', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'en desktop la consola vive en su propia columna')
+  await page.route('**/hdr/city.hdr', (route) => route.abort())
+  await page.goto('/')
+  const consoleEl = page.getByTestId('process-console')
+  const height = () => consoleEl.evaluate((el) => (el as HTMLElement).offsetHeight)
+  const scrollToStep = (index: number) =>
+    page.evaluate((i) => {
+      const title = document.querySelectorAll('[data-testid="process-run"] h3')[i] as HTMLElement
+      const top = window.scrollY + title.getBoundingClientRect().top - window.innerHeight * 0.4
+      window.scrollTo({ top, behavior: 'instant' })
+    }, index)
+
+  const heights = [await height()]
+  for (const [index, done] of [[0, 1], [1, 2], [2, 3]] as const) {
+    await scrollToStep(index)
+    await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(done, { timeout: 10_000 })
+    heights.push(await height())
+  }
+  expect(new Set(heights).size).toBe(1)
+})
+
+test.describe('movimiento reducido', () => {
+  // reducedMotion va en contextOptions: como opción suelta de test.use se
+  // ignora en silencio (matchMedia seguía en false).
+  test.use({ contextOptions: { reducedMotion: 'reduce' } })
+
+  // Contrato: con prefers-reduced-motion la consola muestra el proceso
+  // completo sin depender del scroll, y la home hidrata sin mismatch (#418).
+  test('la consola arranca completa y la home hidrata sin errores', async ({ page }) => {
+    const hydrationErrors: string[] = []
+    page.on('console', (message) => {
+      if (message.type() === 'error' && /418|hydrat/i.test(message.text())) {
+        hydrationErrors.push(message.text())
+      }
+    })
+    page.on('pageerror', (error) => hydrationErrors.push(error.message))
+    await page.route('**/hdr/city.hdr', (route) => route.abort())
+    await page.goto('/')
+    const consoleEl = page.getByTestId('process-console')
+    await expect(consoleEl).toHaveAttribute('data-status', 'done')
+    await expect(consoleEl.locator('[data-kind="ok"]')).toHaveCount(3)
+    expect(hydrationErrors).toEqual([])
+  })
 })

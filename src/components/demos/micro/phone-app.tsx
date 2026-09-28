@@ -178,6 +178,7 @@ export function PhoneApp({ locale }: { locale: Locale }) {
                   animate="center"
                   exit="exit"
                   transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+                  data-lenis-prevent
                   className="absolute inset-0 overflow-y-auto px-3 py-3 [scrollbar-width:none]"
                 >
                   {tab === 'agenda' ? (

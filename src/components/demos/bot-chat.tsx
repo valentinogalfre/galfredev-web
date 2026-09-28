@@ -310,6 +310,7 @@ export function BotChat({
         role="log"
         aria-live="polite"
         aria-label={copy.messagesLabel}
+        data-lenis-prevent
         className="h-[260px] space-y-3 overflow-y-auto bg-[radial-gradient(120%_90%_at_50%_0%,rgba(61,221,196,0.05),transparent_55%)] px-4 py-5 [scrollbar-width:thin] sm:h-[400px] sm:px-5"
       >
         {messages.map((message) => (
@@ -360,7 +361,7 @@ export function BotChat({
                 onFocus={stopAutoplay}
                 autoComplete="off"
                 enterKeyHint="send"
-                className="h-11 min-w-0 flex-1 rounded-full border border-white/10 bg-white/[0.04] px-4 text-base text-white placeholder:text-white/35 outline-none transition focus:border-[rgba(61,221,196,0.45)] focus:bg-white/[0.06]"
+                className="h-11 min-w-0 flex-1 rounded-full border border-white/10 bg-white/[0.04] px-4 text-base text-white placeholder:text-white/35 outline-hidden transition focus:border-[#3dddc4]/70 focus:bg-white/[0.06] focus:shadow-[0_0_0_3px_rgba(61,221,196,0.2)]"
               />
               <button
                 type="submit"
@@ -386,7 +387,7 @@ export function BotChat({
           {copy.whatsappCta}
         </a>
 
-        <p className="mt-3 text-center text-xs leading-5 text-white/40">{limitNote}</p>
+        <p className="mt-3 text-center text-xs leading-5 text-white/55">{limitNote}</p>
       </div>
     </div>
   )

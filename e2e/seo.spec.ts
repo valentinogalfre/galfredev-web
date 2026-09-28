@@ -69,3 +69,21 @@ test('la home usa el title del rediseño (no el default del layout)', async ({ p
   await page.goto('/en')
   await expect(page).toHaveTitle(getDictionary('en').home.seo.title)
 })
+
+// Contrato: al compartir, cada página muestra SU título y SU URL (antes todas
+// heredaban og:title/og:url de la home porque el openGraph del layout no se
+// fusiona: se reemplaza o se hereda entero).
+test('og:url y og:title propios por página', async ({ page }) => {
+  const cases = [
+    { path: '/servicios/bots-whatsapp', url: /\/servicios\/bots-whatsapp$/ },
+    { path: '/en/projects/pyron', url: /\/en\/projects\/pyron$/ },
+    { path: '/sobre-mi', url: /\/sobre-mi$/ },
+    { path: '/en/projects', url: /\/en\/projects$/ },
+  ]
+  for (const { path, url } of cases) {
+    await page.goto(path)
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', url)
+    const ogTitle = await page.locator('meta[property="og:title"]').getAttribute('content')
+    expect(ogTitle).toBe(await page.title())
+  }
+})

@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // Sin X-Powered-By: no anunciar el framework en cada respuesta.
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {
@@ -40,12 +42,19 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value:
-              'camera=(), microphone=(), geolocation=(), browsing-topics=(), interest-cohort=()',
+            // interest-cohort (FLoC) ya no existe: Chrome loguea error por feature
+            // desconocida en cada página.
+            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
           {
             key: 'Cross-Origin-Opener-Policy',
             value: 'same-origin',
+          },
+          {
+            // CSP mínima que no toca scripts ni estilos (cero riesgo de romper
+            // el sitio): nadie lo embebe, sin plugins, sin <base> ni forms ajenos.
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'",
           },
         ],
       },

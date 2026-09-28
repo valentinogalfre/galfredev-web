@@ -57,7 +57,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: enTitle,
     description: enDescription,
-    images: ['/og-home.jpg'],
+    // Sin images: X cae a og:image, que cada segmento con opengraph-image
+    // sobreescribe (con la de la home fija, todas compartían la misma).
   },
 }
 

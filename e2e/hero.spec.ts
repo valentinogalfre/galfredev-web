@@ -26,6 +26,10 @@ test('teclado físico: tipear en el body toma la typed-line y el loop retoma', a
   // Budget propio: en dev + GL por software con workers en paralelo el main
   // thread jankea fuerte y el timer de 4s del unpause puede dispararse tarde.
   test.setTimeout(60_000)
+  // El contrato es la lógica de tipeo (idéntica en CSS y WebGL): sin el HDR la
+  // escena 3D nunca arranca su render por software (tareas de ~200 ms en loop
+  // con varios workers) y el test deja de ser flaky por carga, no por código.
+  await page.route('**/hdr/city.hdr', (route) => route.abort())
   await page.goto('/')
   const typed = page.getByTestId('typed-line')
   // Espera a que el loop arranque: garantiza hero montado + observer activo.

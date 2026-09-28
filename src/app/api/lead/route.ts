@@ -16,6 +16,7 @@ import { NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
 
+const MAX_BODY_BYTES = 16 * 1024
 const MIN_ELAPSED_MS = 1200
 const MAX_ELAPSED_MS = 1000 * 60 * 30
 const DEFAULT_SOURCE = CONTACT_FORM_SOURCE
@@ -35,10 +36,27 @@ export async function POST(request: Request) {
     )
   }
 
+  // Un lead legítimo pesa <3 KB (todos los campos al máximo). Se corta antes
+  // de parsear: el endpoint es público y no puede aceptar payloads arbitrarios.
+  const declaredLength = Number(request.headers.get('content-length') ?? 0)
+  if (declaredLength > MAX_BODY_BYTES) {
+    return NextResponse.json(
+      { ok: false, message: 'La solicitud es demasiado grande.' },
+      { status: 413 },
+    )
+  }
+
   let payload: unknown
 
   try {
-    payload = await request.json()
+    const raw = await request.text()
+    if (raw.length > MAX_BODY_BYTES) {
+      return NextResponse.json(
+        { ok: false, message: 'La solicitud es demasiado grande.' },
+        { status: 413 },
+      )
+    }
+    payload = JSON.parse(raw)
   } catch {
     return NextResponse.json(
       { ok: false, message: 'No se pudo leer la solicitud enviada.' },

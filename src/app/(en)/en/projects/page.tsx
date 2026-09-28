@@ -1,7 +1,7 @@
 import { ProjectsIndexPage } from '@/components/pages/projects-index-page'
 import { breadcrumbSchema, JsonLd } from '@/components/seo/json-ld'
 import { env } from '@/lib/env'
-import { hreflangAlternates } from '@/lib/seo'
+import { hreflangAlternates, socialMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -13,6 +13,13 @@ export const metadata: Metadata = {
     canonical: '/en/projects',
     ...hreflangAlternates('/proyectos', '/projects'),
   },
+  ...socialMetadata({
+    title: 'Projects | GalfreDev',
+    description:
+      'Real cases in production: WhatsApp bots, apps, websites and custom software built by GalfreDev, used every single day.',
+    path: '/en/projects',
+    locale: 'en',
+  }),
 }
 
 export default function Page() {
