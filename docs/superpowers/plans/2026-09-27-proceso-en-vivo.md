@@ -1,6 +1,6 @@
 # Proceso en vivo — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Reemplazar el zig-zag de «Cómo trabajo» por una ejecución: los 3 pasos a la izquierda y una consola `proceso.run` sticky que avanza (en cola → corriendo → listo) con el scroll.
 
@@ -9,6 +9,8 @@
 **Tech Stack:** Next.js 16 App Router, React 19, TypeScript, Tailwind v4, framer-motion 12 (solo `animate`/`useMotionValue` para el contador), Vitest, Playwright.
 
 Spec: `docs/superpowers/specs/2026-09-27-proceso-en-vivo-design.md`
+
+**Estado:** ejecutado el 2026-09-28 — en producción desde galfredevs/galfredev#48–#51.
 
 ---
 
@@ -34,7 +36,7 @@ Spec: `docs/superpowers/specs/2026-09-27-proceso-en-vivo-design.md`
 - Create: `src/lib/process-run.ts`
 - Test: `src/lib/process-run.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest'
@@ -120,12 +122,12 @@ describe('activeIndex', () => {
 })
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/lib/process-run.test.ts`
 Expected: FAIL — `Failed to resolve import "./process-run"`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```ts
 /**
@@ -203,12 +205,12 @@ export function activeIndex(tops: number[], line: number): number {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/lib/process-run.test.ts`
 Expected: PASS (11 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/lib/process-run.ts src/lib/process-run.test.ts
@@ -224,7 +226,7 @@ git commit -m "feat(proceso): motor puro de la consola del proceso (estados, ava
 - Modify: `src/content/es/index.ts` (bloque `process`)
 - Modify: `src/content/en/index.ts` (bloque `process`)
 
-- [ ] **Step 1: Tipos** — en `src/types/content.ts`, antes de `type HomeContent`, agregar:
+- [x] **Step 1: Tipos** — en `src/types/content.ts`, antes de `type HomeContent`, agregar:
 
 ```ts
 /** Paso de «Cómo trabajo»: copy de la lista + lo que imprime la consola. */
@@ -260,12 +262,12 @@ y reemplazar la línea `process: { title: string; steps: { title: string; descri
   process: { title: string; steps: ProcessStep[]; console: ProcessConsole }
 ```
 
-- [ ] **Step 2: Run typecheck to verify it fails**
+- [x] **Step 2: Run typecheck to verify it fails**
 
 Run: `npx tsc --noEmit`
 Expected: FAIL en `src/content/es/index.ts` y `src/content/en/index.ts` (faltan `when`, `stage`, `stageWhen`, `log`, `day` y `console`).
 
-- [ ] **Step 3: Copy es** — reemplazar el bloque `process` de `src/content/es/index.ts` por:
+- [x] **Step 3: Copy es** — reemplazar el bloque `process` de `src/content/es/index.ts` por:
 
 ```ts
     process: {
@@ -329,7 +331,7 @@ Expected: FAIL en `src/content/es/index.ts` y `src/content/en/index.ts` (faltan 
     },
 ```
 
-- [ ] **Step 4: Copy en** — reemplazar el bloque `process` de `src/content/en/index.ts` por:
+- [x] **Step 4: Copy en** — reemplazar el bloque `process` de `src/content/en/index.ts` por:
 
 ```ts
     process: {
@@ -393,12 +395,12 @@ Expected: FAIL en `src/content/es/index.ts` y `src/content/en/index.ts` (faltan 
     },
 ```
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 Run: `npx tsc --noEmit && npx vitest run src/lib/i18n.test.ts`
 Expected: typecheck limpio; i18n PASS (ningún string vacío en ningún idioma).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/types/content.ts src/content/es/index.ts src/content/en/index.ts
@@ -412,7 +414,7 @@ git commit -m "feat(proceso): copy bilingüe de etapas y consola del proceso"
 **Files:**
 - Modify: `src/app/globals.css` (agregar al final, antes del bloque «Paridad Windows»)
 
-- [ ] **Step 1: Agregar el bloque**
+- [x] **Step 1: Agregar el bloque**
 
 ```css
 /* ---------- Proceso en vivo (src/components/sections/process-run.tsx) ----------
@@ -649,9 +651,9 @@ git commit -m "feat(proceso): copy bilingüe de etapas y consola del proceso"
 }
 ```
 
-- [ ] **Step 2: Verify** — `npx next build` compila (el CSS no tiene test propio; lo cubren el build y los e2e de la Task 5).
+- [x] **Step 2: Verify** — `npx next build` compila (el CSS no tiene test propio; lo cubren el build y los e2e de la Task 5).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/globals.css
@@ -667,7 +669,7 @@ git commit -m "feat(proceso): estilos de la consola proceso.run (estados, destel
 - Modify (reescritura completa): `src/components/sections/process-section.tsx`
 - Delete: `src/components/motion/draw-line.tsx`
 
-- [ ] **Step 1: Crear `src/components/sections/process-run.tsx`**
+- [x] **Step 1: Crear `src/components/sections/process-run.tsx`**
 
 ```tsx
 'use client'
@@ -902,7 +904,7 @@ export function ProcessRun({ steps, consoleCopy }: ProcessRunProps) {
 }
 ```
 
-- [ ] **Step 2: Reescribir `src/components/sections/process-section.tsx`**
+- [x] **Step 2: Reescribir `src/components/sections/process-section.tsx`**
 
 ```tsx
 import { Reveal } from '@/components/motion/reveal'
@@ -940,17 +942,17 @@ export function ProcessSection({ locale }: { locale: Locale }) {
 }
 ```
 
-- [ ] **Step 3: Borrar DrawLine**
+- [x] **Step 3: Borrar DrawLine**
 
 Run: `git rm src/components/motion/draw-line.tsx && grep -rn "draw-line\|DrawLine" src`
 Expected: sin resultados del grep.
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `npm run lint && npm run typecheck && npm run test`
 Expected: lint y typecheck limpios; todos los tests unitarios PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/sections/process-run.tsx src/components/sections/process-section.tsx
@@ -964,7 +966,7 @@ git commit -m "feat(proceso): «Cómo trabajo» corre como una ejecución (conso
 **Files:**
 - Modify: `e2e/home-sections.spec.ts` (agregar al final)
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 // Contrato: «Cómo trabajo» corre como una ejecución. Con el último paso ya
@@ -1013,17 +1015,17 @@ test.describe('movimiento reducido', () => {
 })
 ```
 
-- [ ] **Step 2: Run them**
+- [x] **Step 2: Run them**
 
 Run (con el build de prod en :3100): `npx playwright test e2e/home-sections.spec.ts --retries=0`
 Expected: PASS en mobile y desktop (antes de la Task 4 fallaban: no existía `process-console`).
 
-- [ ] **Step 3: Suite completa**
+- [x] **Step 3: Suite completa**
 
 Run: `npm run build && (npm run start -- --port 3100 &) && npx playwright test --retries=0`
 Expected: todo PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add e2e/home-sections.spec.ts
@@ -1034,4 +1036,4 @@ git commit -m "test(proceso): la consola completa al scrollear y arranca complet
 
 ### Task 6: Verificación visual
 
-- [ ] **Step 1:** Capturas de `/` y `/en` en 1440×900 y 390×844 recorriendo la sección (antes / durante / después del scroll) y con `reducedMotion: 'reduce'`. Chequear: consola sticky sin tapar el header, alineación con el resto de secciones, log sin saltos de alto en desktop, una sola línea en mobile, pasos atenuados salvo el activo.
+- [x] **Step 1:** Capturas de `/` y `/en` en 1440×900 y 390×844 recorriendo la sección (antes / durante / después del scroll) y con `reducedMotion: 'reduce'`. Chequear: consola sticky sin tapar el header, alineación con el resto de secciones, log sin saltos de alto en desktop, una sola línea en mobile, pasos atenuados salvo el activo.

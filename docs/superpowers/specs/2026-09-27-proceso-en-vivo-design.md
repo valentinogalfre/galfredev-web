@@ -1,6 +1,6 @@
 # Proceso en vivo — rediseño de «Cómo trabajo»
 
-Fecha: 2026-09-27 · Estado: aprobado (propuesta A del Motion Lab)
+Fecha: 2026-09-27 · Estado: implementado — en producción desde 2026-09-28 (galfredevs/galfredev#48–#51)
 Prototipo aprobado: https://claude.ai/artifact/2dBD4VWFq2HXmUiW1F91oZ
 
 ## Problema
