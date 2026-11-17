@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    // La presentación es un HTML estático en public/: Next no resuelve el
+    // index.html de una carpeta por su cuenta.
+    return [{ source: '/presentacion', destination: '/presentacion/index.html' }]
+  },
   async headers() {
     return [
       {
