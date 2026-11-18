@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { emulateGpu, HARDWARE_GPU, SOFTWARE_GPU } from './gpu'
 
 test('el hero es visible sin esperar al bundle 3D (.hdr abortado → CSS opaco)', async ({
   page,
@@ -11,6 +12,7 @@ test('el hero es visible sin esperar al bundle 3D (.hdr abortado → CSS opaco)'
   // abortarlo simula "el 3D nunca llega" → o el loader revienta (boundary) o
   // vence el presupuesto de materialización — en ambos casos el hero debe
   // quedar completo y usable sobre el teclado CSS. NUNCA vacío.
+  await emulateGpu(page, HARDWARE_GPU)
   await page.route('**/*.hdr', (route) => route.abort())
   await page.goto('/')
   await expect(page.getByText('Software que')).toBeVisible()
@@ -63,11 +65,30 @@ test('con WebGL roto, el hero muestra el fallback CSS', async ({ page }) => {
   await expect(page.locator('canvas')).toHaveCount(0)
 })
 
+test('con WebGL por software, el hero no monta la escena 3D', async ({ page }) => {
+  // SwiftShader/llvmpipe exponen WebGL pero rasterizan en CPU: la escena 3D
+  // congela el main thread (Lighthouse, VMs sin GPU) → tier 'low', solo CSS.
+  await emulateGpu(page, SOFTWARE_GPU)
+  await page.goto('/')
+  await page.waitForFunction(
+    () => {
+      const layer = document.querySelector('[data-testid="keyboard-hero"] .kb-css-in')
+      return layer !== null && getComputedStyle(layer).opacity === '1'
+    },
+    undefined,
+    { timeout: 15_000 },
+  )
+  // Mismo margen que con WebGL roto: el montaje diferido ya habría ocurrido.
+  await page.waitForTimeout(7000)
+  await expect(page.locator('canvas')).toHaveCount(0)
+})
+
 test('tier WebGL: una sola materialización — el teclado CSS nunca se monta', async ({
   page,
 }) => {
   // En dev el bundle de three compila lento: presupuesto propio.
   test.setTimeout(60_000)
+  await emulateGpu(page, HARDWARE_GPU)
   await page.goto('/')
   const canvas = page.locator('[data-testid="keyboard-hero"] canvas')
   try {
@@ -118,6 +139,7 @@ test('GPU en cero fuera de viewport: el rAF driver se detiene', async ({ page })
       }
     }
   })
+  await emulateGpu(page, HARDWARE_GPU)
   const glDraws = () =>
     page.evaluate(() => (window as unknown as { __glDraws?: number }).__glDraws ?? 0)
   await page.goto('/')
