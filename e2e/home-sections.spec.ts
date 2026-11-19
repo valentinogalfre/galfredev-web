@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { KEYBOARD_HDR_URL } from '../src/components/three/keyboard/environment'
 
 test('la home tiene servicios y proceso nuevos (es)', async ({ page }) => {
   await page.goto('/')
@@ -47,7 +48,7 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
   // El contrato es el form: sin el HDR la escena 3D del hero no arranca su
   // render por software (loop de tareas de ~200 ms que, con varios workers,
   // volvía flaky cada click del test).
-  await page.route('**/hdr/city.hdr', (route) => route.abort())
+  await page.route(`**${KEYBOARD_HDR_URL}`, (route) => route.abort())
 
   await page.goto('/#contacto')
 
@@ -101,7 +102,7 @@ test('el form de contacto envía (API mockeada)', async ({ page }) => {
 // pasada la mitad de la pantalla, la consola termina completa y con el
 // resultado de las 3 etapas en el log.
 test('la consola del proceso completa las 3 etapas al scrollear', async ({ page }) => {
-  await page.route('**/hdr/city.hdr', (route) => route.abort())
+  await page.route(`**${KEYBOARD_HDR_URL}`, (route) => route.abort())
   await page.goto('/')
   const consoleEl = page.getByTestId('process-console')
   await expect(consoleEl).toHaveAttribute('data-status', 'idle')
@@ -123,7 +124,7 @@ test('la consola del proceso completa las 3 etapas al scrollear', async ({ page 
 // mientras se scrollea (la última línea del log ocupa 1 o 2 renglones).
 test('la consola del proceso no cambia de alto al avanzar (mobile)', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'en desktop la consola vive en su propia columna')
-  await page.route('**/hdr/city.hdr', (route) => route.abort())
+  await page.route(`**${KEYBOARD_HDR_URL}`, (route) => route.abort())
   await page.goto('/')
   const consoleEl = page.getByTestId('process-console')
   const height = () => consoleEl.evaluate((el) => (el as HTMLElement).offsetHeight)
@@ -158,7 +159,7 @@ test.describe('movimiento reducido', () => {
       }
     })
     page.on('pageerror', (error) => hydrationErrors.push(error.message))
-    await page.route('**/hdr/city.hdr', (route) => route.abort())
+    await page.route(`**${KEYBOARD_HDR_URL}`, (route) => route.abort())
     await page.goto('/')
     const consoleEl = page.getByTestId('process-console')
     await expect(consoleEl).toHaveAttribute('data-status', 'done')

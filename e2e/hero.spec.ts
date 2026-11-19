@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { KEYBOARD_HDR_URL } from '../src/components/three/keyboard/environment'
 
 test('hero: titular, CTAs y teclado visibles', async ({ page }) => {
   await page.goto('/')
@@ -29,7 +30,7 @@ test('teclado físico: tipear en el body toma la typed-line y el loop retoma', a
   // El contrato es la lógica de tipeo (idéntica en CSS y WebGL): sin el HDR la
   // escena 3D nunca arranca su render por software (tareas de ~200 ms en loop
   // con varios workers) y el test deja de ser flaky por carga, no por código.
-  await page.route('**/hdr/city.hdr', (route) => route.abort())
+  await page.route(`**${KEYBOARD_HDR_URL}`, (route) => route.abort())
   await page.goto('/')
   const typed = page.getByTestId('typed-line')
   // Espera a que el loop arranque: garantiza hero montado + observer activo.

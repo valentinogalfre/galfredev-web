@@ -96,7 +96,7 @@ en forma diferida sobre un teclado CSS aprobado como fallback:
 - El canvas usa `frameloop="demand"` con un driver de rAF que **se cancela fuera
   de viewport** (GPU en cero al scrollear) y con `prefers-reduced-motion` no se
   monta: queda el teclado CSS estático con la palabra fija.
-- Assets: `public/hdr/city.hdr` (environment) y `public/fonts/sora-600.ttf`
+- Assets: `public/hdr/city-64.hdr` (environment, 64×32) y `public/fonts/sora-600.ttf`
   (keycaps 3D). Si el 3D no llega o el contexto WebGL muere, el CSS queda.
 
 ### Micro-demos por servicio

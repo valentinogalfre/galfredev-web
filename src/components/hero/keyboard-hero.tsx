@@ -1,5 +1,6 @@
 'use client'
 
+import { KEYBOARD_HDR_URL } from '@/components/three/keyboard/environment'
 import { detectTier, type GpuTier } from '@/components/three/keyboard/quality'
 import { cn } from '@/lib/utils'
 import { motion, useMotionValue, useTransform, type MotionValue } from 'framer-motion'
@@ -73,7 +74,7 @@ type KeyboardHeroProps = {
  * - tier mid/high → el CSS no se muestra nunca: mientras el WebGL carga se ve
  *   el aura (halo teal elíptico respirando, como si el teclado estuviera por
  *   encenderse) y, con el primer frame con assets, el teclado WebGL hace su
- *   única entrada. El HDR (1.5 MB) se calienta por red apenas se conoce el
+ *   única entrada. El HDR se calienta por red apenas se conoce el
  *   tier; el MONTAJE del canvas espera a load+idle (la eval de three no debe
  *   pisar la hidratación).
  * - si a los 10 s de montado el canvas no llegó el primer frame → se descarta
@@ -103,7 +104,7 @@ export function KeyboardHero({
   // (b) montar el canvas recién en load + idle + settle corto.
   useEffect(() => {
     if (tier !== 'high' && tier !== 'mid') return
-    void fetch('/hdr/city.hdr', { cache: 'force-cache' }).catch(() => {})
+    void fetch(KEYBOARD_HDR_URL, { cache: 'force-cache' }).catch(() => {})
     let cancelled = false
     let timer: number | undefined
     let idle: number | undefined

@@ -7,6 +7,7 @@ import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import type { MotionValue } from 'framer-motion'
 import { Suspense, useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { AdditiveBlending, CanvasTexture, type Group } from 'three'
+import { KEYBOARD_HDR_URL } from './environment'
 import { KeyboardModel } from './keyboard-model'
 import type { GpuTier } from './quality'
 
@@ -233,7 +234,7 @@ export function KeyboardScene({
           far={3.2}
           color="#02070a"
         />
-        <Environment files="/hdr/city.hdr" />
+        <Environment files={KEYBOARD_HDR_URL} />
         <ReadySignal onReady={onReady} />
       </Suspense>
       {tier === 'high' && (
