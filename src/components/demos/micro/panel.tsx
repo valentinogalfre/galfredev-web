@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/types/content'
-import { animate, motion, useReducedMotion } from 'framer-motion'
+import { animate, m, useReducedMotion } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -280,7 +280,7 @@ export function Panel({ locale }: { locale: Locale }) {
           </thead>
           <tbody>
             {orders.map((order) => (
-              <motion.tr
+              <m.tr
                 key={order.id}
                 initial={
                   order.id < SEED.length
@@ -338,7 +338,7 @@ export function Panel({ locale }: { locale: Locale }) {
                     {STATUS_LABELS[order.status][locale]}
                   </button>
                 </td>
-              </motion.tr>
+              </m.tr>
             ))}
           </tbody>
         </table>

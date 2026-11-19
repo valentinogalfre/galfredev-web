@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { ProjectId, ServiceId } from '@/types/content'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { useState, type ReactNode } from 'react'
 
 type FilterChip = { id: ServiceId; name: string }
@@ -68,10 +68,10 @@ export function ProjectsFilter({
         ))}
       </div>
 
-      <motion.div layout className="mt-8 grid gap-5 sm:mt-10 md:grid-cols-2 md:gap-6">
+      <m.div layout className="mt-8 grid gap-5 sm:mt-10 md:grid-cols-2 md:gap-6">
         <AnimatePresence mode="popLayout" initial={false}>
           {visible.map((item, index) => (
-            <motion.div
+            <m.div
               key={item.id}
               layout
               data-testid="project-card"
@@ -86,10 +86,10 @@ export function ProjectsFilter({
               style={{ ['--stack-top' as string]: `${4.5 + index * 0.9}rem` }}
             >
               {item.card}
-            </motion.div>
+            </m.div>
           ))}
         </AnimatePresence>
-      </motion.div>
+      </m.div>
     </div>
   )
 }

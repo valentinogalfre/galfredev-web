@@ -21,7 +21,7 @@ import type { ContactFormContent } from '@/types/content'
 import {
   AnimatePresence,
   animate,
-  motion,
+  m,
   useMotionValue,
   useSpring,
 } from 'framer-motion'
@@ -56,7 +56,7 @@ function SuccessCelebration({
   })
 
   return (
-    <motion.div
+    <m.div
       aria-live="polite"
       initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 14, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -72,7 +72,7 @@ function SuccessCelebration({
         <span className="relative inline-flex size-11 shrink-0 items-center justify-center">
           {!reducedMotion
             ? particles.map((particle, index) => (
-                <motion.span
+                <m.span
                   key={index}
                   aria-hidden
                   initial={{ x: 0, y: 0, opacity: 0, scale: 1 }}
@@ -88,7 +88,7 @@ function SuccessCelebration({
               ))
             : null}
           <svg viewBox="0 0 44 44" fill="none" className="size-11">
-            <motion.circle
+            <m.circle
               cx={22}
               cy={22}
               r={19}
@@ -99,7 +99,7 @@ function SuccessCelebration({
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.5, ease: 'easeOut' }}
             />
-            <motion.path
+            <m.path
               d="M14 22.5l6 6L30.5 16.5"
               stroke="#b9ffef"
               strokeWidth={3}
@@ -114,7 +114,7 @@ function SuccessCelebration({
         <div className="min-w-0 pt-0.5 text-sm text-emerald-100">
           <p>{message}</p>
           {ctaHref ? (
-            <motion.a
+            <m.a
               href={ctaHref}
               target="_blank"
               rel="noreferrer"
@@ -125,11 +125,11 @@ function SuccessCelebration({
             >
               {ctaLabel}
               <ArrowRight size={16} />
-            </motion.a>
+            </m.a>
           ) : null}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -296,7 +296,7 @@ export function ContactForm({ labels }: { labels: ContactFormContent }) {
       className="page-panel rounded-[2rem] p-6 sm:p-8"
     >
       {!reducedMotion ? (
-        <motion.div
+        <m.div
           aria-hidden
           className="pointer-events-none absolute left-0 top-0 size-[340px] rounded-full"
           style={{
@@ -464,7 +464,7 @@ export function ContactForm({ labels }: { labels: ContactFormContent }) {
               ctaHref={whatsAppHref}
             />
           ) : message ? (
-            <motion.div
+            <m.div
               key={`error-${message}`}
               aria-live="polite"
               initial={{ opacity: 0 }}
@@ -477,7 +477,7 @@ export function ContactForm({ labels }: { labels: ContactFormContent }) {
               className="mt-5 rounded-[1.35rem] border border-rose-400/20 bg-rose-400/8 px-4 py-4 text-sm text-rose-100"
             >
               <p>{message}</p>
-            </motion.div>
+            </m.div>
           ) : null}
         </AnimatePresence>
       </div>

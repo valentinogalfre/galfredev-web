@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/types/content'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { Moon, Zap } from 'lucide-react'
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 
@@ -78,7 +78,7 @@ function Piece({
   const reduceMotion = useReducedMotion()
 
   return (
-    <motion.div
+    <m.div
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.96 }}
       animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 250, damping: 22, delay }}
@@ -86,7 +86,7 @@ function Piece({
       style={style}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -288,7 +288,7 @@ export function WebBuilder({ locale }: { locale: Locale }) {
 
         {/* Badge de performance al completar el build */}
         {phase === 'built' ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.7, y: -8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 18 }}
@@ -298,7 +298,7 @@ export function WebBuilder({ locale }: { locale: Locale }) {
               <Zap size={12} strokeWidth={2.4} aria-hidden />
               {copy.badge}
             </span>
-          </motion.div>
+          </m.div>
         ) : null}
       </div>
     </div>

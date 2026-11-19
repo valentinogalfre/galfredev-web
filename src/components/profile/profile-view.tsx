@@ -10,7 +10,7 @@ import {
 } from '@/content/profile-content'
 import { deriveInitials } from '@/lib/profile'
 import type { AuthUserSummary, ProfileBundle } from '@/types/site'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   BriefcaseBusiness,
   Building2,
@@ -123,7 +123,7 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
             <div className="flex min-w-0 items-center gap-4 sm:gap-5">
 
               {/* Avatar */}
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0.88 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -145,21 +145,21 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
                     </span>
                   )}
                 </div>
-              </motion.div>
+              </m.div>
 
               {/* Name + meta */}
               <div className="min-w-0 space-y-1.5 sm:space-y-2">
-                <motion.h1
+                <m.h1
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.55, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
                   className="truncate text-[1.45rem] font-semibold leading-tight tracking-[-0.05em] text-white sm:text-[2rem] lg:text-[2.4rem]"
                 >
                   {authUser.displayName}
-                </motion.h1>
+                </m.h1>
 
                 {bundle.companyName ? (
-                  <motion.p
+                  <m.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.45, delay: 0.14 }}
@@ -167,10 +167,10 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
                   >
                     <Building2 size={13} aria-hidden className="shrink-0 text-[#3dddc4]" />
                     <span className="truncate">{bundle.companyName}</span>
-                  </motion.p>
+                  </m.p>
                 ) : null}
 
-                <motion.p
+                <m.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.45, delay: 0.18 }}
@@ -178,12 +178,12 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
                 >
                   <Mail size={13} className="shrink-0 text-white/28" />
                   <span className="min-w-0 truncate">{authUser.email}</span>
-                </motion.p>
+                </m.p>
               </div>
             </div>
 
             {/* Edit button — top-right always */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.45, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -200,11 +200,11 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
                 <span className="hidden sm:inline">Editar perfil</span>
                 <span className="sm:hidden">Editar</span>
               </Link>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* Meta row: phone + provider */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.24 }}
@@ -229,7 +229,7 @@ export function ProfileView({ authUser, bundle }: ProfileViewProps) {
                 Cerrar sesión
               </button>
             </form>
-          </motion.div>
+          </m.div>
         </div>
       </Reveal>
 

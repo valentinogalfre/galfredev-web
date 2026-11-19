@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import {
-  motion,
+  m,
   useMotionTemplate,
   useMotionValue,
   useReducedMotion,
@@ -39,7 +39,7 @@ export function BorderGlowCard({ children, className }: BorderGlowCardProps) {
   const fallbackBackground = 'linear-gradient(180deg,rgba(61,221,196,0.07),transparent 38%)'
 
   return (
-    <motion.div
+    <m.div
       onMouseMove={(event) => {
         if (!enableMotion) {
           return
@@ -61,25 +61,25 @@ export function BorderGlowCard({ children, className }: BorderGlowCardProps) {
         className,
       )}
     >
-      <motion.div
+      <m.div
         aria-hidden
         style={{
           background: enableMotion ? borderGlow : fallbackBackground,
         }}
         className="pointer-events-none absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100"
       />
-      <motion.div
+      <m.div
         aria-hidden
         style={{ background: enableMotion ? ambientGlow : 'transparent' }}
         className="pointer-events-none absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100"
       />
-      <motion.div
+      <m.div
         aria-hidden
         style={{ background: enableMotion ? accentGlow : 'transparent' }}
         className="pointer-events-none absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100"
       />
       <div className="pointer-events-none absolute inset-[1px] rounded-[calc(2rem-1px)] border border-[rgba(61,221,196,0.08)] opacity-70" />
       <div className="relative">{children}</div>
-    </motion.div>
+    </m.div>
   )
 }

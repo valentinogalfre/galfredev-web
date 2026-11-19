@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import {
-  motion,
+  m,
   useReducedMotion,
   useScroll,
   useSpring,
@@ -67,18 +67,18 @@ function DeckCard({
           : 'lg:static lg:block lg:h-auto',
       )}
     >
-      <motion.div
+      <m.div
         ref={cardRef}
         style={{ scale: stackAnimated ? scale : 1 }}
         className="pointer-events-auto relative h-full w-full origin-top lg:h-auto"
       >
         {children}
-        <motion.div
+        <m.div
           aria-hidden
           style={{ opacity: stackAnimated ? veil : 0 }}
           className="pointer-events-none absolute inset-0 hidden rounded-[2rem] bg-[#050810] lg:block"
         />
-      </motion.div>
+      </m.div>
     </div>
   )
 }
@@ -168,7 +168,7 @@ export function ProjectsDeck({ items, className }: ProjectsDeckProps) {
         aria-hidden
         className="mx-auto mt-4 h-1 w-28 overflow-hidden rounded-full bg-white/10 lg:hidden"
       >
-        <motion.div
+        <m.div
           style={{ x: thumbX, width: `${100 / items.length}%` }}
           className="h-full rounded-full bg-gradient-to-r from-[#3dddc4] to-[#2a9184] shadow-[0_0_12px_rgba(61,221,196,0.55)]"
         />

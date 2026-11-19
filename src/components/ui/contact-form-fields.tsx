@@ -3,7 +3,7 @@
 import {
   AnimatePresence,
   animate,
-  motion,
+  m,
   useMotionTemplate,
   useMotionValue,
 } from 'framer-motion'
@@ -66,7 +66,7 @@ function FieldRing({ focused }: { focused: boolean }) {
   if (reducedMotion) return null
 
   return (
-    <motion.span
+    <m.span
       aria-hidden
       className="pointer-events-none absolute inset-0 rounded-[22px]"
       style={{
@@ -108,7 +108,7 @@ function FloatingLabel({
   restTop,
 }: FloatingLabelProps) {
   const reducedMotion = useSafeReducedMotion()
-  const Tag = htmlFor ? motion.label : motion.span
+  const Tag = htmlFor ? m.label : m.span
 
   return (
     <Tag
@@ -144,7 +144,7 @@ function FieldNote({ error, helper }: { error?: string; helper?: string }) {
   return (
     <AnimatePresence initial={false} mode="wait">
       {error ? (
-        <motion.p
+        <m.p
           key={`error-${error}`}
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
@@ -153,7 +153,7 @@ function FieldNote({ error, helper }: { error?: string; helper?: string }) {
           className="px-1 text-[13px] leading-5 text-rose-200"
         >
           {error}
-        </motion.p>
+        </m.p>
       ) : helper ? (
         <p key="helper" className="px-1 text-[13px] leading-5 text-white/40">
           {helper}
@@ -412,7 +412,7 @@ export function SelectField({
 
         <AnimatePresence>
           {open ? (
-            <motion.div
+            <m.div
               id={listboxId}
               role="listbox"
               aria-labelledby={labelId}
@@ -464,7 +464,7 @@ export function SelectField({
                   </button>
                 )
               })}
-            </motion.div>
+            </m.div>
           ) : null}
         </AnimatePresence>
       </div>
@@ -478,7 +478,7 @@ function CheckDraw({ checked, className }: { checked: boolean; className?: strin
 
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
-      <motion.path
+      <m.path
         d="M4.5 12.5l5 5L19.5 7"
         stroke="currentColor"
         strokeWidth={3}
@@ -527,7 +527,7 @@ export function ConsentCheckboxCard({
           disabled ? 'cursor-not-allowed opacity-70' : '',
         ].join(' ')}
       >
-        <motion.span
+        <m.span
           initial={false}
           animate={reducedMotion ? { scale: 1 } : { scale: checked ? [1, 1.18, 1] : 1 }}
           transition={{ duration: 0.28, ease: 'easeOut' }}
@@ -539,7 +539,7 @@ export function ConsentCheckboxCard({
           ].join(' ')}
         >
           <CheckDraw checked={checked} className="size-3.5" />
-        </motion.span>
+        </m.span>
         <span className="text-sm leading-6 text-white/72">
           {label}
           {required ? ' *' : ''}

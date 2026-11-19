@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/types/content'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import {
   CalendarDays,
   Check,
@@ -167,7 +167,7 @@ export function PhoneApp({ locale }: { locale: Locale }) {
             <div className="relative flex-1 overflow-hidden border-t border-white/[0.06]">
               {/* Sin mode: los panels son absolute inset-0, entran/salen superpuestos */}
               <AnimatePresence initial={false} custom={direction}>
-                <motion.div
+                <m.div
                   key={tab}
                   role="tabpanel"
                   id={`micro-demo-panel-${tab}`}
@@ -282,14 +282,14 @@ export function PhoneApp({ locale }: { locale: Locale }) {
                       </div>
                     ) : (
                       <div className="flex h-full flex-col items-center justify-center gap-2.5 text-center">
-                        <motion.span
+                        <m.span
                           initial={reduceMotion ? { opacity: 0 } : { scale: 0, opacity: 0 }}
                           animate={reduceMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
                           transition={{ type: 'spring', stiffness: 320, damping: 16 }}
                           className="inline-flex size-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,#3dddc4,#1f7f73)] text-slate-950 shadow-[0_0_36px_rgba(61,221,196,0.4)]"
                         >
                           <Check size={22} strokeWidth={2.6} aria-hidden />
-                        </motion.span>
+                        </m.span>
                         <p className="text-[12px] font-semibold text-white">{copy.confirmed}</p>
                         <p className="font-mono text-[10px] text-white/50">
                           {SERVICES[serviceIndex].name[locale]} · {time}
@@ -342,7 +342,7 @@ export function PhoneApp({ locale }: { locale: Locale }) {
                       </div>
                     </div>
                   ) : null}
-                </motion.div>
+                </m.div>
               </AnimatePresence>
             </div>
 

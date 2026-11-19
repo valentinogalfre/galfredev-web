@@ -4,7 +4,7 @@ import { StaggerItem, StaggerReveal } from '@/components/motion/stagger-reveal'
 import { switchByMap, type SwitchMap } from '@/lib/route-pairs'
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/types/content'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { Menu, Search, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -232,7 +232,7 @@ export function SiteHeaderClient({
 
       <AnimatePresence>
         {open ? (
-          <motion.div
+          <m.div
             id="mobile-navigation"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -283,7 +283,7 @@ export function SiteHeaderClient({
                 </StaggerItem>
               </StaggerReveal>
             </nav>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </>

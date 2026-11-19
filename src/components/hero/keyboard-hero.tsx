@@ -2,7 +2,7 @@
 
 import { detectTier, type GpuTier } from '@/components/three/keyboard/quality'
 import { cn } from '@/lib/utils'
-import { motion, useMotionValue, useTransform, type MotionValue } from 'framer-motion'
+import { m, useMotionValue, useTransform, type MotionValue } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { Component, useCallback, useEffect, useState, type ReactNode } from 'react'
 import { KeyboardCss } from './keyboard-css'
@@ -173,7 +173,7 @@ export function KeyboardHero({
       {cssMounted && (
         <div className={cn('kb-mask absolute inset-0', showCss ? 'kb-css-in' : 'opacity-0')}>
           <div className="kb-mask-y h-full w-full">
-            <motion.div
+            <m.div
               className="h-full w-full"
               style={{
                 rotateX: cssRotateX,
@@ -183,7 +183,7 @@ export function KeyboardHero({
               }}
             >
               <KeyboardCss typing={typing} egg={egg} />
-            </motion.div>
+            </m.div>
           </div>
         </div>
       )}

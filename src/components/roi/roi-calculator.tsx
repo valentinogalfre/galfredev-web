@@ -7,7 +7,7 @@ import { formatCurrencyArs, formatCurrencyArsCompact } from '@/lib/utils'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import type { RoiCalculatorLabels } from '@/types/content'
 import {
-  motion,
+  m,
   useInView,
   useMotionValue,
   useMotionValueEvent,
@@ -142,20 +142,20 @@ function CelebrationBurst({ seed }: { seed: number }) {
 
   return (
     <span aria-hidden className="pointer-events-none absolute inset-0">
-      <motion.span
+      <m.span
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 0.85, 0] }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className="absolute -inset-2 rounded-2xl bg-[radial-gradient(circle,rgba(61,221,196,0.28),transparent_70%)]"
       />
-      <motion.span
+      <m.span
         initial={{ opacity: 0.7, scale: 0.55 }}
         animate={{ opacity: 0, scale: 1.5 }}
         transition={{ duration: 0.65, ease: 'easeOut' }}
         className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(61,221,196,0.8)]"
       />
       {particles.map((particle, index) => (
-        <motion.span
+        <m.span
           key={index}
           initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
           animate={{
@@ -336,7 +336,7 @@ function RoiLiveChart({
             {milestoneBar ? (
               <g>
                 {!reducedMotion ? (
-                  <motion.circle
+                  <m.circle
                     key={`ping-${milestoneMonth}`}
                     cx={milestoneBar.x + barWidth / 2}
                     cy={milestoneBar.y}
@@ -435,7 +435,7 @@ function ResultCard({
         </div>
         <p className="relative mt-auto break-words pt-2.5 text-[1.05rem] font-medium leading-[1] tracking-[-0.04em] text-white sm:pt-4 sm:text-[1.6rem]">
           {celebrate ? <CelebrationBurst key={burst} seed={burst} /> : null}
-          <motion.span
+          <m.span
             key={celebrate ? burst : 'metric'}
             initial={false}
             animate={
@@ -466,7 +466,7 @@ function ResultCard({
             ) : (
               <AnimatedMetric value={value} formatter={formatter} />
             )}
-          </motion.span>
+          </m.span>
         </p>
       </div>
     </BorderGlowCard>
@@ -625,7 +625,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
             labels={labels.chart}
           />
 
-          <motion.a
+          <m.a
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
@@ -656,7 +656,7 @@ export function ROICalculator({ labels }: { labels: RoiCalculatorLabels }) {
                 className="transition-transform duration-300 group-hover:translate-x-0.5"
               />
             </div>
-          </motion.a>
+          </m.a>
         </div>
       </div>
 

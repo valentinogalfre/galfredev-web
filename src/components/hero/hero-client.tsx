@@ -4,7 +4,7 @@ import { Marquee } from '@/components/motion/marquee'
 import { cn } from '@/lib/utils'
 import {
   AnimatePresence,
-  motion,
+  m,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -106,7 +106,7 @@ export function HeroClient({
   // salió entero del viewport. Todo vive en MotionValues (cero re-render por
   // scroll): el copy se desvanece hacia arriba en el primer ~60% del recorrido
   // y el teclado recibe el progress crudo (la cámara/tilt se leen con .get()
-  // dentro de useFrame; el fallback CSS lo transforma vía motion.div).
+  // dentro de useFrame; el fallback CSS lo transforma vía m.div).
   const reducedMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -149,7 +149,7 @@ export function HeroClient({
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col items-center px-4 pb-4 pt-24 text-center sm:px-6 sm:pt-32">
         {/* Copy del hero: al scrollear se desvanece y sube (completa ~60% del
             recorrido). Con reduced-motion el style no se aplica: queda estático. */}
-        <motion.div
+        <m.div
           style={reducedMotion ? undefined : { opacity: copyOpacity, y: copyY }}
           className="flex w-full flex-col items-center"
         >
@@ -163,7 +163,7 @@ export function HeroClient({
                   agranda el bounding box de texto del h1 y Chrome re-emite un
                   candidato LCP más grande en cada rotación (LCP tardío). */}
               <AnimatePresence mode="wait" initial={false}>
-                <motion.span
+                <m.span
                   key={rotatingWord}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -172,7 +172,7 @@ export function HeroClient({
                   className="inline-block bg-[linear-gradient(95deg,#a5f0e0_5%,#3dddc4_45%,#2a9184_95%)] bg-clip-text pr-2 font-normal italic text-transparent [font-family:var(--font-instrument-serif),Georgia,serif]"
                 >
                   {rotatingWord}
-                </motion.span>
+                </m.span>
               </AnimatePresence>
             </span>
           </h1>
@@ -201,7 +201,7 @@ export function HeroClient({
               {ctaSecondary.label}
             </Link>
           </div>
-        </motion.div>
+        </m.div>
 
         <div
           style={{ animationDelay: '0.3s' }}

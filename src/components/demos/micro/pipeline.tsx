@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/types/content'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import {
   BarChart3,
   ClipboardList,
@@ -186,7 +186,7 @@ export function Pipeline({ locale }: { locale: Locale }) {
           className="font-mono text-[11px] tracking-[0.08em] text-white/50"
         >
           {copy.processed}:{' '}
-          <motion.span
+          <m.span
             key={processed}
             initial={processed === 0 || reduceMotion ? false : { scale: 1.6 }}
             animate={{ scale: 1 }}
@@ -194,7 +194,7 @@ export function Pipeline({ locale }: { locale: Locale }) {
             className="inline-block font-semibold text-[#3dddc4]"
           >
             {processed}
-          </motion.span>
+          </m.span>
         </span>
       </div>
 
@@ -224,7 +224,7 @@ export function Pipeline({ locale }: { locale: Locale }) {
                     {packets
                       .filter((packet) => packet.segment === index - 1)
                       .map((packet) => (
-                        <motion.span
+                        <m.span
                           key={packet.id}
                           initial={{ left: '0%', top: '0%', opacity: 0 }}
                           animate={{ left: '100%', top: '100%', opacity: 1 }}
@@ -242,7 +242,7 @@ export function Pipeline({ locale }: { locale: Locale }) {
 
               {/* Nodo: fila (icono + textos) en mobile, columna en desktop */}
               <div className="flex w-full items-center gap-3 sm:w-[104px] sm:shrink-0 sm:flex-col sm:items-center sm:gap-2 sm:text-center">
-                <motion.span
+                <m.span
                   key={`tile-${index}-${pulse}`}
                   initial={pulse === 0 || reduceMotion ? false : { scale: 0.82 }}
                   animate={{ scale: 1 }}
@@ -257,7 +257,7 @@ export function Pipeline({ locale }: { locale: Locale }) {
                   <Icon size={18} strokeWidth={2} aria-hidden />
                   {/* Anillo ping al recibir: remonta con cada pulso */}
                   {pulse > 0 && !reduceMotion ? (
-                    <motion.span
+                    <m.span
                       key={`ping-${pulse}`}
                       aria-hidden
                       initial={{ opacity: 0.7, scale: 1 }}
@@ -266,7 +266,7 @@ export function Pipeline({ locale }: { locale: Locale }) {
                       className="absolute inset-0 rounded-xl border border-[#3dddc4]"
                     />
                   ) : null}
-                </motion.span>
+                </m.span>
 
                 <div className="min-w-0 flex-1 sm:flex-none">
                   <p
@@ -281,7 +281,7 @@ export function Pipeline({ locale }: { locale: Locale }) {
                   <div className="h-4 sm:mt-0.5 sm:h-8" aria-live="polite">
                     <AnimatePresence mode="wait">
                       {message ? (
-                        <motion.p
+                        <m.p
                           key={`${pulse}-${message}`}
                           initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -290,7 +290,7 @@ export function Pipeline({ locale }: { locale: Locale }) {
                           className="truncate font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#8ceada] sm:line-clamp-2 sm:whitespace-normal"
                         >
                           {message}
-                        </motion.p>
+                        </m.p>
                       ) : null}
                     </AnimatePresence>
                   </div>

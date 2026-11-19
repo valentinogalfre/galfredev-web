@@ -13,7 +13,7 @@ import {
 } from '@/lib/process-run'
 import { cn } from '@/lib/utils'
 import type { ProcessConsole, ProcessStep } from '@/types/content'
-import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
+import { animate, m, useMotionValue, useTransform } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { useEffect, useReducer, useRef } from 'react'
 
@@ -129,9 +129,9 @@ export function ProcessRun({ steps, consoleCopy }: ProcessRunProps) {
             <span className="run-dot size-2 shrink-0 rounded-full" />
             <span className="font-semibold tracking-[0.02em] text-white">{consoleCopy.name}</span>
             <span className="truncate tracking-[0.04em] text-white/56">· {consoleCopy.status[status]}</span>
-            <motion.span className="ml-auto shrink-0 rounded-full border border-white/8 bg-white/[0.03] px-2.5 py-1 text-[11px] tabular-nums tracking-[0.08em] text-white/72">
+            <m.span className="ml-auto shrink-0 rounded-full border border-white/8 bg-white/[0.03] px-2.5 py-1 text-[11px] tabular-nums tracking-[0.08em] text-white/72">
               {dayText}
-            </motion.span>
+            </m.span>
           </div>
 
           <ol className="grid grid-cols-3 px-1 pb-2.5 pt-3.5 lg:px-2.5 lg:pb-5 lg:pt-6">

@@ -11,7 +11,7 @@ import {
 } from '@/content/profile-content'
 import { validateProfileState } from '@/lib/profile'
 import type { ProfileFormState } from '@/types/site'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -94,7 +94,7 @@ function OptionGroup({
 
       <AnimatePresence initial={false}>
         {showOther ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -106,7 +106,7 @@ function OptionGroup({
               placeholder={otherLabel ?? 'Contanos tu respuesta'}
               className={fieldClassName}
             />
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
 
@@ -366,7 +366,7 @@ export function ProfileForm({
             <div className="mt-8 space-y-6">
               <AnimatePresence mode="wait">
                 {step === 0 ? (
-                  <motion.div
+                  <m.div
                     key="step-0"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -444,9 +444,9 @@ export function ProfileForm({
                         Si todavía no tenés una marca definida, podés dejarlo vacío.
                       </p>
                     </label>
-                  </motion.div>
+                  </m.div>
                 ) : (
-                  <motion.div
+                  <m.div
                     key="step-1"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -606,7 +606,7 @@ export function ProfileForm({
                         })}
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>

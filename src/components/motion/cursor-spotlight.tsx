@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from 'framer-motion'
+import { m, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from 'framer-motion'
 import { useEffect } from 'react'
 
 export function CursorSpotlight() {
@@ -28,7 +28,7 @@ export function CursorSpotlight() {
   if (reduceMotion) return null
 
   return (
-    <motion.div
+    <m.div
       aria-hidden
       className="pointer-events-none fixed inset-0 z-10 hidden lg:block"
       style={{ background }}

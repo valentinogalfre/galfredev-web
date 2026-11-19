@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/types/content'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { ArrowRight, CheckCheck, ShieldCheck } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -137,7 +137,7 @@ function MessageBubble({ message }: { message: Msg }) {
 
   if (message.from === 'system') {
     return (
-      <motion.div
+      <m.div
         initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ type: 'spring', stiffness: 320, damping: 26 }}
@@ -147,14 +147,14 @@ function MessageBubble({ message }: { message: Msg }) {
           <ShieldCheck size={13} strokeWidth={2.2} aria-hidden className="shrink-0" />
           {message.text}
         </p>
-      </motion.div>
+      </m.div>
     )
   }
 
   const isUser = message.from === 'user'
 
   return (
-    <motion.div
+    <m.div
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 320, damping: 26 }}
@@ -175,7 +175,7 @@ function MessageBubble({ message }: { message: Msg }) {
           </span>
         ) : null}
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 

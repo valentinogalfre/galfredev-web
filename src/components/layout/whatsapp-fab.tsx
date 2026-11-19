@@ -2,7 +2,7 @@
 
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import type { Locale } from '@/types/content'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { MessageCircle } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -62,7 +62,7 @@ export function WhatsAppFab({ locale }: { locale: Locale }) {
   return (
     <AnimatePresence>
       {visible && !contactInView ? (
-        <motion.a
+        <m.a
           initial={{ opacity: 0, y: 16, scale: 0.92 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 16, scale: 0.92 }}
@@ -77,7 +77,7 @@ export function WhatsAppFab({ locale }: { locale: Locale }) {
             <MessageCircle size={18} />
           </span>
           <span className="hidden sm:block">{labels.label}</span>
-        </motion.a>
+        </m.a>
       ) : null}
     </AnimatePresence>
   )

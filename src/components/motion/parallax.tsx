@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { motion, useMotionValue, useScroll, useTransform } from 'framer-motion'
+import { m, useMotionValue, useScroll, useTransform } from 'framer-motion'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { useSafeReducedMotion } from './hydration'
 
@@ -30,8 +30,8 @@ export function Parallax({ children, offset = 40, className }: ParallaxProps) {
   const y = useTransform([scrollYProgress, factor], ([progress, f]: number[]) => (offset - 2 * offset * progress) * f)
 
   return (
-    <motion.div ref={ref} style={{ y }} className={cn('relative', className)}>
+    <m.div ref={ref} style={{ y }} className={cn('relative', className)}>
       {children}
-    </motion.div>
+    </m.div>
   )
 }
